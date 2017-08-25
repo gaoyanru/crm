@@ -1,0 +1,214 @@
+angular.module('crmApp').controller('Order_outworker', ['$scope', 'server', '$state', '$mdDialog', 'user', '$mdToast', '$q',
+    function($scope, server, $state, $mdDialog, user, $mdToast, $q) {
+        $scope.user = user.get();
+        $scope.open = function(item) {
+            var tplUrl;
+
+            $mdDialog.show({
+                    controller: 'Order_outworker_add',
+                    templateUrl: 'views/order_outworker_add.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: {
+                        customer:{}
+                    }
+                })
+                .then(function(answer) {
+                    resFn(answer);
+                }, function() {
+
+                });
+
+            function resFn(answer) {
+                refreshData();
+            }
+        };
+        $scope.detail = function(item) {
+            var tplUrl;
+
+            $mdDialog.show({
+                    controller: 'Order_outworker_detail',
+                    templateUrl: 'views/order_outworker_detail.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: {
+                        taskId: item.Id,
+                    },
+
+                })
+                .then(function(answer) {
+                    resFn(answer);
+                }, function() {
+
+                });
+
+            function resFn(answer) {
+                refreshData();
+            }
+        };
+
+
+        $scope.search = {
+            cusType: 0,
+            userid: 0
+        };
+        $scope.delete = function(item) {
+            if (!confirm("确认要删除任务吗？")) return;
+            server.http.delete('api/deloutworkertask/'+item.Id).success(function(res) {
+                if (res.status) refreshData();
+            });
+        };
+
+
+        $scope.paginator = {
+            total: 0,
+            currentPage: 1,
+            perPage: 10,
+            previousText: '上一页',
+            nextText: '下一页',
+            lastText: '最后一页',
+            firstText: '首页'
+        };
+
+        $scope.searchParams = {
+            limit: 10,
+            offset: 0,
+            start: '',
+            end: '',
+            status: 0,
+            cusname: '',
+            cid: ''
+        };
+        $scope.pageChanged = function() {
+            refreshData();
+        };
+
+        //set current page
+        $scope.setCurrentPage = function() {
+            $scope.paginator.currentPage = $scope.currentPage;
+            refreshData();
+        };
+        $scope.searchItem = {
+            companyName: '',
+            salesId: 0,
+            outworkId: 0
+        };
+
+        $scope.searchFn = function() {
+            $scope.searchItem.companyName = $scope.search.companyName;
+            $scope.searchItem.outworkId = $scope.search.outworkId;
+            $scope.searchItem.salesId = $scope.search.userid || 0;
+            refreshData($scope.searchItem);
+        }
+
+        function refreshData() {
+            // var deferred = $q.defer();
+
+            var data = angular.extend({
+                offset: ($scope.paginator.currentPage - 1) * $scope.paginator.perPage,
+                limit: $scope.paginator.perPage
+            }, $scope.searchItem, data);
+            server.http.get('api/myoutworkertask?' + $.param(data)).success(function(res) {
+                $scope.paginator.total = res.data.total;
+                $scope.customers = res.data.list;
+                //deferred.resolve($scope.customers[0].Id);
+            });
+            // return deferred.promise;
+        }
+        refreshData();
+        server.getSalers().success(function(res) {
+            $scope.users = res.data;
+        });
+        server.http.get('api/outworkers').success(function(res) {
+            $scope.outworkers = res.data.list;
+        });
+        
+    }
+]).controller("Order_outworker_add", ['$scope', 'server', '$mdDialog', '$mdToast', 'customer','user',
+    function($scope, server, $mdDialog, $mdToast,customer,UserServe) {
+        var user = UserServe.get();
+        $scope.postData = {};
+        if(customer.Id){
+            $scope.cus_selected = true;
+            $scope.postData.Customer = customer;
+        }
+        $scope.title = "添加外勤任务";
+
+        $scope.ok = function(ev) {
+            var postData = angular.copy($scope.postData);
+            postData.CustomerId = postData.Customer.Id;
+            var data = _.chain($scope.tasks).pluck('list').flatten().filter({selected:true}).map(function(item){
+                delete item.selected;
+                item.IsPassThrough = item.IsPassThrough?1:0;
+                item.IsNet = item.IsNet?1:0;
+                item.TaskId = item.Id;
+                return item;
+            });
+            
+            postData.OutWorkerTasks = data.value();
+            delete postData.Customer;
+            server.http.post('/api/outworkertask', postData).success(function(res) {
+                if (res.status) {
+                    $mdToast.show(
+                        $mdToast.simple()
+                        .textContent('添加成功！')
+                        .position('top center')
+                        .hideDelay(2000)
+                    );
+                    $mdDialog.hide();
+                }
+            });
+
+
+        };
+        server.http.get('/api/outertasksub').success(function(res) {
+            var data = _.map(_.groupBy(res.data,'BusinessType'),function(val,key){
+                var item = {list: val};
+                if(key == 1){
+                    item.Name = '税务';
+                }else if(key == 2){
+                    item.Name = '工商';
+                }else{
+                    item.Name='其他';
+                }
+                return item;
+            });
+
+            $scope.tasks = data;
+        });
+        server.http.get('/area/'+ user.SubsidiaryId + '.json').success(function(res){
+            $scope.areas = res.data;
+        });
+        $scope.cancel = function() {
+            $mdDialog.cancel()
+        };
+        $scope.selectCustomer = function() {
+            $mdDialog.show({
+                    controller: 'Order_cusSelect',
+                    templateUrl: 'views/Order_cusSelect.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    skipHide: true
+                })
+                .then(function(item) {
+                    $scope.postData.Customer = item;
+                }, function() {
+
+                });
+        }
+
+
+    }
+]).controller("Order_outworker_detail", ['$scope', 'server', '$mdDialog', '$mdToast','taskId',
+    function($scope, server, $mdDialog, $mdToast,taskId) {
+    
+        server.http.get('/api/outworkertaskbyid/'+taskId).success(function(res) {
+            $scope.customers = res.data;
+        });
+        $scope.cancel = function() {
+            $mdDialog.cancel()
+        };
+        
+
+    }
+]);

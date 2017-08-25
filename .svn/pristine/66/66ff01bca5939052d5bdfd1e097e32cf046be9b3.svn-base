@@ -1,0 +1,231 @@
+angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$state', '$uibModal', 'user', '$q',
+  function ($scope, $http, $state, $uibModal, user, $q) {
+    $scope.user = user.get()
+    console.log(user, '登录用户信息')
+    $scope.contractStatus = { // 合同状态
+      1: "待审核",
+      2: "已审核",
+      3: "已驳回",
+      4: "终止合同"
+    }
+    $scope.contractType = { // 合同类型
+      1: "新增",
+      2: "续费"
+    }
+    $scope.accountStatus = { // 合同状态
+      1: "待审核",
+      2: "已审核",
+      3: "已驳回"
+    }
+    $scope.contracts = [{
+      contractId: '22',
+      firstParty: '22',
+      contacts: '22',
+      salesId: '22',
+      contracttype: '22',
+      contractstatus: '22',
+      contractSignDate: '22',
+      contractSignAmount: '22',
+      accountstatus: '22',
+      operator: '22',
+      lastChangeDate: '22'
+    }]
+    $scope.search = {
+      contractId: '',
+      firstParty: '',
+      contacts: '',
+      salesId: '',
+      contractstatus: '',
+      contracttype: '',
+      accountstatus: '',
+      starttime: '',
+      endtime: ''
+    }
+    // 分页
+    $scope.paginator = {
+        total: 0,
+        currentPage: 1,
+        perPage: 15,
+        previousText: '上一页',
+        nextText: '下一页',
+        lastText: '最后一页',
+        firstText: '首页'
+    }
+    $scope.pageChanged = function () {
+        refreshData()
+    }
+    $scope.setCurrentPage = function () {
+        $scope.currentPage = Math.abs(Math.floor($scope.currentPage)) || 1
+        $scope.paginator.currentPage = $scope.currentPage
+        refreshData()
+    }
+    $scope.open = function () {
+      var modalInstance = $uibModal.open({
+        templateUrl: 'views/order_contract_add.html',
+        controller: 'Order_contract_add',
+        backdrop: 'static',
+        size: 'hg',
+        resolve: {
+            contract: {}
+        }
+      })
+      modalInstance.result.then(function (result) {
+        refreshData()
+      }, function () {
+
+      })
+    }
+    $scope.detail = function() {
+      alert('查看详情')
+    }
+    $scope.delete = function(item) {
+      console.log(item, '操作本行数据')
+      if (!confirm("确认要删除此条记录吗？")) return
+      // $http.put('api/maintask/cancelstatus/' + item.contractId).success(function (res) {
+      //     if (res.status) refreshData()
+      // })
+    }
+    $scope.searchFn = function () {
+      console.log($scope.search)
+      refreshData()
+    }
+
+    function refreshData() {
+      var searchIt;
+      searchIt = $scope.search
+      var data = angular.extend({
+          offset: ($scope.paginator.currentPage - 1) * $scope.paginator.perPage,
+          limit: $scope.paginator.perPage
+      }, searchIt, data);
+      console.log(data, '查询参数')
+      // $http.get('api/maintask?' + $.param(data)).success(function (res) {
+      //     console.log(res)
+      //     $scope.paginator.total = res.data.total;
+      //     $scope.contracts = res.data.list;
+      // });
+    }
+    refreshData()
+    //日期
+    $scope.clear = function () { //清空
+        $scope.dt = null;
+    };
+    $scope.popup1 = {
+        opened: false
+    };
+    $scope.popup2 = {
+        opened: false
+    };
+    $scope.open1 = function () {
+        $scope.popup1.opened = true;
+    }
+    $scope.open2 = function () {
+        $scope.popup2.opened = true;
+    }
+    $scope.changeDate = function () {
+      var d1 = angular.element($("#date1"))[0].value
+      var d2 = angular.element($("#date2"))[0].value
+      if (d2) {
+          var _d1 = d1.replace(/-/ig, "")
+          var _d2 = d2.replace(/-/ig, "")
+          if ((_d2 - _d1) < 0) {
+              angular.element($("#date1"))[0].value = d2
+          }
+      }
+      $scope.search.starttime = d1
+      $scope.search.endtime = d2
+    }
+  }
+]).controller('Order_contract_add', ['$scope', '$http', '$uibModal', '$uibModalInstance', 'user',
+  function ($scope, $http, $uibModal, $uibModalInstance, UserServe) {
+    var user = UserServe.get()
+    console.log(user, '新增用户时用户信息')
+    $scope.contractType = { // 合同类型
+      1: "新增",
+      2: "续费"
+    }
+    $scope.ok = function (ev) {
+      alert('保存成功')
+    }
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss()
+    }
+    $scope.postData = {}
+    $scope.areaSele = 0 // 选择用户列表
+    $scope.canChange = true
+    $scope.selectCustomer = function () {
+      var modalInstance = $uibModal.open({
+        templateUrl: 'views/Order_cusSelect.html',
+        controller: 'Order_cusSelect',
+        size: 'lg',
+      })
+      modalInstance.result.then(function (result) {
+        $scope.postData.Customer = result // 选择完的用户赋值给列表需要显示的地方
+        console.log(result, '读取用户数据')
+        $scope.canChange = false
+        if (result.AreaCode) {
+          $scope.areaSele = result.AreaCode
+        }
+      }, function () {
+
+      })
+    }
+
+  }
+]).controller("Order_cusSelect", ['$scope', '$http', '$uibModalInstance', function ($scope, $http, $uibModalInstance) {
+    $scope.search = {
+        CompanyName: ''
+    }
+
+    $scope.paginator = {
+        total: 0,
+        currentPage: 1,
+        perPage: 10,
+        previousText: '上一页',
+        nextText: '下一页',
+        lastText: '最后一页',
+        firstText: '首页'
+    }
+    $scope.searchParams = {
+        limit: 10,
+        offset: 0,
+        start: '',
+        end: '',
+        status: 0,
+        cusname: '',
+        cid: ''
+    }
+    $scope.pageChanged = function () {
+        refreshData()
+    }
+    //set current page
+    $scope.setCurrentPage = function () {
+        $scope.paginator.currentPage = $scope.currentPage;
+        refreshData()
+    }
+    $scope.searchItem = {
+        companyname: ''
+    };
+    $scope.search = function () {
+        $scope.searchItem.companyname = $scope.search.CompanyName;
+        refreshData()
+    }
+
+    function refreshData() {
+      var data = angular.extend({
+          offset: ($scope.paginator.currentPage - 1) * $scope.paginator.perPage,
+          limit: $scope.paginator.perPage
+      }, $scope.searchItem)
+      $http.get('/api/order/customer?' + $.param(data)).success(function (res) {
+          $scope.paginator.total = res.data.total
+          $scope.customers = res.data.list
+      })
+    }
+    refreshData()
+
+    $scope.select = function (item) {
+        $uibModalInstance.close(item);
+    }
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss();
+    }
+}])

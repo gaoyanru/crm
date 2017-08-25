@@ -1,0 +1,358 @@
+<form name="orderForm">
+    <md-content layout="column" class="order md-padding">
+        <md-card>
+            <md-toolbar md-scroll-shrink ng-if="true">
+                <div class="md-toolbar-tools">
+                    <h4>选择销售</h4></div>
+            </md-toolbar>
+            <md-card-content class="md-inline-form">
+                <md-input-container layout="row" style="margin: 0">
+                    <span class="md-label md-required">销售</span>
+                    <md-select ng-disabled="postData.Orderid||isChange" md-no-asterisk ng-model="postData.SalesId" required aria-label="saler" class="md-select" ng-change="selectSalers()">
+                        <md-option ng-repeat="item in salers" ng-disabled="item.disabled" ng-value="item.UserId">{{item.RealName}}</md-option>
+                    </md-select>
+                </md-input-container>
+            </md-card-content>
+        </md-card>
+        <md-card ng-if="cStep >= 0">
+            <md-toolbar md-scroll-shrink ng-if="true">
+                <div class="md-toolbar-tools">
+                    <h4>订单类型</h4></div>
+            </md-toolbar>
+            <md-card-content class="md-inline-form">
+                <md-radio-group ng-model="postData.Category">
+                    <md-radio-button ng-disabled="orderid" value="1" class="md-primary" ng-click="selectTypeStep(1)">记账报税</md-radio-button>
+                    <md-radio-button ng-disabled="orderid" value="2" class="md-primary" ng-click="selectTypeStep(2)">公司注册+记账报税</md-radio-button>
+                </md-radio-group>
+            </md-card-content>
+        </md-card>
+        <md-card ng-if="cStep == 1">
+            <md-toolbar md-scroll-shrink ng-if="true">
+                <div class="md-toolbar-tools">
+                    <h4>选择客户</h4></div>
+            </md-toolbar>
+            <md-card-content class="md-inline-form">
+                <md-radio-group ng-model="cType">
+                    <md-radio-button ng-value="1" class="md-primary" ng-click="selectCustomerStep(1)">已有客户(CRM/签单客户)</md-radio-button>
+                    <md-radio-button ng-value="2" class="md-primary" ng-click="selectCustomerStep(2)">新增客户</md-radio-button>
+                </md-radio-group>
+            </md-card-content>
+        </md-card>
+        <md-card ng-if="cStep > 1">
+            <md-toolbar md-scroll-shrink>
+                <div class="md-toolbar-tools">
+                    <h4>客户基本信息</h4></div>
+            </md-toolbar>
+            <md-card-content>
+                <md-grid-list md-cols="2" md-cols-md="2" md-row-height="52px">
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">公司名称</span>
+                            <input required flex required ng-model="postData.Customer.CompanyName" aria-label="CompanyName" ng-readonly="isRemind||isChange">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile ng-if="postData.Category==1 || supp || postData.Status==2">
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">公司地址</span>
+                            <input required flex required ng-model="postData.Customer.Address" aria-label="Address">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile ng-if="postData.Category==1 || supp || postData.Status==2">
+                        <md-input-container>
+                            <span class="md-label md-required">所属行业</span>
+                            <md-select md-no-asterisk required ng-model="postData.Customer.IndustryId" class="md-select" required aria-label="IndustryId">
+                                <md-option ng-repeat="ind in industries" ng-value="ind.IndustryId">{{::ind.IndustryName}}</md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container>
+                            <span class="md-label md-required">企业类型</span>
+                            <md-select md-no-asterisk ng-disabled="supp||isChange || postData.IsChange" ng-model="postData.Customer.AddedValue" class="md-select" ng-change="getPrice()" required aria-label="AddedValue">
+                                <md-option ng-value="1">小规模</md-option>
+                                <md-option ng-value="2">一般纳税人</md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">联系人</span>
+                            <input required flex ng-model="postData.Customer.Connector" aria-label="Connector">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">联系电话</span>
+                            <input required flex ng-model="postData.Customer.Mobile" aria-label="Mobile">
+                        </md-input-container>
+                    </md-grid-tile>
+                </md-grid-list>
+            </md-card-content>
+        </md-card>
+        <md-card ng-if="cStep > 1">
+            <md-toolbar md-scroll-shrink>
+                <div class="md-toolbar-tools">
+                    <h4>营业执照信息</h4></div>
+            </md-toolbar>
+            <md-card-content>
+                <md-grid-list md-cols="2" md-cols-md="2" md-row-height="52px">
+                    <md-grid-tile ng-if="postData.Category==1 || supp || postData.Status==2">
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">注册号</span>
+                            <input required ng-readonly="isRemind||isChange" flex required ng-model="postData.Customer.RegNO" aria-label="RegNO">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">法人</span>
+                            <input required ng-readonly="isRemind||isChange" maxlength="10" flex required ng-model="postData.Customer.LegalPerson" aria-label="LegalPerson">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile ng-if="postData.Category==2 || supp">
+                        <md-input-container>
+                            <div layout="row">
+                                <span class="md-label md-required">法人身份证</span>
+                                <img ng-src="{{postData.Customer.PersonCardPath}}" class="order-img" alt="" ng-if="postData.Customer.PersonCardPath" pic-view>
+                                <span class="file-select btn btn-default" ng-if="!supp">选择文件
+                                    <input type="file" nv-file-select="" uploader="uploader1" ng-show="!isReadOnly" />
+                                </span>
+                            </div>
+                            <div class="progress" style="width:80%" ng-if="uploader2.isUploading">
+                                <md-progress-linear md-mode="determinate" value="{{uploader2.progress}}"></md-progress-linear>
+                            </div>
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile ng-if="postData.Category==1 || supp || postData.Status==2">
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">国税登记号</span>
+                            <input required flex ng-model="postData.Customer.NationalTaxNO" aria-label="NationalTaxNO">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile ng-if="postData.Category==1 || supp || postData.Status==2">
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">地税登记号</span>
+                            <input required flex ng-model="postData.Customer.LocalTaxNO" aria-label="LocalTaxNO">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile ng-if="postData.Category==1 || supp || postData.Status==2">
+                        <div layout="row" style="width: 100%">
+                            <div style="width: 300px">
+                                <md-input-container layout="row" style="padding-right: 0">
+                                    <span class="md-label md-required">营业期限</span>
+                                    <md-datepicker required ng-model="postData.Customer.RegisterDate" ng-model-options="timeoption" md-current-view="year" md-open-on-focus="true"></md-datepicker>
+                                </md-input-container>
+                            </div>
+                            <div style="width: 320px">
+                                <md-input-container layout="row" style="padding-right: 0">
+                                    <span class="md-label" style="min-width: 0">至</span>
+                                    <md-datepicker ng-model="postData.Customer.BusnissDeadline" ng-disabled="postData.Customer.NoDeadLine" md-current-view="year" md-open-on-focus="true"></md-datepicker>
+                                    <md-checkbox ng-model="postData.Customer.NoDeadLine" style="top: 6px;left: 6px;">无期限</md-checkbox>
+                                </md-input-container>
+                            </div>
+                        </div>
+                    </md-grid-tile>
+                    <md-grid-tile ng-if="postData.Category==1 || supp || postData.Status==2">
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">注册资金</span>
+                            <input required flex ng-model="postData.Customer.RegisteredCapital" aria-label="RegisteredCapital">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile md-rowspan="2" ng-if="postData.Category==1 || supp">
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">经营范围</span>
+                            <textarea name="" flex ng-model="postData.Customer.BusinessScope"></textarea>
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile ng-if="postData.Category==1 || supp || postData.Status==2">
+                        <md-input-container>
+                            <div layout="row">
+                                <span class="md-label md-required">营业执照</span>
+                                <img ng-src="{{postData.Customer.BusinessLicense}}" class="order-img" alt="" ng-if="postData.Customer.BusinessLicense" pic-view>
+                                <span class="file-select btn btn-default">选择文件
+                                    <input type="file" nv-file-select="" uploader="uploader2"/>
+                                </span>
+                            </div>
+                            <div class="progress" style="width:80%" ng-if="uploader2.isUploading">
+                                <md-progress-linear md-mode="determinate" value="{{uploader2.progress}}"></md-progress-linear>
+                            </div>
+                        </md-input-container>
+                    </md-grid-tile>
+                </md-grid-list>
+            </md-card-content>
+        </md-card>
+        <md-card ng-if="cStep > 1">
+            <md-toolbar md-scroll-shrink>
+                <div class="md-toolbar-tools">
+                    <h4>合同信息</h4></div>
+            </md-toolbar>
+            <md-card-content>
+                <md-grid-list md-cols="2" md-cols-md="2" md-row-height="52px">
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">合同编号</span>
+                            <input required flex required ng-model="postData.ContractNo" aria-label="ContractNo">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">付款方式</span>
+                            <md-select md-no-asterisk ng-model="postData.PayType" ng-disabled="supp || isChange" class="md-select" ng-change="getPrice();setEndDate();" required>
+                                <md-option ng-value="3">季付</md-option>
+                                <md-option ng-value="1">半年付</md-option>
+                                <md-option ng-value="2">年付</md-option>
+                                <md-option ng-value="4">零税(半年)</md-option>
+                                <md-option ng-value="5">零税(全年)</md-option>
+                                <md-option ng-if="user.SubsidiaryId == 12" ng-value="6">机构零票全年</md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">支付方式</span>
+                            <md-select md-no-asterisk ng-model="postData.PayId" class="md-select" required>
+                                <md-option ng-repeat="pay in paymodes" ng-value="pay.Id">{{::pay.PayName}}</md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">卡号</span>
+                            <input flex ng-model="otherData.AccountNum">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">礼包</span>
+                            <md-select md-no-asterisk ng-model="postData.GiftTypeId" ng-disabled="supp|| isChange" class="md-select" ng-change="setEndDate()">
+                                <md-option ng-value="0">不使用礼包</md-option>
+                                <md-option ng-repeat="gift in gifts" ng-value="gift.Id">{{gift.GiftTypeName}}</md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">签订日期</span>
+                            <md-datepicker required ng-model="postData.ContractDate" ng-model-options="timeoption" md-open-on-focus="true"></md-datepicker>
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile ng-if="postData.Category==1 || supp || postData.Status==2">
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">服务开始时间</span>
+                            <md-datepicker required ng-model="postData.ServiceStart" ng-model-options="timeoption" md-open-on-focus="true" md-current-view="year" formater="yyyy-MM" md-min-view="year" aria-label="ServiceStart" md-max-date="maxDate" ng-change="setEndDate()"></md-datepicker>
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile ng-if="postData.Category==1 || supp || postData.Status==2">
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">服务结束时间</span>
+                            <md-datepicker required ng-model="postData.ServiceEnd" ng-model-options="timeoption" md-open-on-focus="true" md-current-view="year" formater="yyyy-MM" md-min-view="year"></md-datepicker>
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label md-required">合同金额</span>
+                            <input required required ng-model="postData.Amount" md-current-view="year"  md-min-view="year" aria-label="Amount">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile md-rowspan="2">
+                        <md-input-container layout="row">
+                            <span class="md-label">备注</span>
+                            <textarea name="" flex ng-model="postData.Remark"></textarea>
+                        </md-input-container>
+                    </md-grid-tile>
+            </md-card-content>
+        </md-card>
+        <md-card ng-if="cStep > 1">
+            <md-toolbar md-scroll-shrink>
+                <div class="md-toolbar-tools">
+                    <h4>其他服务费用及代收费用</h4></div>
+            </md-toolbar>
+            <md-card-content>
+                <md-grid-list md-cols="3" md-cols-md="3" md-row-height="52px">
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">服务内容</span>
+                            <input flex ng-model="otherData.ServiceContent">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile >
+                        <md-input-container layout="row">
+                            <span class="md-label">服务费</span>
+                            <input flex ng-model="otherData.ServiceCharge" type="number">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">总金额</span>
+                            <input flex readonly ng-value="getAmount()" type="number">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile md-colspan="3">
+                        <div class="md-toolbar-tools">
+                            服务费
+                        </div>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">汇缴</span>
+                            <input flex ng-model="otherData.TaxPayment" type="number">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">年报</span>
+                            <input flex ng-model="otherData.AnnualReport" type="number">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">注册</span>
+                            <input flex ng-model="otherData.Register" type="number">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">变更</span>
+                            <input flex ng-model="otherData.Changes" type="number">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile md-colspan="2">
+      
+                    </md-grid-tile>
+                    <md-grid-tile md-colspan="3">
+                        <div class="text-center md-toolbar-tools" flex>
+                            代收费
+                        </div>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">银行开户</span>
+                            <input flex ng-model="otherData.OpenBank" type="number">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">税控</span>
+                            <input flex ng-model="otherData.NationLocalTax" type="number">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">刻章</span>
+                            <input flex ng-model="otherData.Prints" type="number">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile>
+                        <md-input-container layout="row">
+                            <span class="md-label">地址费用</span>
+                            <input flex ng-model="otherData.AddressCost" type="number">
+                        </md-input-container>
+                    </md-grid-tile>
+                    
+                    
+            </md-card-content>
+        </md-card>
+        <div class="text-center" ng-if="cStep > 1">
+            <md-button class="md-raised md-primary" ng-disabled="orderForm.$invalid || saving" ng-click="save($event)">保存</md-button>
+        </div>
+    </md-content>
+</form>

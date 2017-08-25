@@ -1,0 +1,53 @@
+<md-dialog aria-label="跟踪" class="md-dialog-lg">
+    <form name="cusform" novalidate>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{::title}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <i class="fa fa-times"></i>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content ng-cloak class="clearfix md-whiteframe-glow-z1 md-padding">
+            <div class="trackblock">
+                <div ng-repeat="track in tracks" class="trackItem">
+                    <div class="pull-right saler">{{::track.RealName}}</div>
+                    <div class="date">{{::track.TrackDate|tDateTime}}</div>
+                    <!-- <div class="pull-right" ng-if="user.UserId == track.SalesId && track.TrackDate.substr(0,10)==today"><a href="javascript:;" ng-click="delete(track)"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i></a></div> -->
+                    <pre class="description">{{::track.Description}}</pre>
+                </div>
+                <div ng-if="!tracks || tracks.length === 0" class="trackItem">暂无跟踪记录</div>
+            </div>
+            <div class="addtrack well-sm" layout="column" ng-if="!isPub">
+                <!--  <md-input-container layout="row">
+                    <span class="md-label md-required">跟踪日期</span>
+                    <md-datepicker ng-model="TrackDate" flex formater="yyyy-MM-dd" md-max-date="maxDate" md-placeholder="跟踪日期" md-open-on-focus="true"></md-datepicker>
+                </md-input-container> -->
+                <div flex layout="row" style="position: relative;">
+                    <textarea flex ng-model="track.content"></textarea>
+                    <md-button ng-click="save()" class="md-raised md-primary save">跟踪</md-button>
+                </div>
+            </div>
+            <div class="addtrack well-sm tag-row" ng-if="!isPub">
+                <span class="pull-left tag-type" style="margin-left: 9px;">提醒日期</span>
+                <div style="position: relative;">
+                    <md-chips ng-model="reminds" readonly="true" md-removable="true" md-on-remove="deleteRemind($chip)">
+                        <md-chip-template>
+                            <span title="{{$chip.SalesName}}">{{$chip.NextTrackTime|tDate}}</span>
+                        </md-chip-template>
+                        <span style="cursor: pointer;" md-chip-remove>&times;</span>
+                    </md-chips>
+                    <md-input-container layout="row" style="margin: 0">
+                        <span class="md-label">添加提醒</span>
+                        <md-datepicker ng-model="remind.remindDate" flex formater="yyyy-MM-dd" md-placeholder="提醒日期" md-min-date="today" md-open-on-focus="false" ng-change="addRemind()"></md-datepicker>
+                    </md-input-container>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row" md-colors="::{background: 'default-primary-100'}">
+            <span flex></span>
+            <md-button ng-click="cancel()">关闭</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

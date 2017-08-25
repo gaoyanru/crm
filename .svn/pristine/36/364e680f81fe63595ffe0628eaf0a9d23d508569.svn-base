@@ -1,0 +1,34 @@
+<md-dialog aria-label="用户" class="md-dialog-lg">
+    <form name="cusform" novalidate>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{::title}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <i class="fa fa-times"></i>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content ng-cloak class="clearfix md-whiteframe-glow-z1 md-padding" style="overflow: hidden;">
+            <md-grid-list md-cols="2" md-row-height="52px">
+                <md-grid-tile>
+                    <md-input-container layout="row">
+                        <span class="md-label md-required">姓名</span>
+                        <input flex required ng-model="postData.Name" class="md-input">
+                    </md-input-container>
+                </md-grid-tile>
+                <md-grid-tile>
+                    <md-input-container layout="row">
+                        <span class="md-label md-required">联系电话</span>
+                        <input required flex ng-model="postData.Phone" class="md-input">
+                    </md-input-container>
+                </md-grid-tile>
+            </md-grid-list>
+        </md-dialog-content>
+        <md-dialog-actions layout="row" md-colors="::{background: 'default-primary-100'}">
+            <span flex></span>
+            <md-button class="md-raised md-primary" ng-disabled="cusform.$invalid" ng-click="ok($event)">保存</md-button>
+            <md-button ng-click="cancel()">取消</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

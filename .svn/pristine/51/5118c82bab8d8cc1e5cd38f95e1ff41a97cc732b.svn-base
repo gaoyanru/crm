@@ -1,0 +1,11 @@
+<md-button
+    ng-class="{'active' : isSelected()}"
+    ui-sref="{{section.router}}"
+    ng-click="selectPage(section)">
+    <span aria-hidden="true" class="md-toggle-icon"><i class="fa"></i></span>
+  {{section.name}}
+  <span class="md-visually-hidden"
+    ng-if="isSelected()">
+    current page
+  </span>
+</md-button>

@@ -1,0 +1,28 @@
+<div class="o-search well well-sm">
+    <form class="form-inline">
+        <md-grid-list md-cols="1" md-row-height="52px">
+            <md-grid-tile>
+                <md-input-container layout="row">
+                    <span class="md-label">时间范围</span>
+                    <md-datepicker ng-model="search.start" md-open-on-focus="true"></md-datepicker>
+                </md-input-container>
+                <md-input-container layout="row">
+                    <span style="line-height: 36px">至</span>
+                    <md-datepicker ng-model="search.end" md-open-on-focus="true"></md-datepicker>
+                </md-input-container>
+                <md-button class="md-raised md-primary" ng-click="searchFn()">查询</md-button>
+            </md-grid-tile>
+        </md-grid-list>
+    </form>
+</div>
+<div style="width: 400px; float: left;">
+    <canvas id="pie" class="chart chart-pie" chart-data="chart1Options.data" chart-labels="chart1Options.labels" chart-options="chart1Options.options" chart-click="chart1Options.onClick">
+    </canvas>
+    <div class="text-center">合计：{{total}}</div>
+</div>
+<div style="width: 800px; height: 400px; float: left;">
+    <div class="text-center">{{chart2Options.title}}</div>
+    <canvas id="line" class="chart chart-line" chart-data="chart2Options.data" chart-labels="chart2Options.labels" chart-series="chart2Options.series" chart-options="chart1Options.options">
+    </canvas>
+    <div class="text-center">合计：{{total2}}</div>
+</div>

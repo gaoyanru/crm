@@ -1,0 +1,94 @@
+<div ng-cloak>
+    <div class="text-center statis-header">个人排行榜</div>
+    <md-content>
+        <md-tabs md-dynamic-height md-border-bottom>
+            <md-tab label="到款数">
+                <md-content class="md-padding clearfix">
+                    <div style="width: 200px; margin: 12px;float: left;" ng-repeat="item in typeSList">
+                        <h4 class="text-center">{{item.CompanyName}}</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item" ng-repeat="saler in item.salers"><span class="list-header">{{saler.RealName}}</span><span class="list-num">{{saler.Num}}</span></li>
+                            <li class="list-group-item"><span class="list-header">合计：</span><span class="list-num">{{item.total}}</span></li>
+                        </ul>
+                    </div>
+                </md-content>
+            </md-tab>
+            <md-tab label="60%客户数">
+                <md-content class="md-padding">
+                    <div layout="row">
+                        <div style="width: 200px; margin: 12px;float: left;" ng-repeat="item in typeCList">
+                            <h4 class="text-center">{{item.CompanyName}}</h4>
+                            <ul class="list-group">
+                                <li class="list-group-item" ng-repeat="saler in item.salers"><span class="list-header">{{saler.RealName}}</span><span class="list-num">{{saler.Num}}</span></li>
+                                <li class="list-group-item"><span class="list-header">合计：</span><span class="list-num">{{item.total}}</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </md-content>
+            </md-tab>
+            <md-tab label="80%客户数">
+                <md-content class="md-padding">
+                    <div layout="row">
+                        <div style="width: 200px; margin: 12px;float: left;" ng-repeat="item in typeBList">
+                            <h4 class="text-center">{{item.CompanyName}}</h4>
+                            <ul class="list-group">
+                                <li class="list-group-item" ng-repeat="saler in item.salers"><span class="list-header">{{saler.RealName}}</span><span class="list-num">{{saler.Num}}</span></li>
+                                <li class="list-group-item"><span class="list-header">合计：</span><span class="list-num">{{item.total}}</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </md-content>
+            </md-tab>
+        </md-tabs>
+    </md-content>
+</div>
+<div ng-cloak>
+    <div class="text-center statis-header">分组排行榜</div>
+    <md-content>
+        <md-tabs md-dynamic-height md-border-bottom>
+            <md-tab label="{{company.CompanyName}}" ng-repeat="company in companies">
+                <md-content class="md-padding clearfix">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead>
+                            <tr md-colors="::{background: 'default-primary-50'}">
+                                <th>签约数</th>
+                                <th>60%客户</th>
+                                <th>80%客户</th>
+                                <th>99%客户</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <ul class="list-group">
+                                        <li class="list-group-item" ng-repeat="saler in company.SList"><span class="list-header">{{saler.DepartmentName||"其他"}}</span><span class="list-num">{{saler.Num}}</span></li>
+                                        <li class="list-group-item"><span class="list-header">合计：</span><span class="list-num">{{company.total.st}}</span></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul class="list-group">
+                                        <li class="list-group-item" ng-repeat="saler in company.CList"><span class="list-header">{{saler.DepartmentName||"其他"}}</span><span class="list-num">{{saler.Num}}</span></li>
+                                        <li class="list-group-item"><span class="list-header">合计：</span><span class="list-num">{{company.total.ct}}</span></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul class="list-group">
+                                        <li class="list-group-item" ng-repeat="saler in company.BList"><span class="list-header">{{saler.DepartmentName||"其他"}}</span><span class="list-num">{{saler.Num}}</span></li>
+                                        <li class="list-group-item"><span class="list-header">合计：</span><span class="list-num">{{company.total.bt}}</span></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul class="list-group">
+                                        <li class="list-group-item" ng-repeat="saler in company.AList"><span class="list-header">{{saler.DepartmentName||"其他"}}</span><span class="list-num">{{saler.Num}}</span></li>
+                                        <li class="list-group-item"><span class="list-header">合计：</span><span class="list-num">{{company.total.at}}</span></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </md-content>
+            </md-tab>
+        </md-tabs>
+    </md-content>
+</div>
+

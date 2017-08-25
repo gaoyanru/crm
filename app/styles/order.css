@@ -1,0 +1,56 @@
+.order md-grid-tile md-input-container{
+	width: 100%;
+	padding-right: 50px;
+}
+.trackItem{
+	padding: .5em 1em;
+	border-bottom: solid 1px #ccc;
+}
+.trackItem .date{
+	color: #d1d1d1;
+	font-size: 12px;
+	border-bottom: dashed 1px #ccc;
+}
+.trackItem .saler{
+	color: #d1d1d1;
+	font-size: 12px;
+}
+.trackItem .description{
+	padding: .5em 0 0;
+	font-size: 12px;
+	border: none;
+	white-space: normal;
+}
+.addtrack{
+	margin: 1em;	
+    border: solid 1px #ccc;
+    background: #eee;
+}
+.addtrack textarea{
+	height: 50px;
+}
+.addtrack button.save{
+	height: 50px;
+	margin: 0;
+}
+.addtrack label{
+	float: left;
+	width: 65px;
+}
+/*.trackblock{
+	max-height: 350px;
+	overflow-y:auto;
+}*/
+.outerworkline span {
+	line-height: 37px;
+	padding: 0 6px 0 0;
+}
+.outerworkline md-checkbox{
+	margin-bottom: 0;
+}
+.outerworkline md-input-container{
+	margin: 0 6px;
+}
+.outworkline>div>* {
+	margin: 0 6px;
+}

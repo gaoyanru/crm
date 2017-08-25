@@ -1,0 +1,22 @@
+<md-toolbar class="md-whiteframe-glow-z1 site-content-toolbar" style="height: 45px">
+    <div class="md-toolbar-tools" md-colors="::{background: 'default-primary-50'}" style="padding-left:0">
+        <a class="headerlogo" ui-sref="main.dashboard"></a> <span style="margin: 0 12px;">{{title}}</span>
+        <div style="position: absolute; right: 12px;font-size: 16px; top:6px;line-height: 34px;">
+            <span >欢迎您，{{user.RealName}}</span> <span class="btn btn-link pull-right" ng-if="user.se" style="color: #fff; text-align: right;" ng-click="logoutZY()"><i class="fa fa-sign-out" aria-hidden="true"></i>退出直营</span>
+        <span class="btn btn-link pull-right"  ng-click="logout()"><i class="fa fa-sign-out" aria-hidden="true"></i>退出</span>
+        </div>
+        
+    </div>
+</md-toolbar>
+<md-content flex layout="row">
+    <md-sidenav class="site-sidenav md-sidenav-left md-whiteframe-z2" md-is-locked-open="true" layout="column">
+        <ul class="docs-menu" flex>
+            <li ng-repeat="section in menu.sections" class="parent-list-item {{section.className || ''}}" ng-class="{'parentActive' : isSectionSelected(section)}">
+                <menu-toggle section="section" ng-if="section.type === 'toggle' && !section.hidden"></menu-toggle>
+            </li>
+        </ul>
+        
+    </md-sidenav>
+    <md-content flex class="o-body" ui-view flex style="overflow: auto; padding: 12px;">
+    </md-content>
+</md-content>

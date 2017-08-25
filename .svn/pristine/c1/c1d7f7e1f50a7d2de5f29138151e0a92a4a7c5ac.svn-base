@@ -1,0 +1,11 @@
+.tag-row{
+	font-size: 12px;
+}
+.tag-type{
+	height: 44px;
+	line-height: 44px;
+	min-width: 65px;
+}
+.cus-info md-input-container{
+	width: 95%;
+}

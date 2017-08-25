@@ -1,0 +1,63 @@
+<md-dialog aria-label="客户" class="md-dialog-lg">
+  <form name="cusform" novalidate>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>{{::title}}</h2> <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()"> <i class="fa fa-times"></i> </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content ng-cloak class="clearfix md-whiteframe-glow-z1 md-padding cus-info">
+      <md-grid-list md-cols="2" md-row-height="52px">
+        <md-grid-tile>
+          <md-input-container layout="row"> <span class="md-label md-required">公司名称</span>
+            <input flex ng-model="postData.CompanyName" aria-label="CompanyName"> </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile>
+          <md-input-container layout="row"> <span class="md-label md-required">联系人</span>
+            <input required flex ng-model="postData.Connector" aria-label="Connector"> </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile>
+          <md-input-container layout="row"> <span class="md-label md-required">联系电话</span>
+            <input required flex ng-model="postData.Mobile" aria-label="Mobile"> </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile ng-if="!isPub">
+          <md-input-container layout="row"> <span class="md-label md-required">意向度</span>
+            <md-select md-no-asterisk ng-model="postData.CustomerTypeId" required aria-label="CustomerType" class="md-select">
+              <md-option ng-repeat="type in ctypes" ng-repeat="" ng-value="type.CustomerTypeId">{{type.Name}}</md-option>
+            </md-select>
+          </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile>
+          <md-input-container layout="row"> <span class="md-label">来源</span>
+            <md-select md-no-asterisk ng-model="postData.CustomerSourceId" class="md-select">
+              <md-option ng-value="0" ng-selected="true">全部</md-option>
+              <md-option ng-repeat="u in sourceTypes" ng-value="u.Id">{{u.Marking}}</md-option>
+            </md-select>
+          </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile md-colspan="2" md-rowspan="2">
+          <md-input-container layout="row"> <span class="md-label md-required">备注</span>
+            <textarea flex ng-model="postData.Mark" maxlength="200"></textarea>
+          </md-input-container>
+        </md-grid-tile>
+      </md-grid-list>
+      <md-chips ng-model="custags" readonly md-removable="postData.CustomerTypeId != 5" md-on-remove="deleteTag($chip)">
+        <md-chip-template> <span>{{$chip.TagName}}</span> </md-chip-template> <span md-chip-remove>&times;</span> </md-chips>
+      <div ng-if="postData.Id && postData.CustomerTypeId != 5">
+        <md-button class="md-primary" ng-disabled="cusform.$invalid" ng-click="isOpen = !isOpen">打标签 <i class="fa" ng-class="{\'fa-angle-double-down\': !isOpen,\'fa-angle-double-up\': !!isOpen}"></i></md-button>
+        <div ng-show="isOpen">
+          <div ng-repeat="(key, tagGroup) in tags" class="tag-row"> <span class="pull-left tag-type">{{key}}</span>
+            <md-chips ng-model="tagGroup.tags" readonly md-removable="false" md-can-click="true" md-selected="tagGroup.selected" md-on-select="addTag($chip,null,$index)">
+              <md-chip-template> <span>{{$chip.TagName}}</span> </md-chip-template>
+            </md-chips>
+          </div>
+        </div>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row" md-colors="::{background: 'default-primary-100'}"> <span flex></span>
+      <md-button class="md-raised md-primary" ng-disabled="cusform.$invalid" ng-click="ok($event)">保存</md-button>
+      <md-button class="md-raised md-primary" ng-if="showNext" ng-click="next(postData)">下一条</md-button>
+      <md-button ng-click="cancel()">取消</md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

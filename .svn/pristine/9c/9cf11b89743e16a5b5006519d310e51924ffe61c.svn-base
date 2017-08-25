@@ -1,0 +1,22 @@
+.title {
+  height: 30px;
+  line-height: 30px;
+  background-color: #337ab7;
+}
+.clearfix:after{content:"";display:block;height:0;clear:both;visibility:hidden}
+.clearfix{*+height:1%;}
+.form-group {
+  float: left;
+}
+.required::before {
+  content: '*';
+  color: red;
+}
+.add-icon {
+  height: 24px;
+  display: inline-block;
+  width: 24px;
+  text-align: center;
+  background-color: #eee;
+  border: 1px solid #ccc;
+}

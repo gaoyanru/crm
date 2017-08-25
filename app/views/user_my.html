@@ -1,0 +1,55 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>修改用户信息</h2> <span flex></span>
+    </div>
+</md-toolbar>
+<form name="cusform" novalidate>
+    <md-grid-list md-cols="1" md-row-height="52px">
+        <md-grid-tile>
+            <md-input-container layout="row">
+                <span class="md-label md-required">用户名</span>
+                <input flex ng-model="postData.UserName" class="md-input" disabled>
+            </md-input-container>
+        </md-grid-tile>
+
+        <md-grid-tile>
+            <md-input-container layout="row">
+                <span class="md-label md-required">联系电话</span>
+                <input required flex ng-model="postData.Phone" class="md-input">
+            </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile>
+            <md-button class="md-raised md-primary" ng-disabled="cusform.$invalid" ng-click="ok($event)">保存</md-button>
+        </md-grid-tile>
+    </md-grid-list>
+</form>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>修改密码</h2> <span flex></span>
+    </div>
+</md-toolbar>
+<form name="psdform" novalidate>
+    <md-grid-list md-cols="1" md-row-height="52px">
+        <md-grid-tile>
+            <md-input-container layout="row">
+                <span class="md-label md-required">原密码</span>
+                <input flex ng-model="psdData.Old" type="passWord" class="md-input">
+            </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile>
+            <md-input-container layout="row">
+                <span class="md-label md-required">新密码</span>
+                <input required flex ng-model="psdData.New" type="passWord" class="md-input">
+            </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile>
+            <md-input-container layout="row">
+                <span class="md-label md-required">重复新密码</span>
+                <input required flex ng-model="psdData.New2" type="passWord" class="md-input">
+            </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile>
+            <md-button class="md-raised md-primary" ng-disabled="psdform.$invalid" ng-click="changePsd($event)">保存</md-button>
+        </md-grid-tile>
+    </md-grid-list>
+</form>

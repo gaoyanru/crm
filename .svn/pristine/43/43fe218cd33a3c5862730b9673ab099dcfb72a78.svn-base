@@ -1,0 +1,124 @@
+angular.module('crmApp').controller('Order_statement', ['$scope', 'server', '$state', '$mdDialog', function($scope, server, $state, $mdDialog) {
+
+    $scope.add = function(item) {
+        $mdDialog.show({
+                controller: 'Order_statement_add',
+                templateUrl: 'views/order_statement_add.html',
+                clickOutsideToClose: true,
+                fullscreen: true,
+                locals:{customer:{}}
+            })
+            .then(function(answer) {
+                refreshData();
+            }, function() {
+
+            });
+    };
+    $scope.delete = function(item) {
+        if (!confirm("确认要删除吗？")) return;
+        server.http.delete('/api/statement/'+item.Id).success(function(res) {
+            if (res.status) refreshData();
+        });
+    };
+
+
+
+    $scope.paginator = {
+        total: 0,
+        currentPage: 1,
+        perPage: 10,
+        previousText: '上一页',
+        nextText: '下一页',
+        lastText: '最后一页',
+        firstText: '首页'
+    };
+
+    $scope.search = {
+        companyName: '',
+        phone: ''
+    };
+    $scope.pageChanged = function() {
+        refreshData();
+    };
+
+    //set current page
+    $scope.setCurrentPage = function() {
+        $scope.paginator.currentPage = $scope.currentPage;
+        refreshData();
+    };
+    $scope.searchItem = {
+        startmonth: '',
+        EndMonth: ''
+    };
+    $scope.search = function() {
+        if($scope.search.start)
+            $scope.searchItem.startmonth = $scope.search.start.toISOString();
+        if($scope.search.end)
+            $scope.searchItem.EndMonth = $scope.search.end.toISOString();
+        refreshData($scope.searchItem);
+    }
+
+    function refreshData() {
+        var data = angular.extend({
+            offset: ($scope.paginator.currentPage - 1) * $scope.paginator.perPage,
+            limit: $scope.paginator.perPage
+        }, $scope.searchItem);
+        server.http.get('/api/statement?' + $.param(data)).success(function(res) {
+            $scope.paginator.total = res.data.total;
+            $scope.customers = res.data.list;
+        });
+    }
+    refreshData();
+
+
+}]).controller("Order_statement_add", ['$scope', 'server', '$mdDialog','customer', function($scope, server, $mdDialog,customer) {
+    $scope.postData = {};
+    server.getSalers().success(function(res) {
+        $scope.salers = res.data;
+    });
+    $scope.customer = customer;
+    if(customer.Id){
+        $scope.postData.CustomerId = customer.Id;
+        $scope.postData.CustomerName = customer.CompanyName;
+    }
+
+    $scope.select = function(item) {
+        $mdDialog.show({
+                controller: 'Order_cusSelect',
+                templateUrl: 'views/Order_cusSelect.html',
+                clickOutsideToClose: true,
+                skipHide: true,
+                fullscreen: true
+            })
+            .then(function(customer) {
+                $scope.postData.CustomerId = customer.Id;
+                $scope.postData.CustomerName = customer.CompanyName;
+            }, function() {
+
+            });
+
+    }
+    server.http.get('/api/paymodes').success(function(res) {
+        $scope.paymodes = res.data;
+    });
+    server.getSalers().success(function(res) {
+        $scope.salers = res.data;
+    });
+    $scope.getAmount = function(){
+        var postData = _.pick($scope.postData,'ServiceCharge','TaxPayment','AnnualReport','Register','OpenBank','NationLocalTax','Prints','AddressCost','Change');
+        var all = 0;
+        _.each(postData,function(value){
+            all += (value||0);
+        });
+        return all;
+    }
+    $scope.ok = function(ev) {
+        $scope.postData.SumAccount = $scope.getAmount();
+        server.http.post('/api/statement',$scope.postData).success(function(res) {
+            if (res.status) $mdDialog.hide();
+        });
+    };
+    $scope.cancel = function() {
+        $mdDialog.cancel();
+    }
+}]);

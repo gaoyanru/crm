@@ -1,0 +1,46 @@
+<div class="o-search well well-sm">
+    <form class="form-inline">
+        <div class="form-group">
+            <label class="control-label" for="cusname">类型</label>：
+            <select class="form-control" ng-model="typeId">
+                <option value="1">公司核名</option>
+                <option value="2">产品服务</option>
+                <option value="3">贷帐公司</option>
+                <option value="4">孵化器</option>
+                <option value="5">渠道</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary" ng-click="searchFn()">查询</button>
+    </form>
+</div>
+<table class="table table-striped table-bordered table-hover table-condensed">
+    <thead>
+        <th ng-repeat="head in headers" ng-bind="head"></th>
+        <th>公司名称</th>
+        <th>姓名</th>
+        <th>联系电话</th>
+        <th>留言</th>
+        <th>类型</th>
+        <th>留言时间</th>
+        <!-- <th>动作</th> -->
+    </thead>
+    <tbody>
+        <tr ng-repeat="row in data">
+            <td>{{row.CompanyName}}</td>
+            <td>{{row.Name}}</td>
+            <td>{{row.Mobile}}</td>
+            <td>{{row.Remark}}</td>
+            <td>{{row.TypeId|psType}}</td>
+            <td>{{row.CreateDate.replace('T',' ')}}</td>
+            <!-- <td>\r\n                    <a href="javascript:;" uib-tooltip="删除" ng-click="delete(row)"><i class="fa fa-pencil-square-o"></i>删除</a>\r\n                </td> -->
+        </tr>
+    </tbody>
+</table>
+<div class="u-paginator form-inline">
+    <uib-pagination total-items="paginator.total" items-per-page="paginator.perPage" boundary-links="true" ng-model="paginator.currentPage" previous-text="{{::paginator.previousText}}" next-text="{{::paginator.nextText}}" first-text="{{::paginator.firstText}}" last-text="{{::paginator.lastText}}" force-ellipses="true" max-size="6" num-pages="paginator.numPages" ng-change="pageChanged()"> </uib-pagination>
+    <div class="u-pages"> <span>{{paginator.currentPage}}</span> / <span>{{paginator.numPages}}</span> <span>合计:{{paginator.total}}</span> </div>
+    <form name="paginatorForm" novalidate>
+        <div class="input-group">
+            <input type="number" name="paginatorInput" ng-model="currentPage" required min="1" max="{{paginator.numPages}}" class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-disabled="!paginatorForm.$valid" ng-click="setCurrentPage()">Go!</button> </span> </div>
+    </form>
+</div>

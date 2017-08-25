@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RENE_ROOT>
+	<ProductName >Renee数据恢复一年版本</ProductName>
+	<ProductNameMultiLangs>
+		<de ><![CDATA[Renee Undeleter - Datenrettung]]></de>
+		<ru ><![CDATA[Renee Undeleter - ]]></ru>
+		<pt ><![CDATA[Renee Undeleter - Recupera??o de Dados]]></pt>
+		<ja ><![CDATA[Renee Undeleter - データ復元]]></ja>
+		<en ><![CDATA[Renee Undeleter]]></en>
+		<cn ><![CDATA[Renee Undeleter - 数据恢复]]></cn>
+		<it ><![CDATA[Renee Undeleter - Recupero Dati]]></it>
+		<fr ><![CDATA[Renee Undeleter - Récupération de données]]></fr>
+		<pl ><![CDATA[Renee Undeleter - ]]></pl>
+		<es ><![CDATA[Renee Undeleter - ]]></es>
+		<zh ><![CDATA[Renee Undeleter - 檔案救援]]></zh>
+	</ProductNameMultiLangs>
+	<ProductVersion >DR_RENEELABCN_WINx86_160122</ProductVersion>
+	<minUpdatorVersion >20140407</minUpdatorVersion>
+	<CanIgnore >true</CanIgnore>
+	<platform >WINx86</platform>
+	<state >release</state>
+	<totalZipFileSize >3708282</totalZipFileSize>
+	<totalFileSize >7955920</totalFileSize>
+	<UpdateInfo>
+		<cn ><![CDATA[1、修复扫描功能的bug
+2、改善ts文件类型识别]]></cn>
+	</UpdateInfo>
+	<UpdateFileList>
+		<fileinfo>
+			<LocalOriginalPath >[APP_DIR]\libraw.dll</LocalOriginalPath>
+			<ServerPath >http://update.reneelab.com.cn/DR/WINx86/DR_RENEELABCN_WINx86_160122/[APP_DIR]/libraw.dll.zip</ServerPath>
+			<md5 >34ab737934a4bfc3f84c7f7be3012ea7</md5>
+			<fileSize >726000</fileSize>
+			<zipMd5 >929842658537eec03ff53a4f65ce6fd1</zipMd5>
+			<zipFileSize >222138</zipFileSize>
+			<operation >replace</operation>
+			<preCMD ></preCMD>
+			<postCMD ></postCMD>
+			<LocalNewPath >[APP_DIR]\libraw.dll</LocalNewPath>
+			<ignoreUpdate >false</ignoreUpdate>
+		</fileinfo>
+		<fileinfo>
+			<LocalOriginalPath >[APP_DIR]\ReneeUndeleter.exe</LocalOriginalPath>
+			<ServerPath >http://update.reneelab.com.cn/DR/WINx86/DR_RENEELABCN_WINx86_160122/[APP_DIR]/ReneeUndeleter.exe.zip</ServerPath>
+			<md5 >a0f54f1a657b92ca5cec82434e29a5ed</md5>
+			<fileSize >6113264</fileSize>
+			<zipMd5 >a8aa67a206c12c42547d9a965a62b417</zipMd5>
+			<zipFileSize >3107935</zipFileSize>
+			<operation >replace</operation>
+			<preCMD ></preCMD>
+			<postCMD ></postCMD>
+			<LocalNewPath >[APP_DIR]\ReneeUndeleter.exe</LocalNewPath>
+			<ignoreUpdate >false</ignoreUpdate>
+		</fileinfo>
+		<fileinfo>
+			<LocalOriginalPath >[APP_DIR]\ReneeUpdater.exe</LocalOriginalPath>
+			<ServerPath >http://update.reneelab.com.cn/DR/WINx86/DR_RENEELABCN_WINx86_160122/[APP_DIR]/ReneeUpdater.exe.zip</ServerPath>
+			<md5 >9d5ae422bc5c3e6f6210b7ea1cae271c</md5>
+			<fileSize >1116656</fileSize>
+			<zipMd5 >64dd7bc046081c0af959c2851b9d531a</zipMd5>
+			<zipFileSize >378209</zipFileSize>
+			<operation >replace</operation>
+			<preCMD ></preCMD>
+			<postCMD ></postCMD>
+			<LocalNewPath >[APP_DIR]\ReneeU

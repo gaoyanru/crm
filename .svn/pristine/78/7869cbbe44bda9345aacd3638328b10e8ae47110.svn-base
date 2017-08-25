@@ -1,0 +1,20 @@
+<md-dialog style="width: 100%">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>查看订单</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <i class="fa fa-times"></i>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content ng-cloak class="clearfix md-whiteframe-glow-z1 md-padding" style="overflow: auto;">
+    <form name="orderForm">
+        <div ng-include="'views/order_addAgent.html'" ng-controller="OrderAddAgent"></div>
+    </form>
+    </md-dialog-content>
+    <md-dialog-actions layout="row" md-colors="::{background: 'default-primary-100'}">
+        <span flex></span>
+        <md-button ng-click="cancel()">取消</md-button>
+    </md-dialog-actions>
+</md-dialog>

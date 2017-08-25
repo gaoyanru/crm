@@ -1,0 +1,52 @@
+<div class="modal-header">
+  <span class="close" ng-click="cancel()">&times;</span>
+  <h3 class="modal-title">合同新建</h3>
+</div>
+<div class="modal-body">
+  <div class="customer-info">
+    <div class="title">客户基本信息</div>
+    <form name="customerform" novalidate class="clearfix">
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label class="required">甲方</label>：
+        <input flex ng-value="postData.Customer.CompanyName" required aria-label="CompanyName" ng-disabled="canChange"/>
+        <span class="add-icon" ng-click="selectCustomer()">+</span>
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label class="required">联系人</label>：
+        <input flex ng-value="postData.Customer.Connector" required aria-label="Connector" ng-disabled="canChange"/>
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label class="required">联系人电话</label>：
+        <input flex ng-value="postData.Customer.Mobile" required aria-label="Mobile" ng-disabled="canChange"/>
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label class="required">所属销售</label>：
+        <input flex ng-value="postData.Customer.SaleName" required aria-label="SaleName" readonly/>
+      </div>
+    </form>
+  </div>
+  <div class="contract-info">
+    <div class="title">合同信息</div>
+    <div class="content">
+      <form name="contractform" novalidate class="clearfix">
+        <div class="form-group" style="margin: 5px 10px 5px 10px;">
+          <label class="required">合同编号</label>：
+          <input flex ng-value="postData.Contract.contractId" required aria-label="Connector"/>
+        </div>
+        <div class="form-group" style="margin: 5px 10px 5px 10px;">
+          <label class="required">合同类型</label>：
+          <select ng-model="postData.Contract.contracttype">
+            <option value="" ng-selected="true">请选择</option>
+            <option  ng-repeat="(key,value) in contractType" ng-value="key">{{value}}</option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="pay-info">
+    <div class="title">支付信息</div>
+  </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-disabled="cusform.$invalid" ng-click="ok($event)">保存并提交</button>
+</div>

@@ -1,0 +1,238 @@
+(function() {
+    angular.module('crmApp').controller('Customer_signed', ['$scope', 'server', '$state', '$mdDialog', '$q', 'user', function($scope, server, $state, $mdDialog, $q, user) {
+        $scope.title = $state.current.title;
+        $scope.user = user.get();
+        $scope.open = function(item) {
+            var tplUrl;
+            if (item) {
+                tplUrl = 'views/customer_view.html';
+            } else {
+                tplUrl = 'views/customer_addCustomer.html';
+            }
+            $mdDialog.show({
+                    controller: 'Customer_view',
+                    templateUrl: tplUrl,
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: {
+                        customer: item || {},
+                        getNextId: $scope.getNextId
+                    }
+                })
+                .then(function(answer) {
+                    resFn(answer);
+                }, function() {
+
+                });
+
+            function resFn(answer) {
+                refreshData();
+            }
+        };
+        $scope.service = function(item) {
+            $mdDialog.show({
+                    controller: 'Customer_viewService',
+                    templateUrl: 'views/customer_viewservice.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: {
+                        customer: item || {},
+                        getNextId: $scope.getNextId
+                    }
+                })
+                .then(function(answer) {
+                    resFn(answer);
+                }, function() {
+
+                });
+        }
+        $scope.getNextId = function(item) {
+            var deferred = $q.defer();
+
+            var c = _.find($scope.customers, { Id: item.Id });
+            var index = _.indexOf($scope.customers, c) + 1;
+            if (index < $scope.customers.length) {
+                deferred.resolve($scope.customers[index].Id);
+            } else {
+                $scope.paginator.currentPage += 1;
+                refreshData().then(function(id) {
+                    deferred.resolve(id);
+                });
+            }
+
+            return deferred.promise;
+        };
+        $scope.others = function(item) {
+            $mdDialog.show({
+                    controller: 'Order_statement_add',
+                    templateUrl: 'views/order_statement_add.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: { customer: item }
+                })
+                .then(function(answer) {
+
+                }, function() {
+
+                });
+        };
+        $scope.toOthersAll = function() {
+            var ids = _.map(_.filter($scope.customers, { selected: true }), 'Id');
+            $mdDialog.show({
+                    controller: 'Customer_forword',
+                    templateUrl: 'views/customer_forward.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: { customer: ids || [] }
+                })
+                .then(function(answer) {
+                    refreshData();
+                }, function() {
+
+                });
+        }
+        $scope.closeTool = function() {
+            $scope.batIsOpen = false;
+        }
+        $scope.xufei = function(item) {
+            server.http.get('/api/orderbycusid?customerid=' + item.Id).success(function(res) {
+                var order = _.last(res.data);
+                $mdDialog.show({
+                        controller: 'Order_remind_order',
+                        templateUrl: 'views/order_view.html',
+                        clickOutsideToClose: true,
+                        fullscreen: true,
+                        // locals: { orderid: item.}
+                        locals: { orderid: order.OrderId }
+                    })
+                    .then(function(answer) {
+                        refreshData();
+                    }, function() {
+
+                    });
+            });
+
+        }
+        $scope.paginator = {
+            total: 0,
+            currentPage: 1,
+            perPage: 10,
+            previousText: '上一页',
+            nextText: '下一页',
+            lastText: '最后一页',
+            firstText: '首页'
+        };
+
+        $scope.search = {
+            companyName: '',
+            phone: ''
+        };
+        $scope.pageChanged = function() {
+            refreshData();
+        };
+
+        //set current page
+        $scope.setCurrentPage = function() {
+            $scope.paginator.currentPage = $scope.currentPage;
+            refreshData();
+        };
+        $scope.searchItem = {
+            companyName: '',
+            Mobile: '',
+            salesId: 0
+        };
+        $scope.search = function() {
+            $scope.searchItem.companyName = $scope.search.companyName;
+            $scope.searchItem.Mobile = $scope.search.phone;
+            $scope.searchItem.salesId = $scope.search.salesId;
+            refreshData($scope.searchItem);
+        }
+
+        function refreshData() {
+            var data = angular.extend({
+                offset: ($scope.paginator.currentPage - 1) * $scope.paginator.perPage,
+                limit: $scope.paginator.perPage
+            }, $scope.searchItem, data);
+            server.http.get('/api/customer/bill?' + $.param(data)).success(function(res) {
+                $scope.paginator.total = res.data.total;
+                $scope.customers = res.data.list;
+            });
+        }
+        server.getSalers().success(function(res) {
+            $scope.users = res.data;
+        });
+        refreshData();
+
+
+    }]).controller("Customer_viewService", ['$scope', '$filter', 'server', '$mdDialog', 'customer', function($scope, $filter, server, $mdDialog, customer) {
+
+        server.http.get('/api/statementbycusid?customerid=' + customer.Id).success(function(res) {
+            $scope.statements = res.data;
+        });
+        server.http.get('/api/maintaskbyid?customerid=' + customer.Id).success(function(res) {
+            $scope.outworkers = res.data;
+        });
+        server.http.get('/api/orderbycusid?customerid=' + customer.Id).success(function(res) {
+            $scope.orders = res.data;
+        });
+        $scope.cancel = function() {
+            $mdDialog.cancel()
+        };
+
+        $scope.detail = function(item) {
+            var tplUrl;
+
+            $mdDialog.show({
+                    controller: 'Order_outworker_detail',
+                    templateUrl: 'views/order_outworker_detail.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    skipHide: true,
+                    locals: {
+                        taskId: item.Id,
+                    }
+
+                })
+                .then(function(answer) {
+                    resFn(answer);
+                }, function() {
+
+                });
+
+            function resFn(answer) {
+                //refreshData();
+            }
+        };
+        $scope.open = function(item) {
+            $mdDialog.show({
+                    controller: 'Order_view',
+                    templateUrl: 'views/order_view.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    skipHide: true,
+                    locals: { orderid: item.OrderId }
+                })
+                .then(function(answer) {
+                    refreshData();
+                }, function() {
+
+                });
+        };
+        $scope.openOri = function(OrderId) {
+            $mdDialog.show({
+                    controller: 'Order_view',
+                    templateUrl: 'views/order_view.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    skipHide: true,
+                    locals: { orderid: OrderId }
+                })
+                .then(function(answer) {
+                    refreshData();
+                }, function() {
+
+                });
+        }
+
+    }]);
+})(angular);

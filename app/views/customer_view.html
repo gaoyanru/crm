@@ -1,0 +1,106 @@
+<md-dialog aria-label="客户" class="md-dialog-lg">
+  <form name="cusform" novalidate>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>{{title}}</h2>&nbsp;
+        <md-chips ng-model="custags" class="title-chip" readonly="true" md-removable="postData.CustomerTypeId != 5" md-on-remove="deleteTag($chip)">
+          <md-chip-template>
+            <span>{{$chip.TagName}}</span>
+          </md-chip-template>
+          <span md-chip-remove>&times;</span>
+        </md-chips>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <md-dialog-content ng-cloak class="clearfix md-whiteframe-glow-z1" style="padding: 8px 16px;position: relative;">
+      <div ng-show="opt.isOpen" class="well-sm" style="position: absolute;top: 2px;width: 96%;background: rgb(152, 148, 148);color: rgb(255, 255, 255); z-index: 99;">
+      </div>
+      <div layout="row">
+        <div flex=33 style="padding: 12px; border-right: solid 1px #999;">
+          <md-input-container layout="row"> <span class="md-label md-required">公司名称</span>
+            <input flex ng-model="postData.CompanyName" aria-label="CompanyName">
+          </md-input-container>
+          <md-input-container layout="row"> <span class="md-label md-required">联系人</span>
+            <input required flex ng-model="postData.Connector" aria-label="Connector">
+          </md-input-container>
+          <md-input-container layout="row"> <span class="md-label md-required">联系电话</span>
+            <input required flex ng-model="postData.Mobile" aria-label="Mobile">
+          </md-input-container>
+          <md-input-container layout="row"> <span class="md-label md-required">意向度</span>
+            <md-select md-no-asterisk ng-model="postData.CustomerTypeId" required aria-label="CustomerType" class="md-select">
+              <md-option ng-repeat="type in ctypes" ng-repeat="" ng-value="type.CustomerTypeId">{{type.Name}}</md-option>
+            </md-select>
+          </md-input-container>
+
+          <md-input-container layout="row"> <span class="md-label">来源</span>
+            <md-select md-no-asterisk ng-model="postData.CustomerSourceId" class="md-select" disabled>
+              <md-option ng-value="0" ng-selected="true">全部</md-option>
+              <md-option ng-repeat="u in sourceTypes" ng-value="u.Id">{{u.Marking}}</md-option>
+            </md-select>
+          </md-input-container>
+          <md-input-container layout="row"> <span class="md-label md-required">备注</span>
+            <textarea flex ng-model="postData.Mark" maxlength="200"></textarea>
+          </md-input-container>
+        </div>
+        <div flex style="padding: 12px">
+          <md-content label="打标签" ng-if="postData.CustomerTypeId !=5 || postData.Status == 2">
+            <div>打标签</div>
+            <div ng-repeat="(key, tagGroup) in tags" class="tag-row">
+              <span class="pull-left tag-type">{{key}}</span>
+              <md-chips ng-model="tagGroup.tags" readonly="false" md-removable="false" md-can-click="true" md-selected="tagGroup.selected" md-on-select="addTag($chip,null,$index)">
+                <md-chip-template>
+                  <span>{{$chip.TagName}}</span>
+                </md-chip-template>
+                <span md-chip-remove>&times;</span>
+              </md-chips>
+            </div>
+          </md-content>
+          <md-content label="跟踪记录">
+            <div ng-controller="Customer_track">
+              <div class="addtrack well-sm" layout="column" ng-if="!isPub">
+                <div flex layout="row" style="position: relative;">
+                  <textarea flex ng-model="track.content"></textarea>
+     <!--              <md-button ng-click="save()" class="md-raised md-primary save">跟踪</md-button> -->
+                </div>
+              </div>
+              <div class="trackblock" >
+                <div ng-repeat="track in tracks" class="trackItem">
+                  <div class="pull-right saler">{{::track.RealName}}</div>
+                  <div class="date">{{::track.TrackDate|tDateTime}}</div>
+                  <!-- <div class="pull-right" ng-if="user.UserId == track.SalesId && track.TrackDate.substr(0,10)==today"><a href="javascript:;" ng-click="delete(track)"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i></a></div> -->
+                  <pre class="description">{{::track.Description}}</pre>
+                </div>
+                <div ng-if="!tracks || tracks.length === 0" class="trackItem">暂无跟踪记录</div>
+              </div>
+            </div>
+          </md-content>
+          <md-content label="客户提醒" ng-if="postData.CustomerTypeId !=5 || postData.Status == 2">
+            <div ng-controller="Customer_remind">
+              <div class="addtrack well-sm tag-row" ng-if="!isPub">
+                <span class="pull-left tag-type" style="margin-left: 9px;">下次跟进日期</span>
+                <div style="position: relative;">
+                  <md-chips ng-model="reminds" readonly="true" md-removable="true" md-on-remove="deleteRemind($chip)">
+                    <md-chip-template>
+                      <span title="{{$chip.SalesName}}">{{$chip.NextTrackTime|tDate}}</span>
+                    </md-chip-template>
+                    <span md-chip-remove style="cursor: pointer;">&times;</span>
+                  </md-chips>
+                  <md-input-container layout="row" style="margin: 0">
+                    <span class="md-label">添加提醒</span>
+                    <md-datepicker ng-model="remind.remindDate" flex formater="yyyy-MM-dd" md-placeholder="提醒日期" md-min-date="today" md-open-on-focus="false" ng-change="addRemind()"></md-datepicker>
+                  </md-input-container>
+                </div>
+              </div>
+            </div>
+          </md-content>
+        </div>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row" md-colors="::{background: 'default-primary-100'}">
+      <span flex></span>
+      <md-button ng-if="notPub && postData.Status <>2" class="md-raised md-primary" ng-click="toPub(postData)">转公海&amp;下一条</md-button>
+      <md-button class="md-raised md-primary" ng-click="next(postData)">保存&amp;下一条</md-button>
+      <md-button ng-click="cancel()">取消</md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

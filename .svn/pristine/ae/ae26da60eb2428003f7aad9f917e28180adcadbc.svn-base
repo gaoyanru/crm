@@ -1,0 +1,74 @@
+<md-dialog aria-label="公司" class="md-dialog-lg">
+    <form name="cusform" novalidate>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>添加外勤任务</h2> <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()"> <i class="fa fa-times"></i> </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content ng-cloak class="clearfix md-whiteframe-glow-z1 md-padding" style="overflow: auto;min-height: 200px;">
+            <div class="well well-sm">
+                <uib-accordion close-others="true">
+                    <div uib-accordion-group ng-repeat="tg in tasks" class="panel-default" is-open="tg.open">
+                        <uib-accordion-heading>
+                            {{::tg.Name}}任务<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': tg.open, 'glyphicon-chevron-right': !tg.open}"></i>
+                        </uib-accordion-heading>
+                        <div layout="row" ng-repeat-start="task in tg.list" class="outerworkline">
+                            <div style="width: 250px">
+                                <md-checkbox ng-model="task.selected">{{::task.TaskName}}</md-checkbox>
+                            </div>
+                            <div flex ng-show="!task.selected" style="line-height: 37px">{{::task.Remark}}</div>
+                            <div flex layout="row" ng-show="task.selected">
+                                <md-input-container layout="row">
+                                    <md-checkbox ng-model="task.IsPassThrough">是否通办</md-checkbox>
+                                </md-input-container>
+                                <md-divider></md-divider>
+                                <md-input-container layout="row">
+                                    <md-checkbox ng-model="task.IsNet">是否网登</md-checkbox>
+                                </md-input-container>
+                                <md-divider></md-divider>
+                                <md-input-container flex layout="row"> <span>所需资料</span>
+                                    <input flex ng-model="task.Material" /> </md-input-container>
+                                <md-divider></md-divider>
+                                <md-input-container flex layout="row"> <span>办理周期</span>
+                                    <input flex ng-model="task.CycleTime" /> </md-input-container>
+                                <md-divider></md-divider>
+                                <md-input-container flex layout="row"> <span>服务价格</span>
+                                    <input flex ng-model="task.Price" /> </md-input-container>
+                            </div>
+                        </div>
+                        <md-divider ng-repeat-end ng-if="!$last"></md-divider>
+                        <!-- <md-grid-list md-cols="1" md-row-height="52px">
+                            <md-grid-tile >
+                                <md-checkbox ng-model="task.selected">{{task.TaskName}}(￥{{task.Price}})</md-checkbox>
+                            </md-grid-tile>
+                        </md-grid-list> -->
+                    </div>
+                </uib-accordion>
+            </div>
+            <md-grid-list md-cols="1" md-row-height="52px">
+                <md-grid-tile>
+                    <md-input-container layout="row" flex> <span class="md-label md-required">选择公司</span>
+                        <input flex ng-model="postData.Customer.CompanyName" required ng-disabled="cus_selected" aria-label="CompanyName" ng-click="selectCustomer()" readonly> </md-input-container>
+                </md-grid-tile>
+                <md-grid-tile>
+                    <md-input-container layout="row" flex> <span class="md-label md-required">选择区域</span>
+                        <md-select md-no-asterisk ng-model="postData.AreaName" required aria-label="saler" class="md-select">
+                            <md-option ng-repeat="item in areas" ng-value="item">{{item}}</md-option>
+                        </md-select>
+                    </md-input-container>
+                </md-grid-tile>
+                <md-grid-tile md-rowspan="2">
+                    <md-input-container layout="row" flex>
+                        <span class="md-label">备注</span>
+                        <textarea name="" flex ng-model="postData.Remark" maxlength="400"></textarea>
+                    </md-input-container>
+                </md-grid-tile>
+            </md-grid-list>
+        </md-dialog-content>
+        <md-dialog-actions layout="row" md-colors="::{background: 'default-primary-100'}"> <span flex></span>
+            <md-button class="md-raised md-primary" ng-disabled="cusform.$invalid" ng-click="ok($event)">保存</md-button>
+            <md-button ng-click="cancel()">取消</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

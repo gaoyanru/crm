@@ -1,0 +1,113 @@
+<div class="recharge">
+  <div class="well well-sm u-search">
+    <form class="form-inline" style="position:relative;padding-right:150px">
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>合同编号</label>：
+        <input type="text" ng-model="search.contractId" class="form-control">
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>甲方</label>：
+        <input type="text" ng-model="search.firstParty" class="form-control">
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>联系人</label>：
+        <input type="text" ng-model="search.contacts" class="form-control">
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>销售人员</label>：
+        <input type="text" ng-model="search.salesId" class="form-control">
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>合同状态</label>：
+        <select ng-model="search.contractstatus" class="form-control">
+          <option value="" ng-selected="true">请选择</option>
+          <option  ng-repeat="(key,value) in contractStatus" ng-value="key">{{value}}</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>合同类型</label>：
+        <select ng-model="search.contracttype" class="form-control">
+          <option value="" ng-selected="true">请选择</option>
+          <option  ng-repeat="(key,value) in contractType" ng-value="key">{{value}}</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>财务审核状态</label>：
+        <select ng-model="search.accountstatus" class="form-control">
+          <option value="" ng-selected="true">请选择</option>
+          <option  ng-repeat="(key,value) in accountStatus" ng-value="key">{{value}}</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;min-width:300px">
+        <lable style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">合同签订日期：</lable>
+        <div class="row" style="float:left">
+          <div class="col-md-6">
+            <p class="input-group" style="margin:0">
+            <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dt1" is-open="popup1.opened" datepicker-options="dateOptions"  close-text="Close" alt-input-formats="altInputFormats" ng-change="changeDate()" id="date1" style="padding:6px;"/>
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p class="input-group" style="margin:0">
+            <input type="text" class="form-control" uib-datepicker-popup ng-model="dt2" is-open="popup2.opened" datepicker-options="dateOptions"  close-text="Close" ng-change="changeDate()" id="date2" style="padding:6px;"/>
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary" ng-click="searchFn()" style="position:absolute;right:20px;top:5px;">搜索</button>
+      <button class="btn btn-primary pull-right" ng-click="open()" style="position:absolute;right:20px;top:50px">新增</button>
+    </form>
+  </div>
+  <table class="table table-striped table-hover table-bordered">
+    <thead>
+      <tr class="info">
+          <th>合同编号</th>
+          <th>甲方</th>
+          <th>联系人</th>
+          <th>销售人员</th>
+          <th>合同类型</th>
+          <th>合同状态</th>
+          <th>合同签订日期</th>
+          <th>合同总金额</th>
+          <th>财务审核</th>
+          <th>最后操作人</th>
+          <th>最后修改日期</th>
+          <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="contract in contracts">
+        <td style="text-align:center">{{contract.contractId}}</td>
+        <td style="text-align:center">{{contract.firstParty}}</td>
+        <td style="text-align:center">{{contract.contacts}}</td>
+        <td style="text-align:center">{{contract.salesId}}</td>
+        <td style="text-align:center">{{contract.contracttype}}</td>
+        <td style="text-align:center">{{contract.contractstatus}}</td>
+        <td style="text-align:center">{{contract.contractSignDate}}</td>
+        <td style="text-align:center">{{contract.contractSignAmount}}</td>
+        <td style="text-align:center">{{contract.accountstatus}}</td>
+        <td style="text-align:center">{{contract.operator}}</td>
+        <td style="text-align:center">{{contract.lastChangeDate}}</td>
+        <td class="table-opt" style="text-align:center">
+          <button class="btn btn-link" href="javascript:;" ng-click="detail(contract)">查看详情</button>
+          <button class="btn btn-link" href="javascript:;" ng-click="delete(contract)">删除</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="u-paginator">
+    <uib-pagination total-items="paginator.total" items-per-page="paginator.perPage" boundary-links="true" ng-model="paginator.currentPage" previous-text="{{::paginator.previousText}}" next-text="{{::paginator.nextText}}" first-text="{{::paginator.firstText}}"
+        last-text="{{::paginator.lastText}}" force-ellipses="true" max-size="6" num-pages="paginator.numPages" ng-change="pageChanged()"> </uib-pagination>
+    <div class="u-pages"> <span>{{paginator.currentPage}}</span> / <span>{{paginator.numPages}}</span> &nbsp; <span>合计:{{paginator.total}}</span> </div>
+    <form name="paginatorForm" novalidate>
+      <div class="input-group">
+        <input type="number" name="paginatorInput" ng-model="currentPage" required min="1" max="{{paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-disabled="!paginatorForm.$valid" ng-click="setCurrentPage()">Go!</button> </span>
+      </div>
+    </form>
+  </div>
+</div>

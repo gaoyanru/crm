@@ -137,11 +137,11 @@
               <option  ng-repeat="(key,value) in payTypes" ng-value="key">{{value}}</option>
             </select>
           </div>
-          <div class="form-group" style="margin: 5px 10px 5px 10px;" ng-show="pl.payType != 5">
+          <div class="form-group" style="margin: 5px 10px 5px 10px;">
             <label class="required">支付方账号</label>：
-            <input flex ng-model="pl.payId" required class="input-border" style="width: 200px"/>
+            <input flex ng-model="pl.payId" required class="input-border"/>
           </div>
-          <div class="form-group col-md-3" style="margin: 5px 10px 5px 10px" ng-show="pl.payType != 5">
+          <div class="form-group col-md-3" style="margin: 5px 10px 5px 10px">
             <lable class="required" style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">支付时间：</lable>
             <div class="col-md-8">
               <p class="input-group" style="margin:0">
@@ -152,6 +152,7 @@
               </p>
             </div>
           </div>
+
           <div class="form-group" style="margin: 5px 10px 5px 10px; display: flex; align-items: center;">
             <label class="required img-bottom">凭证</label>：
             <div style="display: inline-block;">
@@ -164,6 +165,7 @@
               </div>
             </div>
           </div>
+
           <div class="form-group pay-style" style="margin: 5px 10px 5px 10px">
             <span ng-if="$index+1 == paylist.length" ng-click="addClick($index);paylist.push({})" style="color: blue">添加</span>
             <span ng-if="$index>0 || paylist.length>1" ng-click="delete2($index)">删除</span>

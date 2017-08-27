@@ -26,7 +26,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       contractstatus: '22',
       contractSignDate: '22',
       contractSignAmount: '22',
-      accountstatus: 2,
+      accountstatus: '22',
       operator: '22',
       lastChangeDate: '22'
     }]
@@ -87,7 +87,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
               var data = {
                 belongCompanyName: '北京爱康鼎',
                 contractstatus: 1,
-                financestatus: 0,
+                financestatus: 2,
                 CompanyName: '爱康鼎',
                 Connector: 'gyr',
                 Mobile: '1567885454',
@@ -137,7 +137,6 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
         }
       })
       modalInstance.result.then(function (result) {
-        console.log('刷新页面')
         refreshData()
       }, function () {
 
@@ -364,18 +363,17 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       alert('上传失败!')
     }
 
-    // $scope.add0 = function (m) {
-    //   return m<10?'0'+m:m
-    // }
-    //
-    // $scope.formateDate = function (time) {
-    //   time = new Date(time);
-    //   var y = time.getFullYear();
-    //   var m = time.getMonth()+1;
-    //   var d = time.getDate();
-    //   return y+'-'+$scope.add0(m)+'-'+$scope.add0(d)
-    // }
+    $scope.add0 = function (m) {
+      return m<10?'0'+m:m
+    }
 
+    $scope.formateDate = function (time) {
+      time = new Date(time);
+      var y = time.getFullYear();
+      var m = time.getMonth()+1;
+      var d = time.getDate();
+      return y+'-'+$scope.add0(m)+'-'+$scope.add0(d)
+    }
     $scope.ok = function (ev) {
       // if (!$scope.customer.CompanyName) {
       //   alert('请选择甲方！')
@@ -431,12 +429,12 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       //   alert('请上传支付凭证！')
       //   return
       // }
-      // if ($scope.postData.signTime) {
-      //   $scope.postData.signTime = $scope.formateDate($scope.postData.signTime)
-      // }
-      // for (let i in $scope.paylist) {
-      //   $scope.paylist[i].time = $scope.formateDate($scope.paylist[i].time)
-      // }
+      if ($scope.postData.signTime) {
+        $scope.postData.signTime = $scope.formateDate($scope.postData.signTime)
+      }
+      for (let i in $scope.paylist) {
+        $scope.paylist[i].time = $scope.formateDate($scope.paylist[i].time)
+      }
       var RealName = user.RealName
       if ($scope.postData.Remark) {
         $scope.postData.Remark = $scope.postData.Remark  + '{' + RealName + '}'
@@ -491,7 +489,6 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
   function ($scope, $http, $uibModal, $uibModalInstance, FileUploader, $filter, UserServe, contractItem) {
     console.log(contractItem, 'contractItem')
     var user = UserServe.get()
-    $scope.user = UserServe.get()
     $scope.canChange = true
     $scope.canSave = false
     $scope.rlist = [{}]
@@ -500,8 +497,6 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
     $scope.payimg = ''
     $scope.uploader1 = []
     $scope.imgIndex = 0
-    $scope.canCheck = false
-    $scope.canStop = false
 
     $scope.postDetail = contractItem
     $scope.rlist = $scope.postDetail.rlist
@@ -519,13 +514,10 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       4: '支付宝',
       5: '现金'
     }
-
-    // console.log($scope.payTypes.toString(), 'paytypes')
     $scope.contractType = { // 合同类型
       1: "新增",
       2: "续费"
     }
-    $scope.Remark = $scope.postDetail.Remark
     $scope.getcurProject = function (rg, index) {
 
       var contractprojectChildOptions = {}
@@ -676,41 +668,16 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
         $scope.uploader1.splice(index, 1);
         $scope.paylist.splice(index, 1);
     }
-    // $scope.add0 = function (m) {
-    //   return m<10?'0'+m:m
-    // }
-    //
-    // $scope.formateDate = function (time) {
-    //   time = new Date(time);
-    //   var y = time.getFullYear();
-    //   var m = time.getMonth()+1;
-    //   var d = time.getDate();
-    //   return y+'-'+$scope.add0(m)+'-'+$scope.add0(d)
-    // }
-    $scope.check = function () { // 审单人员审核
-      // 点击审核发送请求 成功后弹框关闭 刷新数据列表 合同状态变成已审核 财务状态变成待审核
-      $scope.postDetail.contractstatus = 2
-      $scope.postDetail.financestatus = 1
-      $uibModalInstance.dismiss('cancel')
+    $scope.add0 = function (m) {
+      return m<10?'0'+m:m
     }
-    $scope.refuse = function () { // 审单人员驳回
-      // 点击驳回 弹框写原因后发送请求 此时有原因把原因拼接到备注里 然后整体全部数据发给后台 返回成功后 合同状态变成已驳回 财务状态无
-      var modalInstance = $uibModal.open({
-          templateUrl: 'views/contract_refuse.html',
-          controller: 'ContractRefuse',
-          size: "lg",
-          resolve: {
-              contractMsg: function() {
-                  return $scope.postDetail
-              }
-          },
-          backdrop: 'static'
-      })
-      modalInstance.result.then(function(result) {
-          $scope.postDetail.contractstatus = 3
-      }, function() {
 
-      });
+    $scope.formateDate = function (time) {
+      time = new Date(time);
+      var y = time.getFullYear();
+      var m = time.getMonth()+1;
+      var d = time.getDate();
+      return y+'-'+$scope.add0(m)+'-'+$scope.add0(d)
     }
     $scope.ok = function (ev) {
       // if (!$scope.postDetail.CompanyName) {
@@ -767,18 +734,17 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       //   alert('请上传支付凭证！')
       //   return
       // }
-      // 时间
-      // if ($scope.postDetail.signTime) {
-      //   $scope.postDetail.signTime = $scope.formateDate($scope.postDetail.signTime)
-      // }
-      // for (let i in $scope.paylist) {
-      //   $scope.paylist[i].time = $scope.formateDate($scope.paylist[i].time)
-      // }
+      if ($scope.postDetail.signTime) {
+        $scope.postDetail.signTime = $scope.formateDate($scope.postDetail.signTime)
+      }
+      for (let i in $scope.paylist) {
+        $scope.paylist[i].time = $scope.formateDate($scope.paylist[i].time)
+      }
       var RealName = user.RealName
       if ($scope.postDetail.Remark) {
-        $scope.postDetail.Remark = $scope.Remark + $scope.postDetail.Remark  + '{' + RealName + '}'
+        $scope.postDetail.Remark = $scope.postDetail.Remark  + '{' + RealName + '}'
       }
-      $uibModalInstance.dismiss('cancel');
+
       console.log($scope.postDetail)
       console.log($scope.rlist, '$scope.rlist')
       console.log($scope.paylist, 'paylist')
@@ -794,27 +760,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
         $scope.popup1.opened = true;
     }
   }
-]).controller('ContractRefuse', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'user', function($scope, $http, $uibModalInstance, contract, users) {
-  var users = users.get()
-  console.log(users)
-  console.log(contract, 'contract')
-  $scope.postData = contract
-  $scope.Remark = ''
-  $scope.save = function() {
-    var RealName = users.RealName
-    $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
-    console.log($scope.postData)
-    $uibModalInstance.close('cancel');
-    // $http.post().success(function(res) {
-    //     if (res.status) {
-    //         $uibModalInstance.close('cancel');
-    //     }
-    // })
-  }
-  $scope.cancel = function() {
-    $uibModalInstance.dismiss('cancel');
-  }
-}]).controller("Order_cusSelect", ['$scope', '$http', '$uibModalInstance', function ($scope, $http, $uibModalInstance) {
+]).controller("Order_cusSelect", ['$scope', '$http', '$uibModalInstance', function ($scope, $http, $uibModalInstance) {
     $scope.search = {
       CompanyName: ''
     }

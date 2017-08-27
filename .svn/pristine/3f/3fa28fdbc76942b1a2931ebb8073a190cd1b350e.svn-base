@@ -13,9 +13,6 @@
 .fl {
   float: left;
 }
-.fr {
-  float: right;
-}
 .required::before {
   content: '*';
   color: red;
@@ -59,7 +56,7 @@
   float: left;
   padding-right: 10px;
 }
-.contract-img-style  img, .contract-img{
+.contract-img-style  img{
   height: 34px;
   width: 34px;
 }

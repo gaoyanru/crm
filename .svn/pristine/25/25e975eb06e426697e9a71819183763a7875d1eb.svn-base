@@ -137,11 +137,11 @@
               <option  ng-repeat="(key,value) in payTypes" ng-value="key">{{value}}</option>
             </select>
           </div>
-          <div class="form-group" style="margin: 5px 10px 5px 10px;" ng-show="pl.payType != 5">
+          <div class="form-group" style="margin: 5px 10px 5px 10px;">
             <label class="required">支付方账号</label>：
             <input flex ng-model="pl.payId" required class="input-border" style="width: 200px"/>
           </div>
-          <div class="form-group col-md-3" style="margin: 5px 10px 5px 10px" ng-show="pl.payType != 5">
+          <div class="form-group col-md-3" style="margin: 5px 10px 5px 10px">
             <lable class="required" style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">支付时间：</lable>
             <div class="col-md-8">
               <p class="input-group" style="margin:0">

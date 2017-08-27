@@ -13,9 +13,6 @@
 .fl {
   float: left;
 }
-.fr {
-  float: right;
-}
 .required::before {
   content: '*';
   color: red;

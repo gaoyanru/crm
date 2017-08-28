@@ -1,18 +1,16 @@
 <div class="modal-header">
   <span class="close" ng-click="cancel()">&times;</span>
-  <h3 class="modal-title">合同查看/编辑</h3>
+  <h3 class="modal-title">合同查看</h3>
 </div>
 <div class="modal-body">
   <div class="contract-belong-info clearfix">
     <div class="title">
       <div class="fl belong-left">
-        <span>合同归属信息{{user.Category}}{{postDetail.contractstatus == 1}}</span>
+        <span>合同归属信息</span>
       </div>
-      <!-- 审单人员有此三个按钮操作权限  财务审核通过后，审核人员有终止操作 财务审核之前，合同是可以删除 -->
-      <div ng-if="user.Category == 2" class="fr belong-right">
-        <button class="btn" type="button" ng-disabled="!(postDetail.contractstatus == 1)" ng-click="check()">审核</button>
-        <button class="btn" type="button" ng-disabled="!(postDetail.contractstatus == 1)" ng-click="refuse()">驳回</button>
-        <button class="btn" type="button" ng-disabled="!(postDetail.financestatus == 2)" ng-click="stop()">终止</button>
+      <div class="fr belong-right">
+        <button class="btn" type="button" ng-disabled="isClick" ng-click="check()">财务审核</button>
+        <button class="btn" type="button" ng-disabled="isClick" ng-click="refuse()">财务驳回</button>
       </div>
     </div>
     <form name="contractBelongform" novalidate class="clearfix">
@@ -77,7 +75,6 @@
         </div>
         <div class="form-group col-md-4" style="margin: 5px 10px 5px 10px;min-width:300px">
           <lable class="required" style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">签订日期：</lable>
-          <!-- <input ng-if="canChange" flex ng-model="postDetail.signTime" ng-disabled="canChange" class="input-width1 input-border"> -->
           <div class="col-md-8">
             <p class="input-group" style="margin:0">
                 <input type="text" class="form-control" ng-click="open1()" ng-model="postDetail.signTime" uib-datepicker-popup="yyyy-MM-dd" ng-model="dt" is-open="popup1.opened" datepicker-options="dateOptions" close-text="关闭" alt-input-formats="altInputFormats" style="padding:6px;" ng-disabled="canChange"/>
@@ -85,12 +82,6 @@
                   <button type="button" class="btn btn-default" ng-click="open1()" ng-disabled="canChange"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
             </p>
-            <!-- <p class="input-group" style="margin:0">
-              <input type="text" class="form-control" uib-datepicker-popup="yyyy/MM/dd" ng-model="postDetail.signTime" is-open="popup1.opened" datepicker-options="dateOptions"  close-text="Close" alt-input-formats="altInputFormats" style="padding:6px;"/>
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
-              </span>
-            </p> -->
           </div>
         </div>
         <div class="form-group" style="margin: 5px 10px 5px 10px;">
@@ -100,7 +91,6 @@
                 <th>项目</th>
                 <th>子项目</th>
                 <th>费用</th>
-                <th ng-if="!canChange" style="width:200px">操作</th>
               </tr>
             </thead>
             <tbody>
@@ -108,44 +98,40 @@
                 <td style="height:34px;line-height: 20px; padding: 6px 12px;">
                   <select ng-model="rg.contractproject" ng-change="getcurProject(rg, $index)" class="input-border select-width" ng-disabled="canChange">
                     <option value="">请选择</option>
-                    <option ng-repeat="item in projectItems" value="{{item.Id}}" ng-selected="rg.contractproject == item.Id">{{item.Name}}</option>
+                    <option ng-repeat="(key,value) in contractprojects" value="{{key}}" ng-selected="rg.contractproject == key">{{value}}</option>
                   </select>
                 </td>
                 <td style="height:34px;line-height: 20px; padding: 6px 12px;">
                   <select ng-model="rg.contractprojectChild" class="input-border select-width" ng-disabled="canChange">
                     <option value="">请选择</option>
-                    <option ng-repeat="item in rg.contractprojectChildOptions" value="{{item.Id}}" selected="true">{{item.Name}}</option>
+                    <option  ng-repeat="(key,value) in rg.contractprojectChildOptions" ng-value="key" selected="true">{{value}}</option>
                   </select>
                 </td>
                 <td style="height:34px;line-height: 20px; padding: 6px 12px;">
                   <input class="select-width input-border" type="number" placeholder="请填写大于0的整数￥:0.00" ng-model="rg.projectAmount" ng-blur="getAmount(rg)" ng-disabled="canChange">
-                </td>
-                <td ng-if="!canChange" class="opt">
-                  <span ng-if="$index+1 == rlist.length" ng-click="rlist.push({})" style="color: blue">添加</span>
-                  <span ng-if="$index>0 || rlist.length>1" ng-click="delete($index)">删除</span>
                 </td>
               </tr>
               <tr>
                 <td colspan="4" style="height:34px;line-height: 20px; padding: 6px 12px;" class="clearfix">
                   <div class="amount fl">
                     <span>记账报税费用：</span>
-                    <span class="contract-inputWidth">{{geteveryProjectAmount(rlist)[0]}}</span>
+                    <span class="contract-inputWidth">{{postDetail.chargeAmount}}</span>
                   </div>
                   <div class="amount fl">
                     <span>财务服务费用：</span>
-                    <span class="contract-inputWidth">{{geteveryProjectAmount(rlist)[1]}}</span>
+                    <span class="contract-inputWidth">{{postDetail.financeAmount}}</span>
                   </div>
                   <div class="amount fl">
                     <span>外勤服务费用：</span>
-                    <span class="contract-inputWidth">{{geteveryProjectAmount(rlist)[2]}}</span>
+                    <span class="contract-inputWidth">{{postDetail.outworkAmount}}</span>
                   </div>
                   <div class="amount fl">
                     <span>代收费用：</span>
-                    <span class="contract-inputWidth">{{geteveryProjectAmount(rlist)[3]}}</span>
+                    <span class="contract-inputWidth">{{postDetail.collectionAmount}}</span>
                   </div>
                   <div class="amount fl">
                     <span>合同总金额：</span>
-                    <span class="contract-inputWidth" style="color: red;">{{reduce(rlist)}}</span>
+                    <span class="contract-inputWidth" style="color: red;">{{postDetail.amount}}</span>
                   </div>
                 </td>
               </tr>
@@ -154,10 +140,7 @@
         </div>
         <div class="form-group" style="margin: 5px 10px 5px 10px;">
           <label>备注信息：</label>
-          <div class="remark-style">
-            <span>{{postDetail.Remark}}</span>
-            <textarea class="textarea-style" cols="100" rows="3" ng-model="Remark" ng-disabled="canChange"></textarea>
-          </div>
+          <textarea style="width:950px;color:#ccc" cols="100" rows="3" ng-model="postDetail.Remark" ng-disabled="canChange"></textarea>
         </div>
       </form>
     </div>
@@ -206,19 +189,8 @@
               </div>
             </div>
           </div>
-
-          <div ng-if="!canChange" class="form-group pay-style" style="margin: 5px 10px 5px 10px">
-            <span ng-if="$index+1 == paylist.length" ng-click="addClick($index);paylist.push({})" style="color: blue">添加</span>
-            <span ng-if="$index>0 || paylist.length>1" ng-click="delete2($index)">删除</span>
-          </div>
         </div>
       </form>
     </div>
   </div>
-</div>
-<!-- 提单人员有修改和保存提交订单的权限  user.Category == ？-->
-<div ng-if="user.Category == 2" class="modal-footer">
-<!-- <div class="modal-footer"> -->
-  <button ng-if="(postDetail.contractstatus == 1 && !canSave )|| (postDetail.contractstatus == 3 && !canSave)" class="btn btn-primary" type="button" ng-click="canCompile()">编辑</button>
-  <button ng-if="canSave" class="btn btn-primary" type="button" ng-disabled="cusform.$invalid" ng-click="ok($event)">保存并提交</button>
 </div>

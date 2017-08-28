@@ -1,6 +1,13 @@
 <div class="recharge">
-  <div class="well well-sm u-search">
+  <div class="well well-sm u-search clearfix">
     <form class="form-inline" style="position:relative;padding-right:150px">
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>所属公司</label>：
+        <select class="form-control" ng-model="search.belongCompany">
+          <option value="" ng-selected="true">请选择</option>
+          <option ng-repeat="item in companys" ng-value="item.id">{{item.CompanyName}}</option>
+        </select>
+      </div>
       <div class="form-group" style="margin: 5px 10px 5px 10px;">
         <label>合同编号</label>：
         <input type="text" ng-model="search.contractId" class="form-control">
@@ -60,12 +67,13 @@
         </div>
       </div>
       <button type="button" class="btn btn-primary" ng-click="searchFn()" style="position:absolute;right:20px;top:5px;">搜索</button>
-      <button class="btn btn-primary pull-right" ng-click="open()" style="position:absolute;right:20px;top:50px">新增</button>
     </form>
   </div>
   <table class="table table-striped table-hover table-bordered">
     <thead>
       <tr class="info">
+          <th>选择</th>
+          <th>所属公司</th>
           <th>合同编号</th>
           <th>甲方</th>
           <th>联系人</th>
@@ -82,22 +90,23 @@
     </thead>
     <tbody>
       <tr ng-repeat="contract in contracts">
-        <td style="text-align:center; width:90px">{{contract.contractId}}</td>
-        <td style="text-align:center; width:200px">{{contract.firstParty}}</td>
-        <td style="text-align:center; width:120px">{{contract.contacts}}</td>
-        <td style="text-align:center; width:120px">{{contract.salesId}}</td>
-        <td style="text-align:center; width:120px">{{contract.contracttype | ContractType}}</td>
-        <td style="text-align:center; width:120px">{{contract.contractstatus | Contractstatus}}</td>
-        <td style="text-align:center; width:120px">{{contract.contractSignDate}}</td>
-        <td style="text-align:center; width:100px">{{contract.contractSignAmount}}</td>
-        <td style="text-align:center; width:120px">{{contract.accountstatus | FinanceStatus}}</td>
-        <td style="text-align:center; width:120px">{{contract.operator}}</td>
-        <td style="text-align:center; width:150px">{{contract.lastChangeDate}}</td>
-        <td class="table-opt" style="text-align:center; width:100px">
-          <button class="btn btn-link" href="javascript:;" ng-click="detail(contract)">查看详情</button>
-          <!-- 判断财务审核状态是已审核就不可以删除 -->
-          <!-- <button class="btn btn-link" ng-click="delete(contract)" ng-disabled="contract.accountstatus == 2">删除</button> -->
-          <button class="btn btn-link" ng-click="delete(contract)">删除</button>
+        <td><input type="checkbox" ng-model="contract.selected" ng-disabled="contract.accountstatus != 1 " style="vertical-align: top; width:16px;height:16px;"></td>
+        <td style="text-align:center">{{contract.companyName}}</td>
+        <td style="text-align:center">{{contract.contractId}}</td>
+        <td style="text-align:center">{{contract.firstParty}}</td>
+        <td style="text-align:center">{{contract.contacts}}</td>
+        <td style="text-align:center">{{contract.salesId}}</td>
+        <td style="text-align:center">{{contract.contracttype | ContractType}}</td>
+        <td style="text-align:center">{{contract.contractstatus | Contractstatus}}</td>
+        <td style="text-align:center">{{contract.contractSignDate}}</td>
+        <td style="text-align:center">{{contract.contractSignAmount}}</td>
+        <td style="text-align:center">{{contract.accountstatus | FinanceStatus}}</td>
+        <td style="text-align:center">{{contract.operator}}</td>
+        <td style="text-align:center">{{contract.lastChangeDate}}</td>
+        <td class="table-opt">
+          <button class="btn btn-link" href="javascript:;" ng-click="detail(contract)">查看</button>
+          <button class="btn btn-link" href="javascript:;" ng-click="check(contract)">审核</button>
+          <button class="btn btn-link" href="javascript:;" ng-click="refuse(contract)">驳回</button>
         </td>
       </tr>
     </tbody>

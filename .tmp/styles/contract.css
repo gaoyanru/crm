@@ -88,3 +88,20 @@
 .img-bottom {
   margin-bottom: 0;
 }
+.remark-style {
+  padding: 5px;
+  float: right;
+  width: 950px;
+  height: 80px;
+  border: 1px solid #ccc;
+  color: #ccc;
+  overflow: hidden;
+}
+.textarea-style {
+  outline: none;
+  width: 100%;
+  color: rgb(204, 204, 204);
+  border: none;
+  background: #fff;
+  height: 80%;
+}

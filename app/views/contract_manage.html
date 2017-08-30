@@ -1,41 +1,41 @@
 <div class="recharge">
-  <div class="well well-sm u-search">
+  <div class="well well-sm u-search clearfix">
     <form class="form-inline" style="position:relative;padding-right:150px">
       <div class="form-group" style="margin: 5px 10px 5px 10px;">
         <label>合同编号</label>：
-        <input type="text" ng-model="search.contractId" class="form-control">
+        <input type="text" ng-model="search.contractNo" class="form-control">
       </div>
       <div class="form-group" style="margin: 5px 10px 5px 10px;">
         <label>甲方</label>：
-        <input type="text" ng-model="search.firstParty" class="form-control">
+        <input type="text" ng-model="search.companyname" class="form-control">
       </div>
       <div class="form-group" style="margin: 5px 10px 5px 10px;">
         <label>联系人</label>：
-        <input type="text" ng-model="search.contacts" class="form-control">
+        <input type="text" ng-model="search.contact" class="form-control">
       </div>
       <div class="form-group" style="margin: 5px 10px 5px 10px;">
         <label>销售人员</label>：
-        <input type="text" ng-model="search.salesId" class="form-control">
+        <input type="text" ng-model="search.saleName" class="form-control">
       </div>
       <div class="form-group" style="margin: 5px 10px 5px 10px;">
         <label>合同状态</label>：
-        <select ng-model="search.contractstatus" class="form-control">
-          <option value="" ng-selected="true">请选择</option>
-          <option  ng-repeat="(key,value) in contractStatus" ng-value="key">{{value}}</option>
+        <select ng-model="search.contractStatus" class="form-control">
+          <option value="0">请选择</option>
+          <option  ng-repeat="(key,value) in ContractStatus" ng-value="key">{{value}}</option>
         </select>
       </div>
       <div class="form-group" style="margin: 5px 10px 5px 10px;">
         <label>合同类型</label>：
-        <select ng-model="search.contracttype" class="form-control">
-          <option value="" ng-selected="true">请选择</option>
-          <option  ng-repeat="(key,value) in contractType" ng-value="key">{{value}}</option>
+        <select ng-model="search.contractType" class="form-control">
+          <option value="0">请选择</option>
+          <option  ng-repeat="(key,value) in ContractType" ng-value="key">{{value}}</option>
         </select>
       </div>
       <div class="form-group" style="margin: 5px 10px 5px 10px;">
         <label>财务审核状态</label>：
-        <select ng-model="search.accountstatus" class="form-control">
-          <option value="" ng-selected="true">请选择</option>
-          <option  ng-repeat="(key,value) in accountStatus" ng-value="key">{{value}}</option>
+        <select ng-model="search.financeStatus " class="form-control">
+          <option value="0">请选择</option>
+          <option  ng-repeat="(key,value) in FinanceStatus" ng-value="key">{{value}}</option>
         </select>
       </div>
       <div class="form-group" style="margin: 5px 10px 5px 10px;min-width:300px">
@@ -82,22 +82,21 @@
     </thead>
     <tbody>
       <tr ng-repeat="contract in contracts">
-        <td style="text-align:center; width:90px">{{contract.contractId}}</td>
-        <td style="text-align:center; width:200px">{{contract.firstParty}}</td>
-        <td style="text-align:center; width:120px">{{contract.contacts}}</td>
-        <td style="text-align:center; width:120px">{{contract.salesId}}</td>
-        <td style="text-align:center; width:120px">{{contract.contracttype | ContractType}}</td>
-        <td style="text-align:center; width:120px">{{contract.contractstatus | Contractstatus}}</td>
-        <td style="text-align:center; width:120px">{{contract.contractSignDate}}</td>
-        <td style="text-align:center; width:100px">{{contract.contractSignAmount}}</td>
-        <td style="text-align:center; width:120px">{{contract.accountstatus | FinanceStatus}}</td>
-        <td style="text-align:center; width:120px">{{contract.operator}}</td>
-        <td style="text-align:center; width:150px">{{contract.lastChangeDate}}</td>
+        <td style="text-align:center; width:90px">{{contract.ContractNo}}</td>
+        <td style="text-align:center; width:200px">{{contract.CompanyName}}</td>
+        <td style="text-align:center; width:120px">{{contract.Connector}}</td>
+        <td style="text-align:center; width:120px">{{contract.SaleName}}</td>
+        <td style="text-align:center; width:120px">{{contract.OrderType | ContractType}}</td>
+        <td style="text-align:center; width:120px">{{contract.OrderStatus | Contractstatus}}</td>
+        <td style="text-align:center; width:120px">{{contract.ContractDate | formateDate}}</td>
+        <td style="text-align:center; width:100px">{{contract.Amount}}</td>
+        <td style="text-align:center; width:120px">{{contract.FinancialAudit | FinanceStatus}}</td>
+        <td style="text-align:center; width:120px">{{contract.ModifyUserName}}</td>
+        <td style="text-align:center; width:150px">{{contract.ModifyDate}}</td>
         <td class="table-opt" style="text-align:center; width:100px">
           <button class="btn btn-link" href="javascript:;" ng-click="detail(contract)">查看详情</button>
           <!-- 判断财务审核状态是已审核就不可以删除 -->
-          <!-- <button class="btn btn-link" ng-click="delete(contract)" ng-disabled="contract.accountstatus == 2">删除</button> -->
-          <button class="btn btn-link" ng-click="delete(contract)">删除</button>
+          <button class="btn btn-link" ng-click="delete(contract)" ng-disabled="contract.FinancialAudit == 2">删除</button>
         </td>
       </tr>
     </tbody>

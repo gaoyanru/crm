@@ -262,7 +262,8 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
             registerAmount: '30000000.00',
             serviceDateStart: '2017-07-14',
             serviceDateEnd: '2017-07-14',
-            Remark: '可对客户基本信息和营业执照信息进行编辑，若编辑完毕公司名称，公司联系人，联系电话，销售人员信息要同步到最进生成的合同信息内及CRM；企业类型不可编辑，读取合同内信息点击法人身份证及营业执照后的 控件，可上传图片信息；'
+            Remark: '可对客户基本信息和营业执照信息进行编辑，若编辑完毕公司名称，公司联系人，联系电话，销售人员信息要同步到最进生成的合同信息内及CRM；企业类型不可编辑，读取合同内信息点击法人身份证及营业执照后的 控件，可上传图片信息；',
+            NoDeadLine: 0
           }
           return data
         }
@@ -349,6 +350,7 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
   $scope.postDetail = {}
   $scope.industries = [] // 所属行业列表
   $scope.areas = [] // 所属区域列表
+  $scope.contractTab = [] // 合同信息lsit页卡2
 
   contract.serviceDateStart = new Date(contract.serviceDateStart)
   contract.serviceDateEnd = new Date(contract.serviceDateStart)
@@ -385,8 +387,16 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
     alert('审核提交外勤')
   }
   // 弹框关闭
-  $scope.cancel = function () {
+  $scope.cancel = function() {
     $uibModalInstance.dismiss()
+  }
+  // 编辑
+  $scope.edit = function() {
+    $scope.isEdit = false
+  }
+  // 编辑完成
+  $scope.save = function() {
+    // 保存提交后台信息 后变成不可编辑
   }
   // 图片上传
   var uploadUrl = 'https://pilipa.oss-cn-beijing.aliyuncs.com';
@@ -506,4 +516,34 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
   $scope.open2 = function () {
       $scope.popup2.opened = true;
   }
+
+  // tab2页卡内容
+  $scope.refreshData2 = function() {
+    alert('ssss')
+    // 点击页卡请求当前页卡数据内容
+    $scope.contractTab = [
+      {contractId: 'BJ-A00986', contractType: '2', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'},
+      {contractId: 'BJ-A00986', contractType: '1', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'},
+      {contractId: 'BJ-A00986', contractType: '2', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'}
+    ]
+  }
+  // tab2分页功能开始
+  // $scope.tab2.paginator = {
+  //     total: 0,
+  //     currentPage: 1,
+  //     perPage: 15,
+  //     previousText: '上一页',
+  //     nextText: '下一页',
+  //     lastText: '最后一页',
+  //     firstText: '首页'
+  // }
+  // $scope.tab2.pageChanged = function () {
+  //     $scope.refreshData2()
+  // }
+  // $scope.tab2.setCurrentPage = function () {
+  //     $scope.tab2.currentPage = Math.abs(Math.floor($scope.tab2.currentPage)) || 1
+  //     $scope.tab2.paginator.currentPage = $scope.tab2.currentPage
+  //     $scope.refreshData2()
+  // }
+  // 分页功能结束
 }])

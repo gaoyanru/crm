@@ -388,4 +388,9 @@ angular.module('crmApp').filter('filterAddValue', function() {
     return str
   }
   return companyType
+}).filter('formateDate', function() {
+  var date = function (date) {
+  return date.slice(0, 10)
+  }
+  return date
 })

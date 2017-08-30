@@ -153,11 +153,16 @@
                   </div>
                   <div style="display: inline-block;">
                     <p class="input-group" style="margin:0;width:150px">
-                      <input type="text" class="form-control" ng-click="open2()" ng-model="postDetail.serviceDateEnd" uib-datepicker-popup="yyyy-MM-dd" ng-model="dt" is-open="popup2.opened" datepicker-options="dateOptions" close-text="关闭" alt-input-formats="altInputFormats" style="padding:6px;" ng-disabled="isEdit"/>
+                      <input type="text" class="form-control" ng-click="open2()" ng-model="postDetail.serviceDateEnd" uib-datepicker-popup="yyyy-MM-dd" ng-model="dt" is-open="popup2.opened" datepicker-options="dateOptions" close-text="关闭" alt-input-formats="altInputFormats" style="padding:6px;" ng-disabled="isEdit || (postDetail.NoDeadLine == 1)"/>
                       <span class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="open2()" ng-disabled="isEdit"><i class="glyphicon glyphicon-calendar"></i></button>
+                        <button type="button" class="btn btn-default" ng-click="open2()" ng-disabled="isEdit || (postDetail.NoDeadLine == 1)"><i class="glyphicon glyphicon-calendar"></i></button>
                       </span>
                     </p>
+                  </div>
+                  <!-- 无限期 postDetail.NoDeadLine == 0 有期限 ==1无期限 同时前面结束时间不可点击   -->
+                  <div style="display: inline-block;">
+                    <label ng-hide="isEdit && (postDetail.NoDeadLine == 0)">
+                      <input ng-hide="isEdit && (postDetail.NoDeadLine == 1)" type="checkbox" name="noLimitDate" ng-readonly="isReadOnly" value="1" ng-click="postDetail.NoDeadLine = !postDetail.NoDeadLine; " ng-checked="postDetail.NoDeadLine == 1" /> 无期限 </label>
                   </div>
               </div>
               <div class="form-group" style="margin: 5px 10px 5px 10px;">
@@ -167,8 +172,49 @@
             </form>
           </div>
         </uib-tab>
-        <uib-tab index="1" heading="合同信息">
-          Some Tab Content
+        <uib-tab index="1" heading="合同信息" select="refreshData2()">
+          <div class="contract-info clearfix">
+            <div class="title" style="margin-bottom: 10px;">合同信息</div>
+            <table class="table table-striped table-hover table-bordered">
+              <thead>
+                <tr class="info">
+                    <th>合同编号</th>
+                    <th>合同类型</th>
+                    <th>签订日期</th>
+                    <th>服务期限</th>
+                    <th>服务开始时间</th>
+                    <th>服务结束时间</th>
+                    <th>合同总金额</th>
+                    <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="contrac in contractTab">
+                  <td style="text-align:center;">{{contrac.contractId}}</td>
+                  <td style="text-align:center">{{contrac.contractType}}</td>
+                  <td style="text-align:center">{{contrac.signTime}}</td>
+                  <td style="text-align:center">{{contrac.service}}</td>
+                  <td style="text-align:center">{{contrac.serviceDateStart}}</td>
+                  <td style="text-align:center">{{contrac.serviceDateEnd}}</td>
+                  <td style="text-align:center">{{contrac.contractAmount}}</td>
+                  <td class="table-opt" style="text-align:center;width:200px">
+                    <button class="btn btn-link" href="javascript:;" ng-click="detail(contrac)">查看详情</button>
+                    <button ng-disabled="isStop" class="btn btn-link" href="javascript:;" ng-click="stop(contrac)">终止合同</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- <div class="u-paginator">
+              <uib-pagination total-items="tab2.paginator.total" items-per-page="tab2.paginator.perPage" boundary-links="true" ng-model="tab2.paginator.currentPage" previous-text="{{::tab2.paginator.previousText}}" next-text="{{::tab2.paginator.nextText}}" first-text="{{::tab2.paginator.firstText}}"
+                  last-text="{{::tab2.paginator.lastText}}" force-ellipses="true" max-size="6" num-pages="tab2.paginator.numPages" ng-change="tab2.pageChanged()"> </uib-pagination>
+              <div class="u-pages"> <span>{{tab2.paginator.currentPage}}</span> / <span>{{tab2.paginator.numPages}}</span> &nbsp; <span>合计:{{tab2.paginator.total}}</span> </div>
+              <form name="paginatorForm" novalidate>
+                <div class="input-group">
+                  <input type="number" name="paginatorInput" ng-model="tab2.currentPage" required min="1" max="{{tab2.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-disabled="!paginatorForm.$valid" ng-click="tab2.setCurrentPage()">Go!</button> </span>
+                </div>
+              </form>
+            </div> -->
+          </div>
         </uib-tab>
         <uib-tab index="2" heading="服务费及代收费">
           More Tab Content

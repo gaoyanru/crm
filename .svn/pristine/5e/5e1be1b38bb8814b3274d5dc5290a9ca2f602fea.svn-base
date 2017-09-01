@@ -121,7 +121,7 @@
         </div>
         <div class="form-group" style="margin: 5px 10px 5px 10px;">
           <label>备注信息：</label>
-          <textarea style="width:950px" cols="100" rows="3" ng-model="postData.Remark"></textarea>
+          <textarea style="width:950px" cols="100" rows="3" ng-model="postData.remark"></textarea>
         </div>
       </form>
     </div>

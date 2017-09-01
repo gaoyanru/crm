@@ -396,15 +396,14 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       $scope.postData.Amount = a + b + c + d
       console.log($scope.postData.Amount)
       var RealName = user.RealName
-      if ($scope.postData.Remark) {
-        $scope.postData.Remark = $scope.postData.Remark  + '{' + RealName + '}'
+      if ($scope.postData.remark) {
+        $scope.postData.remark = $scope.postData.remark  + '{' + RealName + '}'
       }
       // 出现提交多余字段传给后台情况 所以重新赋值下 及 把用户CustomerId传给后台
       $scope.postData.CompanyName = $scope.customer.CompanyName || ''
       $scope.postData.Connector = $scope.customer.Connector || ''
       $scope.postData.Mobile = $scope.customer.Mobile || ''
       $scope.postData.SaleName = $scope.customer.SaleName || ''
-      $scope.postData.SalesId =  $scope.customer.SalesId || ''
       $scope.postData.CustomerId = $scope.customer.Id
       // 新建合同时候 需要传递合同 OrderId为0
       $scope.postData.OrderId = 0
@@ -688,12 +687,8 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
     $scope.check = function () { // 审单人员审核
       // 点击审核发送请求 成功后弹框关闭 刷新数据列表 合同状态变成已审核 财务状态变成待审核
       console.log($scope.postDetail.OrderId)
-      var post = {}
-      post.contractId = $scope.postDetail.OrderId
-      post.remark = ''
-      post.auditVal = 0
-      var url = '/api/contract/audit'
-      $http.put(url, post).success(function(res) {
+      var url = '/api/contractpass/?contractId=' + $scope.postDetail.OrderId
+      $http.post(url, $scope.postDetail).success(function(res) {
         console.log(res)
         if(res.status) {
           $uibModalInstance.close()
@@ -807,10 +802,10 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       // 备注打标签
       var RealName = user.RealName
       if ($scope.remark) {
-        $scope.remark = $scope.postDetail.Remark + $scope.remark  + '{' + RealName + '}'
+        $scope.remark = $scope.postDetail.Description + $scope.remark  + '{' + RealName + '}'
       }
       console.log($scope.remark, RealName)
-      $scope.postDetail.Remark = $scope.remark
+      $scope.postDetail.Description = $scope.remark
       // 需要为新增的项目列表和支付列表添加两个字段 "Id":0,"OrderId":0 业务需要
       for (var i in $scope.rlist) {
         if (!$scope.rlist[i].Id) {
@@ -828,7 +823,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
         }
       }
       // 提交给后台的时候 需要转化rlist paylist字段名是所需的
-      $scope.postDetail.Details = $scope.rlist
+      $scope.postDetail.details = $scope.rlist
       $scope.postDetail.PayInfoList = $scope.paylist
       // 业务需要 ReceiveAmount =1
       $scope.postDetail.ReceiveAmount = 1
@@ -862,14 +857,13 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
   $scope.save = function() {
     var RealName = users.RealName
     if ($scope.Remark) {
-      $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+      $scope.postData.remark = $scope.postData.Description + $scope.Remark + '{' + RealName + '}'
     }
     var post = {}
     post.contractId = $scope.postData.OrderId
-    post.Remark = $scope.postData.Remark
-    post.auditVal = 1
+    post.remark = $scope.postData.remark
     // console.log(post)
-    $http.put('/api/contract/audit', post).success(function(res) {
+    $http.post('/api/ContractReject', post).success(function(res) {
       // console.log(res)
         if (res.status) {
             $uibModalInstance.close();

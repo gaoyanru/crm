@@ -1,0 +1,234 @@
+<div class="modal-header">
+    <span class="close" ng-click="cancel()">&times;</span>
+    <h3 class="modal-title">签约客户管理>查看</h3>
+</div>
+<div class="modal-body">
+  <div class="content-header clearfix">
+    <form name="contractBelongform" novalidate class="con-header-left fl">
+      <div class="form-group ml5">
+        <label>序列ID</label>：
+        <input flex ng-model="postDetail.Id" required readonly class="input-border"/>
+      </div>
+      <div class="form-group ml5">
+        <label>公司名称</label>：
+        <input flex ng-model="postDetail.CompanyName" required readonly class="input-border" style="width:200px"/>
+      </div>
+      <div class="form-group ml5">
+        <label>当前合同编号</label>：
+        <input flex ng-model="postDetail.contractId" required readonly class="input-border"/>
+      </div>
+      <div class="form-group ml5">
+        <label>当前服务日期</label>：
+        <input flex ng-model="postDetail.serviceDate" required readonly class="input-border"/>
+      </div>
+      <div class="form-group ml5">
+        <label>公司状态</label>：
+        <input flex value="{{postDetail.companystatus | CustomerCompanyStatus}}" required readonly class="input-border" style="width:100px"/>
+      </div>
+      <div class="form-group ml5">
+        <label>外勤审核状态</label>：
+        <input flex value="{{postDetail.outworkstatus | CustomerOutworkStatus}}" required readonly class="input-border" style="width:100px"/>
+      </div>
+      <div class="form-group ml5">
+        <label>会计审核状态</label>：
+        <input flex value="{{postDetail.accountstatus | CustomeraccountStatus}}" required readonly class="input-border" style="width:100px"/>
+      </div>
+    </form>
+    <div class="con-header-right fr">
+      <button class="btn btn-primary mt10" type="button" ng-click="submitAccount()">审核提交会计</button>
+      <button class="btn btn-primary" type="button" ng-click="submitOutwork()">审核提交外勤</button>
+    </div>
+  </div>
+  <div class="content-tab">
+    <form name="outerForm" class="tab-form-demo">
+      <uib-tabset active="activeForm">
+        <uib-tab index="0" heading="公司信息">
+          <div class="customer-info clearfix">
+            <div class="title" style="margin-bottom: 10px;">
+              <div class="fl belong-left">
+                <span>客户基本信息</span>
+              </div>
+              <div class="fr belong-right">
+                <button ng-if="isEdit" class="btn" type="button" ng-click="edit()">编辑</button>
+                <button ng-if="!isEdit" class="btn" type="button" ng-click="save()">完成</button>
+              </div>
+            </div>
+            <form name="customerform" novalidate class="clearfix">
+              <div class="form-group ml5">
+                <label class="required">公司名称</label>：
+                <input flex ng-model="postDetail.CompanyName" required ng-disabled="isEdit" class="input-border" style="width:250px"/>
+              </div>
+              <div class="form-group ml5">
+                <label class="required">公司联系人</label>：
+                <input flex ng-model="postDetail.Connector" required ng-disabled="isEdit" class="input-border" style="width:100px"/>
+              </div>
+              <div class="form-group ml5">
+                <label class="required">联系人电话</label>：
+                <input flex ng-model="postDetail.Mobile" required ng-disabled="isEdit" class="input-border"/>
+              </div>
+              <div class="form-group ml5">
+                <label class="required">所属销售</label>：
+                <input flex ng-model="postDetail.SaleName" required readonly class="input-border"/>
+              </div>
+              <div class="form-group ml5">
+                <label>企业类型</label>：
+                <span class="input-border companyTypeStyle">{{postDetail.companyType | CompanyType}}</span>
+              </div>
+              <div class="form-group ml5">
+                <label>所属行业</label>：
+                <select ng-model="postDetail.industryId" class="input-border" ng-disabled="isEdit" style="width:100px;">
+                  <option value="">请选择</option>
+                  <option  ng-repeat="item in industries" value="item.industryId" ng-selected="postDetail.industryId == item.industryId" >{{item.industryName}}</option>
+                </select>
+              </div>
+              <div class="form-group ml5">
+                <label>所属区域</label>：
+                <select ng-model="postDetail.areaId" class="input-border" ng-disabled="isEdit" style="width:100px;">
+                  <option value="">请选择</option>
+                  <option  ng-repeat="item in areas" value="item.areaId" ng-selected="postDetail.areaId == item.areaId" >{{item.areaName}}</option>
+                </select>
+              </div>
+              <div class="form-group ml5">
+                <label>公司地址</label>：
+                <input flex ng-model="postDetail.address" required ng-disabled="isEdit" class="input-border" style="width:300px"/>
+              </div>
+            </form>
+          </div>
+          <div class="customer-info clearfix">
+            <div class="title" style="margin-bottom: 10px;">营业执照信息</div>
+            <form name="companyform" novalidate class="clearfix">
+              <div class="form-group ml5">
+                <label>法人姓名</label>：
+                <input flex ng-model="postDetail.Name" required ng-disabled="isEdit" class="input-border"/>
+              </div>
+              <div class="form-group ml5 flex-style">
+                <label>法人身份证</label>：
+                <div style="display: inline-block;">
+                  <img ng-src="{{postDetail.cardImgUrl1}}" ng-if="postDetail.cardImgUrl1" alt="" pic-view class="contract-img-style">
+                  <div class="uploader-outter">
+                    <input class="uploader-img" type="file" nv-file-select="" uploader="uploader1" ng-disabled="isEdit"/>
+                  </div>
+                  <div class="progress" style="width:80%;margin-left:90px" ng-if="uploader1.isUploading">
+                    <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader1.progress + '%' }" style="width: 100%;"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group ml5">
+                <label>注册号</label>：
+                <input flex ng-model="postDetail.registrationId" required ng-disabled="isEdit" class="input-border" style="width: 180px"/>
+              </div>
+              <div class="form-group ml5 flex-style">
+                <label>营业执照</label>：
+                <div style="display: inline-block;">
+                  <img ng-src="{{postDetail.cardImgUrl2}}" ng-if="postDetail.cardImgUrl2" alt="" pic-view class="contract-img-style">
+                  <div class="uploader-outter">
+                    <input class="uploader-img" type="file" nv-file-select="" ng-disabled="isEdit" uploader="uploader2"/>
+                  </div>
+                  <div class="progress" style="width:80%;margin-left:90px" ng-if="uploader2.isUploading">
+                    <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader2.progress + '%' }" style="width: 100%;"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group ml5">
+                <label>国税登记号</label>：
+                <input flex ng-model="postDetail.nationalTax" required ng-disabled="isEdit" class="input-border" style="width: 180px"/>
+              </div>
+              <div class="form-group ml5">
+                <label>地税登记号</label>：
+                <input flex ng-model="postDetail.governmentTax" required ng-disabled="isEdit" class="input-border" style="width: 180px"/>
+              </div>
+              <div class="form-group ml5">
+                <label>注册资金</label>：
+                <input flex ng-model="postDetail.registerAmount" required ng-disabled="isEdit" class="input-border"/>
+              </div>
+              <div class="form-group ml5">
+                <lable style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">营业期限：</lable>
+                  <div style="display: inline-block;">
+                    <p class="input-group" style="margin:0;width:150px">
+                      <input type="text" class="form-control" ng-click="open1()" ng-model="postDetail.serviceDateStart" uib-datepicker-popup="yyyy-MM-dd" ng-model="dt" is-open="popup1.opened" datepicker-options="dateOptions" close-text="关闭" alt-input-formats="altInputFormats" style="padding:6px;" ng-disabled="isEdit"/>
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="open1()" ng-disabled="isEdit"><i class="glyphicon glyphicon-calendar"></i></button>
+                      </span>
+                    </p>
+                  </div>
+                  <div style="display: inline-block;">
+                    <p class="input-group" style="margin:0;width:150px">
+                      <input type="text" class="form-control" ng-click="open2()" ng-model="postDetail.serviceDateEnd" uib-datepicker-popup="yyyy-MM-dd" ng-model="dt" is-open="popup2.opened" datepicker-options="dateOptions" close-text="关闭" alt-input-formats="altInputFormats" style="padding:6px;" ng-disabled="isEdit || (postDetail.NoDeadLine == 1)"/>
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="open2()" ng-disabled="isEdit || (postDetail.NoDeadLine == 1)"><i class="glyphicon glyphicon-calendar"></i></button>
+                      </span>
+                    </p>
+                  </div>
+                  <!-- 无限期 postDetail.NoDeadLine == 0 有期限 ==1无期限 同时前面结束时间不可点击   -->
+                  <div style="display: inline-block;">
+                    <label ng-hide="isEdit && (postDetail.NoDeadLine == 0)">
+                      <input ng-hide="isEdit && (postDetail.NoDeadLine == 1)" type="checkbox" name="noLimitDate" ng-readonly="isReadOnly" value="1" ng-click="postDetail.NoDeadLine = !postDetail.NoDeadLine; " ng-checked="postDetail.NoDeadLine == 1" /> 无期限 </label>
+                  </div>
+              </div>
+              <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label>经营范围：</label>
+                <textarea cols="120" rows="5" ng-model="postDetail.Remark" ng-disabled="isEdit"></textarea>
+              </div>
+            </form>
+          </div>
+        </uib-tab>
+        <uib-tab index="1" heading="合同信息" select="refreshData2()">
+          <div class="contract-info clearfix">
+            <div class="title" style="margin-bottom: 10px;">合同信息</div>
+            <table class="table table-striped table-hover table-bordered">
+              <thead>
+                <tr class="info">
+                    <th>合同编号</th>
+                    <th>合同类型</th>
+                    <th>签订日期</th>
+                    <th>服务期限</th>
+                    <th>服务开始时间</th>
+                    <th>服务结束时间</th>
+                    <th>合同总金额</th>
+                    <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="contrac in contractTab">
+                  <td style="text-align:center;">{{contrac.contractId}}</td>
+                  <td style="text-align:center">{{contrac.contractType}}</td>
+                  <td style="text-align:center">{{contrac.signTime}}</td>
+                  <td style="text-align:center">{{contrac.service}}</td>
+                  <td style="text-align:center">{{contrac.serviceDateStart}}</td>
+                  <td style="text-align:center">{{contrac.serviceDateEnd}}</td>
+                  <td style="text-align:center">{{contrac.contractAmount}}</td>
+                  <td class="table-opt" style="text-align:center;width:200px">
+                    <button class="btn btn-link" href="javascript:;" ng-click="detail(contrac)">查看详情</button>
+                    <button ng-disabled="isStop" class="btn btn-link" href="javascript:;" ng-click="stop(contrac)">终止合同</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- <div class="u-paginator">
+              <uib-pagination total-items="tab2.paginator.total" items-per-page="tab2.paginator.perPage" boundary-links="true" ng-model="tab2.paginator.currentPage" previous-text="{{::tab2.paginator.previousText}}" next-text="{{::tab2.paginator.nextText}}" first-text="{{::tab2.paginator.firstText}}"
+                  last-text="{{::tab2.paginator.lastText}}" force-ellipses="true" max-size="6" num-pages="tab2.paginator.numPages" ng-change="tab2.pageChanged()"> </uib-pagination>
+              <div class="u-pages"> <span>{{tab2.paginator.currentPage}}</span> / <span>{{tab2.paginator.numPages}}</span> &nbsp; <span>合计:{{tab2.paginator.total}}</span> </div>
+              <form name="paginatorForm" novalidate>
+                <div class="input-group">
+                  <input type="number" name="paginatorInput" ng-model="tab2.currentPage" required min="1" max="{{tab2.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-disabled="!paginatorForm.$valid" ng-click="tab2.setCurrentPage()">Go!</button> </span>
+                </div>
+              </form>
+            </div> -->
+          </div>
+        </uib-tab>
+        <uib-tab index="2" heading="服务费及代收费">
+          More Tab Content
+        </uib-tab>
+        <uib-tab index="3" heading="外勤任务">
+          More Tab Content
+        </uib-tab>
+        <uib-tab index="4" heading="备注信息">
+          More Tab Content
+        </uib-tab>
+        <uib-tab index="5" heading="操作记录">
+          More Tab Content
+        </uib-tab>
+      </uib-tabset>
+    </form>
+  </div>
+</div>

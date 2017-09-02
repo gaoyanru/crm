@@ -1,0 +1,551 @@
+angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state', 'Excel', '$uibModal', 'user', '$q', function($scope, $http, $state, Excel, $uibModal, user, $q) {
+    $scope.user = user.get()
+    $scope.customers = [] // 签约客户列表数据
+    $scope.areas = [] // 所属区域列表
+    $scope.markBg = {}
+
+    $scope.companyStatus = { // 公司状态
+        1: "待分配",
+        2: "未开始",
+        3: "外勤服务",
+        4: "会计服务",
+        5: "外勤会计服务",
+        6: "挂起",
+        7: "已结束"
+    }
+    $scope.outworkStatus = { // 外勤处理状态
+        1: "待审核",
+        2: "已审核",
+        3: '已驳回'
+    }
+    $scope.accountStatus = { // 会计处理状态
+        1: "待审核",
+        2: "已驳回",
+        3: "部分确认",
+        4: "已审核"
+    }
+    $scope.companys = [] // 所属公司列表
+
+    $scope.search = { // 查询条件
+        Id: '',
+        companyName: '',
+        contacts: '',
+        salesId: '',
+        companystatus: '',
+        area: '',
+        outworkstatus: '',
+        accountstatus: '',
+        starttime: '',
+        endtime: ''
+    }
+
+    // 分页功能开始
+    $scope.paginator = {
+        total: 0,
+        currentPage: 1,
+        perPage: 15,
+        previousText: '上一页',
+        nextText: '下一页',
+        lastText: '最后一页',
+        firstText: '首页'
+    }
+    $scope.pageChanged = function() {
+        refreshData()
+    }
+    $scope.setCurrentPage = function() {
+            $scope.currentPage = Math.abs(Math.floor($scope.currentPage)) || 1
+            $scope.paginator.currentPage = $scope.currentPage
+            refreshData()
+        }
+        // 分页功能结束
+
+    // 获取所属区域
+    function getareasList() {
+        $scope.areas = [
+                { id: 1, areaName: '北京爱康鼎' },
+                { id: 2, areaName: '上海爱康鼎' },
+                { id: 3, areaName: '天津爱康鼎' },
+                { id: 4, areaName: '河南爱康鼎' },
+            ]
+            // $http.get().success(function (res) {
+            //   console.log(res)
+            //   $scope.areas = res.data
+            // })
+    }
+    getareasList()
+
+    // 查询条件
+    $scope.searchFn = function() {
+            console.log($scope.search)
+            refreshData()
+        }
+        // 合同列表
+    function refreshData() {
+        var searchIt;
+        searchIt = $scope.search
+        var data = angular.extend({
+            offset: ($scope.paginator.currentPage - 1) * $scope.paginator.perPage,
+            limit: $scope.paginator.perPage
+        }, searchIt, data);
+        console.log(data, '查询参数')
+        $scope.customers = [{
+            Id: 'PD00000001',
+            companyName: '北京爱康鼎科技有限公司',
+            areaName: '朝阳区',
+            contractId: 'BJ-A0000678',
+            contacts: '王女士',
+            salesId: '李大锤',
+            contractSignDate: '2017/06/07',
+            companystatus: 1,
+            outworkstatus: 2,
+            accountstatus: 3,
+            Remark: 'asdasdfasdmsado{sss}',
+            tagStatus: '1'
+        }, {
+            Id: 'PD00000001',
+            companyName: '北京爱康鼎科技有限公司',
+            areaName: '朝阳区',
+            contractId: 'BJ-A0000678',
+            contacts: '王女士',
+            salesId: '李大锤',
+            contractSignDate: '2017/06/07',
+            companystatus: 1,
+            outworkstatus: 2,
+            accountstatus: 3,
+            Remark: 'asdasdfasdmsado{sss}',
+            tagStatus: '3'
+        }, {
+            Id: 'PD00000001',
+            companyName: '北京爱康鼎科技有限公司',
+            areaName: '朝阳区',
+            contractId: 'BJ-A0000678',
+            contacts: '王女士',
+            salesId: '李大锤',
+            contractSignDate: '2017/06/07',
+            companystatus: 1,
+            outworkstatus: 2,
+            accountstatus: 3,
+            Remark: 'asdasdfasdmsado{sss}',
+            tagStatus: '2'
+        }]
+        for (var i in $scope.customers) {
+            if ($scope.customers[i].tagStatus == 1) {
+                $scope.markBg = { 'background-color': 'red' }
+            } else if ($scope.customers[i].tagStatus == 2) {
+                $scope.markBg = { 'background-color': 'blue' }
+            } else if ($scope.customers[i].tagStatus == 3) {
+                $scope.markBg = { 'background-color': 'yellow' }
+            }
+            $scope.customers[i].markBg = $scope.markBg
+        }
+        console.log($scope.customers)
+            // $http.get('api/maintask?' + $.param(data)).success(function (res) {
+            //     console.log(res)
+            //     $scope.paginator.total = res.data.total;
+            //     $scope.customers = res.data.list;
+            // });
+    }
+    refreshData()
+
+    // 导出
+    $scope.toExcel = function() {
+            var downItem = $scope.search
+            if ($scope.paginator.total > 4000) {
+                alert('总条数过多，请缩小查询范围')
+            } else {
+                console.log(downItem.Id,
+                        downItem.companyName,
+                        downItem.contacts,
+                        downItem.salesId,
+                        downItem.companystatus,
+                        downItem.area,
+                        downItem.outworkstatus,
+                        downItem.accountstatus,
+                        downItem.starttime,
+                        downItem.endtime)
+                    // var url = `/api/download/getrechargedetails?starttime=${starttime || ''}&endtime=${endtime || ''}&channelname=${channelname || ''}&type=${type || 0}`
+                    // // console.log(url)
+                    // window.open(url)
+            }
+            // var exportHref = Excel.tableToExcel('dataTable', 'sheet name')
+            // $timeout(function() { location.href = exportHref }, 100)
+
+            // $scope.exportHref = Excel.tableToExcel('div[js-height]>#dataTable', 'sheet name');
+            // $timeout(function() { location.href = $scope.exportHref; }, 100);
+        }
+        // 挂起操作
+    $scope.gq = function(item) {
+            var modalInstance = $uibModal.open({
+                templateUrl: 'views/contract_refuse.html',
+                controller: 'MarkRefuse',
+                resolve: {
+                    contractMsg: function() {
+                        return item
+                    },
+                    signFrom: function() {
+                        return false
+                    },
+                    title: function() {
+                        return ''
+                    }
+                },
+                backdrop: 'static'
+            })
+            modalInstance.result.then(function(result) {
+                // 挂起后公司状态跟新为挂起
+                item.companystatus = 6
+            }, function() {
+
+            });
+        }
+        // 标记操作
+    $scope.mark = function(item) {
+            var modalInstance = $uibModal.open({
+                templateUrl: 'views/contract_refuse.html',
+                controller: 'MarkRefuse',
+                resolve: {
+                    contractMsg: function() {
+                        return item
+                    },
+                    signFrom: function() {
+                        return true
+                    },
+                    title: function() {
+                        return '添加标签'
+                    }
+                },
+                backdrop: 'static'
+            })
+            modalInstance.result.then(function(result) {
+                // 挂起后公司状态跟新为挂起
+                item.companystatus = 6
+            }, function() {
+
+            });
+        }
+        // 取消标记
+    $scope.cancelmark = function(item) {
+            // 取消标记  点击发送请求 修改tagStatus值为空
+            item.tagStatus = ''
+        }
+        // 查看详情
+    $scope.detail = function(item) {
+            // 点击请求接口返回 tab1及公共顶部信息
+            var modalInstance = $uibModal.open({
+                templateUrl: 'views/signed_detail.html',
+                controller: 'SignedDetail',
+                size: 'hg',
+                resolve: {
+                    contractMsg: function() {
+                        // return item
+                        var data = {
+                            Id: 'PD00000001',
+                            CompanyName: '北京爱康鼎科技有限公司',
+                            contractId: 'BJ-A0000678',
+                            serviceDate: '2017-07-2018-08',
+                            companystatus: 1,
+                            outworkstatus: 2,
+                            accountstatus: 3,
+                            Connector: '王女士',
+                            Mobile: '13655456778',
+                            SaleName: '王五',
+                            companyType: '2',
+                            industryId: '3',
+                            areaId: '2',
+                            address: '北京市朝阳区小营路街道房地置业大厦1104',
+                            cardImgUrl1: 'https://pilipa.oss-cn-beijing.aliyuncs.com/FileUploads/pay/201708/3cPE46BEJj.png',
+                            cardImgUrl2: 'https://pilipa.oss-cn-beijing.aliyuncs.com/FileUploads/pay/201708/3cPE46BEJj.png',
+                            Name: '王翠花',
+                            registrationId: '91110302MA00EN3A7A',
+                            nationalTax: '91110302MA00EN3A7A',
+                            governmentTax: '91110302MA00EN3A7A',
+                            registerAmount: '30000000.00',
+                            serviceDateStart: '2017-07-14',
+                            serviceDateEnd: '2017-07-14',
+                            Remark: '可对客户基本信息和营业执照信息进行编辑，若编辑完毕公司名称，公司联系人，联系电话，销售人员信息要同步到最进生成的合同信息内及CRM；企业类型不可编辑，读取合同内信息点击法人身份证及营业执照后的 控件，可上传图片信息；',
+                            NoDeadLine: 0
+                        }
+                        return data
+                    }
+                },
+                backdrop: 'static'
+            })
+            modalInstance.result.then(function(result) {
+
+            }, function() {
+
+            });
+        }
+        // 弹窗关闭
+    $scope.cancel = function() {
+            $uibModalInstance.dismiss()
+        }
+        //日期
+    $scope.clear = function() {
+        $scope.dt = null;
+    };
+    $scope.popup1 = {
+        opened: false
+    };
+    $scope.popup2 = {
+        opened: false
+    };
+    $scope.open1 = function() {
+        $scope.popup1.opened = true;
+    }
+    $scope.open2 = function() {
+        $scope.popup2.opened = true;
+    }
+    $scope.changeDate = function() {
+            var d1 = angular.element($("#date1"))[0].value
+            var d2 = angular.element($("#date2"))[0].value
+            if (d2) {
+                var _d1 = d1.replace(/-/ig, "")
+                var _d2 = d2.replace(/-/ig, "")
+                if ((_d2 - _d1) < 0) {
+                    angular.element($("#date1"))[0].value = d2
+                }
+            }
+            $scope.search.starttime = d1
+            $scope.search.endtime = d2
+        }
+        // 日期功能结束
+}]).controller('MarkRefuse', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'signFrom', 'title', 'user', function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
+    var users = users.get()
+    console.log(users)
+    console.log(signFrom, title, 'title')
+    console.log(contract, 'contract')
+    $scope.postData = contract
+    $scope.Remark = ''
+    $scope.sign = signFrom
+    $scope.title = title
+
+    $scope.tags = {
+        1: '高',
+        2: '中',
+        3: '低'
+    }
+
+    $scope.save = function() {
+        if ($scope.Remark) {
+            var RealName = users.RealName
+            $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+        }
+        console.log($scope.postData)
+        $uibModalInstance.close('cancel');
+        // $http.post().success(function(res) {
+        //     if (res.status) {
+        //         $uibModalInstance.close('cancel');
+        //     }
+        // })
+    }
+    $scope.cancel = function() {
+        $uibModalInstance.dismiss('cancel');
+    }
+}]).controller('SignedDetail', ['$scope', '$http', '$uibModal', '$uibModalInstance', 'FileUploader', '$filter', 'contractMsg', 'user', function($scope, $http, $uibModal, $uibModalInstance, FileUploader, $filter, contract, users) {
+    var users = users.get()
+    console.log(users)
+    console.log(contract, 'contract')
+    $scope.isEdit = true
+    $scope.postDetail = {}
+    $scope.industries = [] // 所属行业列表
+    $scope.areas = [] // 所属区域列表
+    $scope.contractTab = [] // 合同信息lsit页卡2
+
+    contract.serviceDateStart = new Date(contract.serviceDateStart)
+    contract.serviceDateEnd = new Date(contract.serviceDateStart)
+
+    $scope.postDetail = contract
+
+    // 获取所属行业列表信息
+    function getIndustries() {
+        $scope.industries = [
+            { industryId: '1', industryName: 'IT' },
+            { industryId: '2', industryName: '教育' },
+            { industryId: '3', industryName: '销售' },
+            { industryId: '4', industryName: '人工智能' },
+            { industryId: '5', industryName: '快递' },
+        ]
+    }
+    getIndustries()
+        // 获取所属区域列表信息
+    function getAreas() {
+        $scope.areas = [
+            { areaId: '1', areaName: '朝阳区' },
+            { areaId: '2', areaName: '丰台区' },
+            { areaId: '3', areaName: '昌平区' },
+            { areaId: '4', areaName: '海淀区' },
+        ]
+    }
+    getAreas()
+        // 审核提交会计
+    $scope.submitAccount = function() {
+            alert('审核提交会计')
+        }
+        // 审核提交外勤
+    $scope.submitOutwork = function() {
+            alert('审核提交外勤')
+        }
+        // 弹框关闭
+    $scope.cancel = function() {
+            $uibModalInstance.dismiss()
+        }
+        // 编辑
+    $scope.edit = function() {
+            $scope.isEdit = false
+        }
+        // 编辑完成
+    $scope.save = function() {
+            // 保存提交后台信息 后变成不可编辑
+        }
+        // 图片上传
+    var uploadUrl = 'https://pilipa.oss-cn-beijing.aliyuncs.com';
+    $http.get('/api/signkey').success(function(res) {
+        delete res.data.Filename;
+        delete res.data.key;
+        delete res.data.callback;
+        delete res.data.expire;
+        delete res.data.Host;
+        $scope.signkey = res.data;
+    })
+    $scope.uploader1 = new FileUploader({
+        url: uploadUrl,
+        autoUpload: true
+    })
+    $scope.uploader2 = new FileUploader({
+        autoUpload: true,
+        url: uploadUrl
+    })
+    $scope.uploader1.onCompleteItem = function(fileItem, response, status, headers) {
+        $scope.postDetail.cardImgUrl1 = uploadUrl + '/' + $scope._key1;
+    }
+    $scope.uploader2.onCompleteItem = function(fileItem, response, status, headers) {
+        $scope.postDetail.cardImgUrl2 = uploadUrl + '/' + $scope._key2;
+    }
+    $scope.uploader1.onBeforeUploadItem = function(item) {
+        var key = buildKey(1, item.file.name);
+        item.formData.push({
+            key: key
+        });
+        _.each($scope.signkey, function(value, key) {
+            var temp = {};
+            temp[key] = value;
+            item.formData.push(temp);
+        });
+        $scope._key1 = key;
+    }
+    $scope.uploader2.onBeforeUploadItem = function(item) {
+        var key = buildKey(2, item.file.name)
+        item.formData.push({
+            key: key
+        })
+        _.each($scope.signkey, function(value, key) {
+            var temp = {}
+            temp[key] = value
+            item.formData.push(temp)
+        });
+        $scope._key2 = key
+    }
+    $scope.uploader1.onErrorItem = function() {
+        alert('上传失败!')
+    }
+    $scope.uploader2.onErrorItem = function() {
+        alert('上传失败!')
+    }
+    $scope.uploader1.filters.push({
+        name: 'customFilter',
+        fn: verifyImage
+    })
+    $scope.uploader2.filters.push({
+        name: 'customFilter',
+        fn: verifyImage
+    })
+
+    function buildKey(type, fileName) {
+        var randomFilename = ""
+
+        var get_suffix = function(filename) {
+            var suffix = ''
+            var pos = filename.lastIndexOf('.')
+
+            if (pos != -1) {
+                suffix = filename.substring(pos)
+            }
+            return suffix
+        };
+        var random_string = function(len) {
+            len = len || 32
+            var chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'
+            var maxPos = chars.length;
+            var pwd = ''
+            for (var i = 0; i < len; i++) {
+                pwd += chars.charAt(Math.floor(Math.random() * maxPos))
+            }
+            return pwd
+        }
+
+        var suffix = get_suffix(fileName);
+        var typMap = {
+            1: 'FileUploads/Order/CardID/',
+            2: 'FileUploads/Order/Contract/'
+        }
+        var nowstr = $filter('date')(new Date(), 'yyyyMM')
+        var g_object_name = typMap[type] + nowstr + '/' + random_string(10) + suffix
+        return g_object_name
+    }
+
+    function verifyImage(item, options) {
+        var reg = /^.*\.(?:png|jpg|bmp|gif|jpeg)$/
+        if (!reg.test(item.name.toLowerCase())) {
+            alert('请选择图片')
+            return false
+        }
+        return true
+    }
+    //日期
+    $scope.clear = function() { //清空
+        $scope.dt = null;
+    }
+    $scope.popup1 = {
+        opened: false
+    }
+    $scope.popup2 = {
+        opened: false
+    }
+    $scope.open1 = function() {
+        $scope.popup1.opened = true;
+    }
+    $scope.open2 = function() {
+        $scope.popup2.opened = true;
+    }
+
+    // tab2页卡内容
+    $scope.refreshData2 = function() {
+            alert('ssss')
+                // 点击页卡请求当前页卡数据内容
+            $scope.contractTab = [
+                { contractId: 'BJ-A00986', contractType: '2', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00' },
+                { contractId: 'BJ-A00986', contractType: '1', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00' },
+                { contractId: 'BJ-A00986', contractType: '2', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00' }
+            ]
+        }
+        // tab2分页功能开始
+        // $scope.tab2.paginator = {
+        //     total: 0,
+        //     currentPage: 1,
+        //     perPage: 15,
+        //     previousText: '上一页',
+        //     nextText: '下一页',
+        //     lastText: '最后一页',
+        //     firstText: '首页'
+        // }
+        // $scope.tab2.pageChanged = function () {
+        //     $scope.refreshData2()
+        // }
+        // $scope.tab2.setCurrentPage = function () {
+        //     $scope.tab2.currentPage = Math.abs(Math.floor($scope.tab2.currentPage)) || 1
+        //     $scope.tab2.paginator.currentPage = $scope.tab2.currentPage
+        //     $scope.refreshData2()
+        // }
+        // 分页功能结束
+}])

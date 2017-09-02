@@ -1,4 +1,4 @@
-angular.module('crmApp').controller('Order_outworker', ['$scope', '$http', '$state', '$uibModal', 'user', '$q',
+angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state', '$uibModal', 'user', '$q',
     function($scope, $http, $state, $uibModal, user, $q) {
         $scope.user = user.get();
         // console.log($scope.user)
@@ -22,11 +22,11 @@ angular.module('crmApp').controller('Order_outworker', ['$scope', '$http', '$sta
 
             var modalInstance = $uibModal.open({
                 templateUrl: 'views/order_outworker_detail.html',
-                controller: 'Order_outworkerDetail',
+                controller: 'Order_outworker_detail',
                 size: 'hg',
                 resolve: {
-                    taskId: function() {
-                        return item.Id
+                    item: function() {
+                        return item
                     }
                 }
             });
@@ -61,10 +61,61 @@ angular.module('crmApp').controller('Order_outworker', ['$scope', '$http', '$sta
             taskstatus: "",
             servicestatus: ""
         };
-        $scope.delete = function(item) {
+        $scope.cancel = function(item) {
             if (!confirm("确认要取消任务吗？")) return;
             $http.put('api/maintask/cancelstatus/' + item.Id).success(function(res) {
                 if (res.status) refreshData();
+            });
+        };
+        $scope.ifCheck = function(item) {
+            if (item.OutWorkerStatus == 1) {
+                return false
+            } else {
+                return true
+            }
+        }
+        $scope.isSub = function(item) {
+            if (!item.PartTax && item.OutWorkerStatus == 2) {
+                return false
+            }
+            if (item.PartTax && item.OutWorkerStatus == 2 && item.AccountantStatus == 5) {
+                return false
+            }
+            return true
+        }
+        $scope.check = function(item) {
+            if (!confirm("确认资料齐全？")) return;
+            var PartTax
+            if (!item.PartTax) {
+                PartTax = 0
+            } else {
+                PartTax = item.PartTax
+            }
+            $http.put('api/maintask/audit/pass/' + item.Id + '?partTax=' + PartTax).success(function(res) {
+                if (res.status) refreshData();
+            });
+        };
+        $scope.reject = function(item) {
+            if (!confirm("确认驳回？")) return;
+            $http.put('api/maintask/audit/reject/' + item.Id).success(function(res) {
+                if (res.status) refreshData();
+            });
+        };
+        $scope.sub = function(item) {
+            var modalInstance = $uibModal.open({
+                templateUrl: 'views/order_outworker_detail_sub.html',
+                controller: 'Order_outworkerDetail_sub',
+                size: '',
+                resolve: {
+                    item: function() {
+                        return item
+                    }
+                }
+            });
+            modalInstance.result.then(function(result) {
+                refreshData();
+            }, function() {
+
             });
         };
         //日期
@@ -448,15 +499,29 @@ angular.module('crmApp').controller('Order_outworker', ['$scope', '$http', '$sta
 
 
     }
-]).controller("Order_outworkerDetail", ['$scope', '$http', '$uibModalInstance', 'taskId', '$mdDialog', 'user', '$uibModal',
-    function($scope, $http, $uibModalInstance, taskId, $mdDialog, user, $uibModal) {
-        $scope.ifSub = false
+]).controller("Order_outworker_detail", ['$scope', '$http', '$uibModalInstance', 'item', '$mdDialog', 'user', '$uibModal',
+    function($scope, $http, $uibModalInstance, item, $mdDialog, user, $uibModal) {
+        $scope.isSub = function() {
+            if (!item.PartTax && item.OutWorkerStatus == 2) {
+                return false
+            }
+            if (item.PartTax && item.OutWorkerStatus == 2 && item.AccountantStatus == 5) {
+                return false
+            }
+            return true
+        }
+        var taskId = item.Id
+        $scope.ifSub = true
         $scope.customers = [];
         $scope.user = user.get();
         $scope.forwards = {
             forwardUserId: '0',
             isSelectAll: false
         };
+        $scope.dynamicPopover = {
+            content: item.Remark,
+            title: '备注'
+        }
         var count = 0
 
         function refreshData() {
@@ -480,6 +545,25 @@ angular.module('crmApp').controller('Order_outworker', ['$scope', '$http', '$sta
             }
             close();
         };
+        $scope.sub = function() {
+            var modalInstance = $uibModal.open({
+                templateUrl: 'views/order_outworker_detail_sub.html',
+                controller: 'Order_outworkerDetail_sub',
+                size: '',
+                resolve: {
+                    item: function() {
+                        return item
+                    }
+                }
+            });
+            modalInstance.result.then(function(result) {
+                close()
+                refreshData();
+            }, function() {
+
+            });
+
+        }
 
         function close() {
             if (count > 0) {
@@ -805,5 +889,21 @@ angular.module('crmApp').controller('Order_outworker', ['$scope', '$http', '$sta
                 $uibModalInstance.close($scope.Tasks);
             }
         }
+    }
+]).controller("Order_outworkerDetail_sub", ['$scope', '$http', '$uibModalInstance', 'item',
+    function($scope, $http, $uibModalInstance, item) {
+        $scope.close = function() {
+            $uibModalInstance.close();
+        }
+
+        $scope.sub = function() {
+            $http.put('/api/maintask/audit/submit/' + item.Id + '?partTax=' + $scope.partT + '&serviceStatus=' + item.ServiceStatus).success(function(res) {
+                $scope.close()
+            })
+        }
+        $scope.dis = function() {
+            return $scope.partT === undefined ? true : false
+        }
+        $scope.part = item.PartTax == 1 || item.PartTax == 2
     }
 ]);

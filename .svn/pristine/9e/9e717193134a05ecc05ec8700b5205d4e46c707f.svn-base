@@ -389,38 +389,10 @@ angular.module('crmApp').filter('filterAddValue', function() {
     }
     return companyType
 }).filter('formateDate', function() {
-  var date = function (date) {
-  return date.slice(0, 10)
-  }
-  return date
-}).filter('PayType', function() {
-  var payType = function (status) {
-    var str = ''
-    switch (+status) {
-      case 1:
-        str = '银行卡转账'
-        break;
-      case 2:
-        str = '拉卡拉'
-        break;
-      case 3:
-        str = '微信'
-        break;
-      case 4:
-        str = '支付宝'
-        break;
-      case 5:
-        str = '现金'
-        break;
+    var date = function(date) {
+        return date.slice(0, 10)
     }
-    return str
-  }
-  return payType
-}).filter('handdleAmount', function() {
-  var amount = function (amount) {
-  return '￥:' + amount
-  }
-  return amount
+    return date
 }).filter('mainTaskStatus', function() {
     var status = function(status) {
         var str = ''
@@ -513,64 +485,4 @@ angular.module('crmApp').filter('filterAddValue', function() {
         return str
     }
     return status
-}).filter('MainoutworkStatus', function() {
-    var mainoutworkStatus = function(status) {
-        var str = ''
-        switch (+status) {
-            case 1:
-                str = '待分配'
-                break;
-            case 2:
-                str = '待处理'
-                break;
-            case 3:
-                str = '进行时'
-                break;
-            case 4:
-                str = '已完成'
-                break;
-            case 5:
-                str = '已取消'
-                break;
-        }
-        return str
-    }
-    return mainoutworkStatus
-}).filter('ChildoutworkStatus', function() {
-    var childoutworkStatus = function(status) {
-        var str = ''
-        switch (+status) {
-            case 1:
-                str = '待分配'
-                break;
-            case 2:
-                str = '待处理'
-                break;
-            case 3:
-                str = '进行中'
-                break;
-            case 4:
-                str = '已取消'
-                break;
-            case 5:
-                str = '已完成'
-                break;
-        }
-        return str
-    }
-    return childoutworkStatus
-}).filter('HanddleOperation', function() {
-    var handdleOperation = function(status) {
-        var str = ''
-        switch (+status) {
-            case 1:
-                str = '标记'
-                break;
-            case 2:
-                str = '挂起'
-                break;
-        }
-        return str
-    }
-    return handdleOperation
-})
+});

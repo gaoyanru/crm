@@ -75,7 +75,7 @@ module.exports = function(grunt) {
             {
                 context: '/api/',
                 host: '123.56.31.133',
-                port: 8828,
+                port: 8818,
                 https: false,
                 changeOrigin: true
             },
@@ -89,7 +89,7 @@ module.exports = function(grunt) {
             {
                 context: '/FileUploads/',
                 host: '123.56.31.133',
-                port: 8828,
+                port: 8818,
                 https: false,
                 changeOrigin: true
 

@@ -831,7 +831,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       $scope.postDetail.Details = $scope.rlist
       $scope.postDetail.PayInfoList = $scope.paylist
       // 业务需要 ReceiveAmount =1
-      $scope.postDetail.ReceiveAmount = 1
+      // $scope.postDetail.ReceiveAmount = 1
       console.log($scope.postDetail)
       var url = '/api/contract/' + $scope.postDetail.OrderId
       $http.put(url, $scope.postDetail).success(function(res) {

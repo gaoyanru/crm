@@ -393,4 +393,32 @@ angular.module('crmApp').filter('filterAddValue', function() {
   return date.slice(0, 10)
   }
   return date
+}).filter('PayType', function() {
+  var payType = function (status) {
+    var str = ''
+    switch (+status) {
+      case 1:
+        str = '银行卡转账'
+        break;
+      case 2:
+        str = '拉卡拉'
+        break;
+      case 3:
+        str = '微信'
+        break;
+      case 4:
+        str = '支付宝'
+        break;
+      case 5:
+        str = '现金'
+        break;
+    }
+    return str
+  }
+  return payType
+}).filter('handdleAmount', function() {
+  var amount = function (amount) {
+  return '￥:' + amount
+  }
+  return amount
 })

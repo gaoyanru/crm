@@ -310,7 +310,8 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
     $scope.search.endtime = d2
   }
   // 日期功能结束
-}]).controller('MarkRefuse', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'signFrom', 'title', 'user', function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
+}]).controller('MarkRefuse', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'signFrom', 'title', 'user',
+function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   var users = users.get()
   console.log(users)
   console.log(signFrom, title, 'title')
@@ -351,6 +352,7 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
   $scope.industries = [] // 所属行业列表
   $scope.areas = [] // 所属区域列表
   $scope.contractTab = [] // 合同信息lsit页卡2
+  $scope.contractTab3 = [] // 合同信息lsit页卡3
 
   contract.serviceDateStart = new Date(contract.serviceDateStart)
   contract.serviceDateEnd = new Date(contract.serviceDateStart)
@@ -368,6 +370,15 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
     ]
   }
   getIndustries()
+  // 合同详情 页卡2 3及页卡2 3详情 都用原来老接口
+  function gettabmsg() {
+    var OrderId = 561
+    $http.get('/api/contractdetail/' + OrderId).success(function(res) {
+      console.log(res)
+      $scope.itemDetail23 = res.data
+    })
+  }
+  gettabmsg()
   // 获取所属区域列表信息
   function getAreas() {
     $scope.areas = [
@@ -520,24 +531,49 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
   // tab2页卡内容
   $scope.refreshData2 = function() {
     // 点击页卡请求当前页卡数据内容
+    // $scope.contractTab = $scope.itemDetail23
     $scope.contractTab = [
       {contractId: 'BJ-A00986', contractType: '2', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'},
       {contractId: 'BJ-A00986', contractType: '1', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'},
       {contractId: 'BJ-A00986', contractType: '2', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'}
     ]
   }
-  $scope.detail = function() {
+  $scope.detailTab2 = function(item) {
     // 弹框查看
+    var modalInstance = $uibModal.open({
+      templateUrl: 'views/signed_tab2_detail.html',
+      controller: 'Tab2Detail',
+      size: 'lg',
+      resolve: {
+        contractItem: function() {
+          return $scope.itemDetail23
+        }
+      }
+    })
+    modalInstance.result.then(function (result) {
+      $scope.refreshData2()
+    }, function () {
+
+    })
+    // item.OrderId = 561
+    // $http.get('/api/contractdetail/' + item.OrderId).success(function(res) {
+    //   console.log(res)
+    //   $scope.itemDetail2 = res.data
+    //
+    // })
   }
   $scope.stop = function(item) {
     // 根据返回状态判断是否是在服务器内 服务器过了就不能终止合同
     var modalInstance = $uibModal.open({
       templateUrl: 'views/contract_refuse.html',
-      controller: 'ContractRefuse',
+      controller: 'ContractRefuseSigned',
       size: "lg",
       resolve: {
         contractMsg: function() {
           return item
+        },
+        title: function() {
+          return '终止合同'
         }
       },
       backdrop: 'static'
@@ -550,6 +586,7 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
 
     });
   }
+
   // tab2分页功能开始
   // $scope.tab2.paginator = {
   //     total: 0,
@@ -569,4 +606,220 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
   //     $scope.refreshData2()
   // }
   // 分页功能结束
+
+  // tab3页卡内容
+  $scope.refreshData3 = function() {
+    console.log('ss')
+    // 点击页卡请求当前页卡数据内容
+    $scope.contractTab3 = [
+      {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1},
+      {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1},
+      {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1}
+    ]
+  }
+  $scope.detailTab3 = function(item) {
+    // 弹框查看
+    $http.get('api/contract/getmainitemlist').success(function(res) {
+      console.log(res, 'res')
+      if (res.status) {
+        $scope.projectItems = res.data
+        var modalInstance = $uibModal.open({
+          templateUrl: 'views/signed_tab3_detail.html',
+          controller: 'Tab3Detail',
+          size: 'hg',
+          resolve: {
+            contractItem: function() {
+              return $scope.itemDetail23
+            },
+            projectItems: function() {
+              return $scope.projectItems
+            }
+          }
+        })
+        modalInstance.result.then(function (result) {
+          $scope.refreshData3()
+        }, function () {
+
+        })
+      }
+    })
+  }
+
+  // tab3分页功能开始
+  // $scope.tab3.paginator = {
+  //     total: 0,
+  //     currentPage: 1,
+  //     perPage: 15,
+  //     previousText: '上一页',
+  //     nextText: '下一页',
+  //     lastText: '最后一页',
+  //     firstText: '首页'
+  // }
+  // $scope.tab3.pageChanged = function () {
+  //     $scope.refreshData2()
+  // }
+  // $scope.tab3.setCurrentPage = function () {
+  //     $scope.tab3.currentPage = Math.abs(Math.floor($scope.tab3.currentPage)) || 1
+  //     $scope.tab3.paginator.currentPage = $scope.tab3.currentPage
+  //     $scope.refreshData3()
+  // }
+  // 分页功能结束
+
+  // tab4页卡内容
+  $scope.refreshData4 = function() {
+    console.log('ss')
+    // 点击页卡请求当前页卡数据内容
+    // var customerId = $scope.postDetail.CustomerId
+    var customerId = '1201043653'
+    $http.get('/api/maintask/listforCustomerId/' + customerId).success(function(res) {
+      console.log(res)
+      if (res.status) {
+        $scope.contractTab4 = res.data
+      }
+    })
+    // $scope.contractTab4 = [
+    //   {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1},
+    //   {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1},
+    //   {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1}
+    // ]
+  }
+  $scope.detailTab4 = function(item) {
+    // 弹框查看
+    // $http.get('api/contract/getmainitemlist').success(function(res) {
+    //   console.log(res, 'res')
+    //   if (res.status) {
+    //     $scope.projectItems = res.data
+    //     var modalInstance = $uibModal.open({
+    //       templateUrl: 'views/signed_tab4_detail.html',
+    //       controller: 'Tab4Detail',
+    //       size: 'lg',
+    //       resolve: {
+    //         contractItem: function() {
+    //           return $scope.itemDetail23
+    //         },
+    //         projectItems: function() {
+    //           return $scope.projectItems
+    //         }
+    //       }
+    //     })
+    //     modalInstance.result.then(function (result) {
+    //       $scope.refreshData4()
+    //     }, function () {
+    //
+    //     })
+    //   }
+    // })
+  }
+
+  // tab4分页功能开始
+  // $scope.tab4.paginator = {
+  //     total: 0,
+  //     currentPage: 1,
+  //     perPage: 15,
+  //     previousText: '上一页',
+  //     nextText: '下一页',
+  //     lastText: '最后一页',
+  //     firstText: '首页'
+  // }
+  // $scope.tab3.pageChanged = function () {
+  //     $scope.refreshData4()
+  // }
+  // $scope.tab4.setCurrentPage = function () {
+  //     $scope.tab4.currentPage = Math.abs(Math.floor($scope.tab4.currentPage)) || 1
+  //     $scope.tab4.paginator.currentPage = $scope.tab4.currentPage
+  //     $scope.refreshData4()
+  // }
+  // 分页功能结束
+}]).controller('Tab2Detail',  ['$scope', '$http', '$uibModal', '$uibModalInstance', '$filter', 'user', 'contractItem', function($scope, $http, $uibModal, $uibModalInstance, $filter, UserServe, contractItem) {
+  console.log(contractItem, 'contractItem')
+  $scope.paylist = [{}]
+  $scope.postDetail = {}
+  $scope.canChange = true
+  $scope.postDetail = contractItem
+  $scope.postDetail.ContractDate = $scope.postDetail.ContractDate.slice(0, 10)
+  $scope.postDetail.ServiceStart = $scope.postDetail.ServiceStart.slice(0, 10)
+  $scope.postDetail.ServiceEnd = $scope.postDetail.ServiceEnd.slice(0, 10)
+  console.log($scope.postDetail.ContractDate)
+  for (var i in $scope.postDetail.PayInfoList) {
+    $scope.postDetail.PayInfoList[i].PayTypeId = $scope.postDetail.PayInfoList[i].PayTypeId + ''
+    $scope.postDetail.PayInfoList[i].PayTime = $scope.postDetail.PayInfoList[i].PayTime.slice(0, 10)
+  }
+  $scope.paylist = $scope.postDetail.PayInfoList
+
+  // 弹窗关闭
+  $scope.cancel = function () {
+    $uibModalInstance.dismiss()
+  }
+}]).controller('ContractRefuseSigned', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'title', 'user', function($scope, $http, $uibModalInstance, contract, title, users) {
+  var users = users.get()
+  console.log(users)
+  console.log(contract, 'contract')
+  $scope.postData = contract
+  $scope.title = title
+  $scope.Remark = ''
+  // $scope.save = function() {
+  //   if ($scope.Remark) {
+  //     var RealName = users.RealName
+  //     $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+  //   }
+  //   var post = {}
+  //   post.contractId = $scope.postData.OrderId
+  //   post.remark = $scope.postData.remark
+  //   post.auditVal = 1
+  //   $http.put('/api/contract/financeaudit', post).success(function(res) {
+  //     console.log(res)
+  //     if (res.status) {
+  //         $uibModalInstance.close();
+  //     }
+  //   })
+  // }
+  $scope.cancel = function() {
+    $uibModalInstance.dismiss('cancel');
+  }
+}]).controller('Tab3Detail',  ['$scope', '$http', '$uibModal', '$uibModalInstance', '$filter', 'user', 'contractItem', 'projectItems', function($scope, $http, $uibModal, $uibModalInstance, $filter, UserServe, contractItem, projectItems) {
+  console.log(contractItem, 'contractItem')
+  $scope.canChange = true
+  $scope.isChange = true
+  $scope.canSave = false // 编辑和保存按钮切换
+  $scope.rlist = [{}]
+  $scope.postDetail = {}
+
+  $scope.projectItems = projectItems
+  $scope.postDetail = contractItem
+  // 处理项目list
+  for (var i in $scope.postDetail.Details) {
+    $scope.postDetail.Details[i].MainItemId = $scope.postDetail.Details[i].MainItemId + ''
+    $scope.postDetail.Details[i].ChildItemId = $scope.postDetail.Details[i].ChildItemId + ''
+    var contractprojectChildOptions = []
+    for (var j in $scope.projectItems) {
+      console.log($scope.postDetail.Details[i].MainItemId == $scope.projectItems[j].Id)
+      if ($scope.postDetail.Details[i].MainItemId == $scope.projectItems[j].Id) {
+        $scope.postDetail.Details[i].contractprojectChildOptions = $scope.projectItems[j].Children
+      }
+    }
+  }
+  $scope.rlist = $scope.postDetail.Details
+
+  // 可编辑
+  $scope.canCompile = function() {
+    $scope.canChange = false
+    $scope.canSave = true
+  }
+  // 保存提交修改
+  $scope.ok = function() {
+    $scope.postDetail.Details = $scope.rlist
+    console.log($scope.postDetail)
+    var url = '/api/contract/' + $scope.postDetail.OrderId
+    $http.put(url, $scope.postDetail).success(function(res) {
+      console.log(res)
+      if (res.status) {
+        $uibModalInstance.close();
+        // $uibModalInstance.dismiss('cancel');
+      }
+    })
+  }
+  // 弹窗关闭
+  $scope.cancel = function () {
+    $uibModalInstance.dismiss()
+  }
 }])

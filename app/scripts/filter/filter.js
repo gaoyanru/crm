@@ -362,13 +362,13 @@ angular.module('crmApp').filter('filterAddValue', function() {
         var str = ''
         switch (+status) {
             case 1:
-                str = '高'
+                str = '低'
                 break;
             case 2:
                 str = '中'
                 break;
             case 3:
-                str = '低'
+                str = '高'
                 break;
         }
         return str

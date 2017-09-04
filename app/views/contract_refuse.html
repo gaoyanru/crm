@@ -6,9 +6,9 @@
     <form name="refuseform" novalidate class="form-inline">
       <div ng-if="sign" class="form-group" style="margin: 5px 10px 5px 10px;">
         <label>标签</label>：
-        <select ng-model="postData.tagStatus" class="form-control" ng-disabled="isEdit">
+        <select ng-model="postData.RemarkSignId" class="form-control" ng-disabled="isEdit">
           <option value="">请选择</option>
-          <option  ng-repeat="(key,value) in tags" value="{{key}}" ng-selected="postData.tagStatus == key">{{value}}</option>
+          <option  ng-repeat="(key,value) in tags" value="{{key}}" ng-selected="postData.RemarkSignId == key">{{value}}</option>
         </select>
       </div>
 	    <textarea cols="60" rows="3" ng-model="Remark" placeholder="请填写原因" ng-disabled="isEdit"></textarea>

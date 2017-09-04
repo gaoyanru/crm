@@ -1,0 +1,938 @@
+angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$state', '$uibModal', 'user', '$q',
+  function ($scope, $http, $state, $uibModal, user, $q) {
+    $scope.user = user.get()
+    $scope.itemDetail = {}
+    $scope.ContractStatus = { // 合同状态
+      1: "待审核",
+      2: "已审核",
+      3: "已驳回",
+      4: "终止合同"
+    }
+    $scope.ContractType = { // 合同类型
+      1: "新增",
+      2: "续费"
+    }
+    $scope.FinanceStatus = { // 财务审核
+      1: "待审核",
+      2: "已审核",
+      3: "已驳回"
+    }
+    $scope.contracts = [] // 合同列表
+    $scope.search = {
+      contractNo: '',
+      companyname: '',
+      contact: '',
+      saleName: '',
+      contractStatus: '0',
+      contractType: '0',
+      financeStatus : '0',
+      starttime: '',
+      endtime: ''
+    }
+    // 分页
+    $scope.paginator = {
+        total: 0,
+        currentPage: 1,
+        perPage: 15,
+        previousText: '上一页',
+        nextText: '下一页',
+        lastText: '最后一页',
+        firstText: '首页'
+    }
+    $scope.pageChanged = function () {
+        refreshData()
+    }
+    $scope.setCurrentPage = function () {
+        $scope.currentPage = Math.abs(Math.floor($scope.currentPage)) || 1
+        $scope.paginator.currentPage = $scope.currentPage
+        refreshData()
+    }
+    // 获取项目下拉选项
+    function getProjectItem() {
+      $http.get('api/contract/getmainitemlist').success(function(res) {
+        console.log(res, 'res')
+        $scope.projectItems = res.data
+      })
+    }
+    getProjectItem()
+    // 新增合同
+    $scope.open = function () {
+      var modalInstance = $uibModal.open({
+        templateUrl: 'views/order_contract_add.html',
+        controller: 'Order_contract_add',
+        backdrop: 'static',
+        size: 'hg',
+        resolve: {
+            contract: {}
+        }
+      })
+      modalInstance.result.then(function (result) {
+        refreshData()
+      }, function () {
+
+      })
+    }
+    // 合同查看
+    $scope.detail = function(item) {
+      console.log(item, '查看详情本行数据')
+      $http.get('/api/contractdetail/' + item.OrderId).success(function(res) {
+        console.log(res)
+        $scope.itemDetail = res.data
+        var modalInstance = $uibModal.open({
+          templateUrl: 'views/order_contract_detail.html',
+          controller: 'Order_contract_detail',
+          size: 'hg',
+          resolve: {
+              contractItem: function() {
+                return $scope.itemDetail
+              },
+              projectItems: function() {
+                return $scope.projectItems
+              }
+          }
+        })
+        modalInstance.result.then(function (result) {
+          refreshData()
+        }, function () {
+
+        })
+      })
+    }
+    // 合同删除
+    $scope.delete = function(item) {
+      if (!confirm("确认要删除此条记录吗？")) return
+      $http.delete('api/contract/' + item.OrderId).success(function (res) {
+        if (res.status) refreshData()
+      })
+    }
+    // 查询条件
+    $scope.searchFn = function () {
+      console.log($scope.search)
+      refreshData()
+    }
+    // 合同列表
+    function refreshData() {
+      var searchIt;
+      searchIt = $scope.search
+      var data = angular.extend({
+          offset: ($scope.paginator.currentPage - 1) * $scope.paginator.perPage,
+          limit: $scope.paginator.perPage
+      }, searchIt, data);
+      // console.log(data, '查询参数')
+      $http.get('api/contract?' + $.param(data)).success(function(res) {
+        // console.log(res, 'res')
+        $scope.paginator.total = res.data.total
+        $scope.contracts = res.data.list
+      })
+    }
+    refreshData()
+    //日期
+    $scope.clear = function () {
+        $scope.dt = null;
+    };
+    $scope.popup1 = {
+        opened: false
+    };
+    $scope.popup2 = {
+        opened: false
+    };
+    $scope.open1 = function () {
+        $scope.popup1.opened = true;
+    }
+    $scope.open2 = function () {
+        $scope.popup2.opened = true;
+    }
+    $scope.changeDate = function () {
+      var d1 = angular.element($("#date1"))[0].value
+      var d2 = angular.element($("#date2"))[0].value
+      if (d2) {
+          var _d1 = d1.replace(/-/ig, "")
+          var _d2 = d2.replace(/-/ig, "")
+          if ((_d2 - _d1) < 0) {
+              angular.element($("#date1"))[0].value = d2
+          }
+      }
+      $scope.search.starttime = d1
+      $scope.search.endtime = d2
+    }
+  }
+]).controller('Order_contract_add', ['$scope', '$http', '$uibModal', '$uibModalInstance', 'FileUploader', '$filter', 'user',
+  function ($scope, $http, $uibModal, $uibModalInstance, FileUploader, $filter, UserServe) {
+    var user = UserServe.get()
+    console.log('user')
+    $scope.postData = {}
+    $scope.areaSele = 0 // 选择用户列表
+    $scope.canChange = true // 是否可编辑客户基本信息
+    $scope.rlist = [{}]
+    $scope.paylist = [{}]
+    $scope.money = {}
+    $scope.customer = {}
+    $scope.PayImagePath = ''
+    $scope.uploader1 = []
+    $scope.imgIndex = 0
+    $scope.projectItems = []
+
+    $scope.contractType = { // 合同类型
+      1: "新增",
+      2: "续费"
+    }
+
+    $scope.payTypes = {
+      1: '银行卡转账',
+      2: '拉卡拉',
+      3: '微信',
+      4: '支付宝',
+      5: '现金'
+    }
+    function getProjectItem() { // 获取项目下拉选项
+      $http.get('api/contract/getmainitemlist').success(function(res) {
+        console.log(res, 'res')
+        $scope.projectItems = res.data
+      })
+    }
+    getProjectItem()
+
+    $scope.getcurProject = function (rg) {
+      console.log(rg.MainItemId)
+      rg.contractprojectChildren = {}
+      for (var i in $scope.projectItems) {
+        if (rg.MainItemId == $scope.projectItems[i].Id) {
+          rg.contractprojectChildren = $scope.projectItems[i].Children
+        }
+      }
+    }
+
+    $scope.geteveryAmount = function(rlist) {
+      // console.log(rlist)
+      var arr = [0, 0, 0, 0]
+      for (var i in rlist) {
+        if (rlist[i].MainItemId === '1') {
+          $scope.chargeAmount = arr[0] += rlist[i].Amount || 0
+        } else if (rlist[i].MainItemId === '2') {
+          $scope.financeAmount = arr[1] += rlist[i].Amount || 0
+        } else if (rlist[i].MainItemId === '3') {
+          $scope.outworkAmount = arr[2] += rlist[i].Amount || 0
+        } else if (rlist[i].MainItemId === '4') {
+          $scope.collectionAmount = arr[3] += rlist[i].Amount || 0
+        }
+      }
+      return arr
+    }
+
+    $scope.reduce = function(rlist) {
+      return rlist.reduce(function(r,t){
+        return r + (t.Amount||0);},0) || 0
+    }
+    // 图片上唇
+    var uploadUrl = 'https://pilipa.oss-cn-beijing.aliyuncs.com'
+    $http.get('/api/signkey').success(function (res) {
+        delete res.data.Filename
+        delete res.data.key
+        delete res.data.callback
+        delete res.data.expire
+        delete res.data.Host
+        $scope.signkey = res.data
+    })
+    $scope.imgClick = function (index) {
+      $scope.imgIndex = index
+    }
+    $scope.addClick= function (index) {
+      $scope.uploader1.push(addFileUploadInstance ())
+    }
+    $scope.uploader1[0] = addFileUploadInstance()
+    function addFileUploadInstance () {
+      var uploader1 = {}
+      uploader1 = new FileUploader({
+          autoUpload: true,
+          url: uploadUrl
+      })
+      uploader1.onErrorItem = uploadError
+      uploader1.onCompleteItem = function (fileItem, response, status, headers) {
+          // $scope.imgs.push(uploadUrl + '/' + item.key)
+          console.log(arguments)
+          $scope.PayImagePath = uploadUrl + '/' + $scope._key1
+          $scope.paylist[$scope.imgIndex].PayImagePath = $scope.PayImagePath
+      }
+
+      uploader1.onErrorItem = function () {
+          alert('上传失败')
+      }
+      uploader1.onBeforeUploadItem = function (item) {
+        //item.formData = [];
+        // debugger
+        var key = buildKey(1, item.file.name);
+        item.formData.push({
+            key: key
+        });
+        _.each($scope.signkey, function (value, key) {
+            var temp = {};
+            temp[key] = value;
+            item.formData.push(temp);
+        });
+        $scope._key1 = key;
+      };
+      uploader1.filters.push({
+        name: 'customFilter',
+        fn: function(item, options) {
+            var reg = /^.*\.(?:png|jpg|bmp|gif|jpeg)$/;
+            if (!reg.test(item.name.toLowerCase())) {
+                alert('请选择图片')
+                return false
+            }
+            return true
+        }
+      })
+      return uploader1;
+    }
+    function buildKey(type, fileName) {
+      var randomFilename = ""
+      var get_suffix = function (filename) {
+        var suffix = ''
+        var pos = filename.lastIndexOf('.')
+
+        if (pos != -1) {
+            suffix = filename.substring(pos)
+        }
+        return suffix
+      }
+      var random_string = function (len) {
+        len = len || 32
+        var chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'
+        var maxPos = chars.length
+        var pwd = ''
+        for (var i = 0; i < len; i++) {
+            pwd += chars.charAt(Math.floor(Math.random() * maxPos))
+        }
+        return pwd
+      }
+      var suffix = get_suffix(fileName)
+      var typMap = 'FileUploads/pay/'
+      var nowstr = $filter('date')(new Date(), 'yyyyMM')
+      var g_object_name = typMap + nowstr + '/' + random_string(10) + suffix
+      return g_object_name
+    }
+    function uploadError(item) {
+      alert('上传失败!')
+    }
+
+    // $scope.add0 = function (m) {
+    //   return m<10?'0'+m:m
+    // }
+    //
+    // $scope.formateDate = function (time) {
+    //   time = new Date(time);
+    //   var y = time.getFullYear();
+    //   var m = time.getMonth()+1;
+    //   var d = time.getDate();
+    //   return y+'-'+$scope.add0(m)+'-'+$scope.add0(d)
+    // }
+
+    $scope.ok = function (ev) {
+      if (!$scope.customer.CompanyName) {
+        alert('请选择甲方！')
+        return
+      }
+      if (!$scope.customer.Connector) {
+        alert('请填写联系人！')
+        return
+      }
+      if (!$scope.customer.Mobile) {
+        alert('请填写联系人电话！')
+        return
+      }
+      if (!$scope.postData.ContractNo) {
+        alert('请填写合同编号！')
+        return
+      }
+      if (!$scope.postData.OrderType) {
+        alert('请选择合同类型！')
+        return
+      }
+      if (!$scope.postData.ContractDate) {
+        alert('请填写签订日期！')
+        return
+      }
+      // 验证项目
+      for (var i in $scope.rlist) {
+        if (!$scope.rlist[i].MainItemId) {
+          alert('请选择项目！')
+          return
+        } else if (!$scope.rlist[i].ChildItemId && ($scope.rlist[i].MainItemId !=3)) {
+          alert('请选择子项目！')
+          return
+        } else if ($scope.rlist[i].Amount < 0) {
+          alert('项目费用必须是大于0的数！')
+          return
+        }
+      }
+      // 验证支付方式
+      for (var i in $scope.paylist) {
+        if (!$scope.paylist[i].PayTypeId) {
+          alert('请选择支付方式！')
+          return
+        } else if (!$scope.paylist[i].PayAccountNo && ($scope.paylist[i].PayTypeId != 5)) {
+          alert('请填写支付方账号！')
+          return
+        } else if (!$scope.paylist[i].PayTime && ($scope.paylist[i].PayTypeId != 5)) {
+          alert('请选择支付时间！')
+          return
+        } else if (!$scope.paylist[i].PayImagePath && ($scope.paylist[i].PayTypeId != 5)) {
+          alert('请上传支付凭证！')
+          return
+        }
+      }
+      // 过滤时间
+      // if ($scope.postData.signTime) {
+      //   $scope.postData.signTime = $scope.formateDate($scope.postData.signTime)
+      // }
+      // for (let i in $scope.paylist) {
+      //   $scope.paylist[i].time = $scope.formateDate($scope.paylist[i].time)
+      // }
+      var a = $scope.chargeAmount || 0
+      var b = $scope.financeAmount || 0
+      var c = $scope.outworkAmount || 0
+      var d = $scope.collectionAmount || 0
+      console.log(a, b, c, d)
+      $scope.postData.Amount = a + b + c + d
+      console.log($scope.postData.Amount)
+      var RealName = user.RealName
+      if ($scope.postData.Remark) {
+        $scope.postData.Remark = $scope.postData.Remark  + '{' + RealName + '}'
+      }
+      // 出现提交多余字段传给后台情况 所以重新赋值下 及 把用户CustomerId传给后台
+      $scope.postData.CompanyName = $scope.customer.CompanyName || ''
+      $scope.postData.Connector = $scope.customer.Connector || ''
+      $scope.postData.Mobile = $scope.customer.Mobile || ''
+      $scope.postData.SaleName = $scope.customer.SaleName || ''
+      $scope.postData.SalesId =  $scope.customer.SalesId || ''
+      $scope.postData.CustomerId = $scope.customer.Id
+      // 新建合同时候 需要传递合同 OrderId为0
+      $scope.postData.OrderId = 0
+      // 需要项目列表和支付列表添加两个字段 "Id":0,"OrderId":0 业务需要
+      for (var i in $scope.rlist) {
+        $scope.rlist[i].Id = 0
+        $scope.rlist[i].OrderId = 0
+        if(!$scope.rlist[i].Amount) {
+          $scope.rlist[i].Amount = 0
+        }
+      }
+      for (var i in $scope.paylist) {
+        $scope.paylist[i].Id = 0
+        $scope.paylist[i].OrderId = 0
+      }
+      // 提交给后台的时候 需要转化rlist paylist字段名是所需的
+      $scope.postData.details = $scope.rlist
+      $scope.postData.PayInfoList = $scope.paylist
+      console.log($scope.postData)
+      $http.post('/api/contract', $scope.postData).success(function(res) {
+        console.log(res)
+        if (res.status) {
+          $uibModalInstance.close();
+        }
+      })
+    }
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss()
+    }
+    // 选择用户列表
+    $scope.selectCustomer = function () {
+      var modalInstance = $uibModal.open({
+        templateUrl: 'views/Order_cusSelect.html',
+        controller: 'Order_cusSelect',
+        size: 'lg',
+      })
+      modalInstance.result.then(function (result) {
+        $scope.customer = result // 选择完的用户赋值给列表需要显示的地方
+        console.log(result, '读取用户数据')
+        $scope.canChange = false
+        if (result.AreaCode) {
+          $scope.areaSele = result.AreaCode
+        }
+      }, function () {
+
+      })
+    }
+    //
+    $scope.delete = function (index) {
+        $scope.rlist.splice(index, 1);
+    }
+    $scope.delete2 = function (index) {
+        $scope.uploader1.splice(index, 1);
+        $scope.paylist.splice(index, 1);
+    }
+    //日期
+    $scope.clear = function () { //清空
+        $scope.dt = null;
+    }
+    $scope.popup1 = {
+        opened: false
+    }
+    $scope.open1 = function () {
+        $scope.popup1.opened = true;
+    }
+  }
+]).controller('Order_contract_detail', ['$scope', '$http', '$uibModal', '$uibModalInstance', 'FileUploader','$filter', 'user', 'contractItem', 'projectItems',
+  function ($scope, $http, $uibModal, $uibModalInstance, FileUploader, $filter, UserServe, contractItem, projectItems) {
+    console.log(contractItem, 'contractItem')
+    console.log(projectItems, 'projectItems')
+    var user = UserServe.get()
+    $scope.user = UserServe.get()
+    $scope.canChange = true // 是否可编辑
+    // $scope.isEdit = false
+    $scope.canSave = false // 编辑按钮是否可以点
+    $scope.rlist = [{}]
+    $scope.paylist = [{}]
+    $scope.postDetail = {}
+    $scope.PayImagePath = ''
+    $scope.uploader1 = []
+    $scope.imgIndex = 0
+    $scope.canCheck = false // 可以审核
+    $scope.canStop = false // 可以终止
+    $scope.rlistMoney = {}
+    $scope.remark = ''
+    $scope.projectItems = projectItems
+
+    contractItem.ContractDate = new Date(contractItem.ContractDate)
+    $scope.postDetail = contractItem
+    $scope.postDetail.OrderType = $scope.postDetail.OrderType + ''
+    // 处理项目list
+    for (var i in $scope.postDetail.Details) {
+      $scope.postDetail.Details[i].MainItemId = $scope.postDetail.Details[i].MainItemId + ''
+      $scope.postDetail.Details[i].ChildItemId = $scope.postDetail.Details[i].ChildItemId + ''
+      var contractprojectChildOptions = []
+      for (var j in $scope.projectItems) {
+        console.log($scope.postDetail.Details[i].MainItemId == $scope.projectItems[j].Id)
+        if ($scope.postDetail.Details[i].MainItemId == $scope.projectItems[j].Id) {
+          $scope.postDetail.Details[i].contractprojectChildOptions = $scope.projectItems[j].Children
+        }
+      }
+    }
+    $scope.rlist = $scope.postDetail.Details
+
+    console.log( $scope.postDetail.Details)
+    console.log($scope.rlist)
+
+    // 处理支付方式list
+    for (var i in $scope.postDetail.PayInfoList) {
+      $scope.postDetail.PayInfoList[i].PayTypeId = $scope.postDetail.PayInfoList[i].PayTypeId + ''
+      $scope.postDetail.PayInfoList[i].PayTime = new Date($scope.postDetail.PayInfoList[i].PayTime)
+    }
+    $scope.paylist = $scope.postDetail.PayInfoList
+
+    $scope.payTypes = {
+      1: '银行卡转账',
+      2: '拉卡拉',
+      3: '微信',
+      4: '支付宝',
+      5: '现金'
+    }
+    $scope.contractType = { // 合同类型
+      1: "新增",
+      2: "续费"
+    }
+    // 修改当前项目对应子项目
+    $scope.getcurProject = function (index) {
+      console.log($scope.rlist[index], 'item')
+      $scope.rlist[index].ChildItemId = ''
+      var contractprojectChildOptions = {}
+      for (var i in $scope.projectItems) {
+        if ($scope.rlist[index].MainItemId == $scope.projectItems[i].Id) {
+          contractprojectChildOptions = $scope.projectItems[i].Children
+        }
+      }
+      $scope.rlist[index].contractprojectChildOptions = contractprojectChildOptions
+    }
+    // 计算各项费用
+    $scope.geteveryAmount = function(rlist) {
+      // console.log(rlist)
+      var arr = [0, 0, 0, 0]
+      for (var i in rlist) {
+        if (rlist[i].MainItemId === '1') {
+          arr[0] += rlist[i].Amount || 0
+        } else if (rlist[i].MainItemId === '2') {
+          arr[1] += rlist[i].Amount || 0
+        } else if (rlist[i].MainItemId === '3') {
+          arr[2] += rlist[i].Amount || 0
+        } else if (rlist[i].MainItemId === '4') {
+          arr[3] += rlist[i].Amount || 0
+        }
+      }
+      return arr
+    }
+    $scope.reduce = function(rlist) {
+      return rlist.reduce(function(r,t){
+        return r + (t.Amount||0);},0) || 0
+    }
+    // 支付list图片上传处理
+    $scope.canCompile = function() {
+      $scope.paylist.forEach(function(){
+          $scope.uploader1[arguments[1]] = addFileUploadInstance()
+      })
+      // $scope.isEdit = true
+      $scope.canChange = false
+      $scope.canSave = true
+    }
+
+    $scope.delete = function (index) {
+        $scope.rlist.splice(index, 1);
+    }
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss()
+    }
+    // 图片上唇
+    var uploadUrl = 'https://pilipa.oss-cn-beijing.aliyuncs.com'
+    $http.get('/api/signkey').success(function (res) {
+        delete res.data.Filename
+        delete res.data.key
+        delete res.data.callback
+        delete res.data.expire
+        delete res.data.Host
+        $scope.signkey = res.data
+    })
+    $scope.imgClick = function (index) {
+      $scope.imgIndex = index
+    }
+    $scope.addClick= function (index) {
+      $scope.uploader1.push(addFileUploadInstance ())
+    }
+    $scope.uploader1[0] = addFileUploadInstance()
+    function addFileUploadInstance () {
+      var uploader1 = {}
+      uploader1 = new FileUploader({
+          autoUpload: true,
+          url: uploadUrl
+      })
+      uploader1.onErrorItem = uploadError
+      uploader1.onCompleteItem = function (fileItem, response, status, headers) {
+          // $scope.imgs.push(uploadUrl + '/' + item.key)
+          console.log(arguments)
+          $scope.PayImagePath = uploadUrl + '/' + $scope._key1
+          $scope.paylist[$scope.imgIndex].PayImagePath = $scope.PayImagePath
+      }
+
+      uploader1.onErrorItem = function () {
+          alert('上传失败')
+      }
+      uploader1.onBeforeUploadItem = function (item) {
+        //item.formData = [];
+        // debugger
+        var key = buildKey(1, item.file.name);
+        item.formData.push({
+            key: key
+        });
+        _.each($scope.signkey, function (value, key) {
+            var temp = {};
+            temp[key] = value;
+            item.formData.push(temp);
+        });
+        $scope._key1 = key;
+      };
+      uploader1.filters.push({
+        name: 'customFilter',
+        fn: function(item, options) {
+            var reg = /^.*\.(?:png|jpg|bmp|gif|jpeg)$/;
+            if (!reg.test(item.name.toLowerCase())) {
+                alert('请选择图片')
+                return false
+            }
+            return true
+        }
+      })
+      return uploader1;
+    }
+    function buildKey(type, fileName) {
+      var randomFilename = ""
+      var get_suffix = function (filename) {
+        var suffix = ''
+        var pos = filename.lastIndexOf('.')
+
+        if (pos != -1) {
+            suffix = filename.substring(pos)
+        }
+        return suffix
+      }
+      var random_string = function (len) {
+        len = len || 32
+        var chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'
+        var maxPos = chars.length
+        var pwd = ''
+        for (var i = 0; i < len; i++) {
+            pwd += chars.charAt(Math.floor(Math.random() * maxPos))
+        }
+        return pwd
+      }
+      var suffix = get_suffix(fileName)
+      var typMap = 'FileUploads/pay/'
+      var nowstr = $filter('date')(new Date(), 'yyyyMM')
+      var g_object_name = typMap + nowstr + '/' + random_string(10) + suffix
+      return g_object_name
+    }
+    function uploadError(item) {
+      alert('上传失败!')
+    }
+    $scope.delete2 = function (index) {
+        $scope.uploader1.splice(index, 1);
+        $scope.paylist.splice(index, 1);
+    }
+    // $scope.add0 = function (m) {
+    //   return m<10?'0'+m:m
+    // }
+    //
+    // $scope.formateDate = function (time) {
+    //   time = new Date(time);
+    //   var y = time.getFullYear();
+    //   var m = time.getMonth()+1;
+    //   var d = time.getDate();
+    //   return y+'-'+$scope.add0(m)+'-'+$scope.add0(d)
+    // }
+    $scope.check = function () { // 审单人员审核
+      // 点击审核发送请求 成功后弹框关闭 刷新数据列表 合同状态变成已审核 财务状态变成待审核
+      console.log($scope.postDetail.OrderId)
+      var post = {}
+      post.contractId = $scope.postDetail.OrderId
+      post.remark = ''
+      post.auditVal = 0
+      var url = '/api/contract/audit'
+      $http.put(url, post).success(function(res) {
+        console.log(res)
+        if(res.status) {
+          $uibModalInstance.close()
+        }
+      })
+    }
+    $scope.refuse = function () { // 审单人员驳回
+      // 点击驳回 弹框写原因后发送请求 此时有原因把原因拼接到备注里 然后整体全部数据发给后台 返回成功后 合同状态变成已驳回 财务状态无
+      var modalInstance = $uibModal.open({
+          templateUrl: 'views/contract_refuse.html',
+          controller: 'ContractRefuse1',
+          size: "lg",
+          resolve: {
+              contractMsg: function() {
+                  return $scope.postDetail
+              }
+          },
+          backdrop: 'static'
+      })
+      modalInstance.result.then(function(result) {
+          $uibModalInstance.close()
+      }, function() {
+
+      });
+    }
+    $scope.ok = function (ev) {
+      if (!$scope.postDetail.CompanyName) {
+        alert('请填写甲方名字！')
+        return
+      }
+      if (!$scope.postDetail.Connector) {
+        alert('请填写联系人！')
+        return
+      }
+      if (!$scope.postDetail.Mobile) {
+        alert('请填写联系人电话！')
+        return
+      }
+      if (!$scope.postDetail.ContractNo) {
+        alert('请填写合同编号！')
+        return
+      }
+      if (!$scope.postDetail.OrderType) {
+        alert('请选择合同类型！')
+        return
+      }
+      if (!$scope.postDetail.ContractDate) {
+        alert('请填写签订日期！')
+        return
+      }
+      // 验证项目
+      for (var i in $scope.rlist) {
+        if (!$scope.rlist[i].MainItemId) {
+          alert('请选择项目！')
+          return
+        } else if (!$scope.rlist[i].ChildItemId && ($scope.rlist[i].MainItemId !=3)) {
+          alert('请选择子项目！')
+          return
+        } else if ($scope.rlist[i].Amount < 0) {
+          alert('项目费用必须是大于0的数！')
+          return
+        }
+      }
+      // 验证支付方式
+      for (var i in $scope.paylist) {
+        if (!$scope.paylist[i].PayTypeId) {
+          alert('请选择支付方式！')
+          return
+        } else if (!$scope.paylist[i].PayAccountNo && ($scope.paylist[i].PayTypeId != 5)) {
+          alert('请填写支付方账号！')
+          return
+        } else if (!$scope.paylist[i].PayTime && ($scope.paylist[i].PayTypeId != 5)) {
+          alert('请选择支付时间！')
+          return
+        } else if (!$scope.paylist[i].PayImagePath && ($scope.paylist[i].PayTypeId != 5)) {
+          alert('请上传支付凭证！')
+          return
+        }
+      }
+
+      // 时间
+      // if ($scope.postDetail.signTime) {
+      //   $scope.postDetail.signTime = $scope.formateDate($scope.postDetail.signTime)
+      // }
+      // for (let i in $scope.paylist) {
+      //   $scope.paylist[i].time = $scope.formateDate($scope.paylist[i].time)
+      // }
+
+      // 开始计算修改时候总金额
+      var arr = [0, 0, 0, 0]
+      for (var i in $scope.rlist) {
+        if ($scope.rlist[i].MainItemId === '1') {
+          $scope.chargeAmount = arr[0] += $scope.rlist[i].Amount || 0
+        } else if ($scope.rlist[i].MainItemId === '2') {
+          $scope.financeAmount = arr[1] += $scope.rlist[i].Amount || 0
+        } else if ($scope.rlist[i].MainItemId === '3') {
+          $scope.outworkAmount = arr[2] += $scope.rlist[i].Amount || 0
+        } else if ($scope.rlist[i].MainItemId === '4') {
+          $scope.collectionAmount = arr[3] += $scope.rlist[i].Amount || 0
+        }
+      }
+      var a = $scope.chargeAmount || 0
+      var b = $scope.financeAmount || 0
+      var c = $scope.outworkAmount || 0
+      var d = $scope.collectionAmount || 0
+      console.log(a, b, c, d)
+      $scope.postDetail.Amount = a + b + c + d
+      console.log($scope.postDetail.Amount)
+      // 结束计算修改时候总金额
+
+      // 备注打标签
+      var RealName = user.RealName
+      if ($scope.remark) {
+        $scope.remark = $scope.postDetail.Remark + $scope.remark  + '{' + RealName + '}'
+      }
+      console.log($scope.remark, RealName)
+      $scope.postDetail.Remark = $scope.remark
+      // 需要为新增的项目列表和支付列表添加两个字段 "Id":0,"OrderId":0 业务需要
+      for (var i in $scope.rlist) {
+        if (!$scope.rlist[i].Id) {
+          $scope.rlist[i].Id = 0
+          $scope.rlist[i].OrderId = 0
+        }
+        if(!$scope.rlist[i].Amount) {
+          $scope.rlist[i].Amount = 0
+        }
+      }
+      for (var i in $scope.paylist) {
+        if (!$scope.paylist[i].Id) {
+          $scope.paylist[i].Id = 0
+          $scope.paylist[i].OrderId = 0
+        }
+      }
+      // 提交给后台的时候 需要转化rlist paylist字段名是所需的
+      $scope.postDetail.Details = $scope.rlist
+      $scope.postDetail.PayInfoList = $scope.paylist
+      // 业务需要 ReceiveAmount =1
+      // $scope.postDetail.ReceiveAmount = 1
+      console.log($scope.postDetail)
+      var url = '/api/contract/' + $scope.postDetail.OrderId
+      $http.put(url, $scope.postDetail).success(function(res) {
+        console.log(res)
+        if (res.status) {
+          $uibModalInstance.close();
+          // $uibModalInstance.dismiss('cancel');
+        }
+      })
+    }
+    //日期
+    $scope.clear = function () { //清空
+        $scope.dt = null;
+    }
+    $scope.popup1 = {
+        opened: false
+    }
+    $scope.open1 = function () {
+        $scope.popup1.opened = true;
+    }
+  }
+]).controller('ContractRefuse1', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'user', function($scope, $http, $uibModalInstance, contract, users) {
+  var users = users.get()
+  console.log(users)
+  console.log(contract, 'contract')
+  $scope.postData = contract
+  $scope.Remark = ''
+  $scope.save = function() {
+    var RealName = users.RealName
+    if ($scope.Remark) {
+      $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+    }
+    var post = {}
+    post.contractId = $scope.postData.OrderId
+    post.Remark = $scope.postData.Remark
+    post.auditVal = 1
+    // console.log(post)
+    $http.put('/api/contract/audit', post).success(function(res) {
+      // console.log(res)
+        if (res.status) {
+            $uibModalInstance.close();
+        }
+    })
+  }
+  $scope.cancel = function() {
+    $uibModalInstance.dismiss('cancel');
+  }
+}]).controller("Order_cusSelect", ['$scope', '$http', '$uibModalInstance', function ($scope, $http, $uibModalInstance) {
+    $scope.search = {
+      CompanyName: ''
+    }
+    $scope.paginator = {
+      total: 0,
+      currentPage: 1,
+      perPage: 10,
+      previousText: '上一页',
+      nextText: '下一页',
+      lastText: '最后一页',
+      firstText: '首页'
+    }
+    $scope.searchParams = {
+      limit: 10,
+      offset: 0,
+      start: '',
+      end: '',
+      status: 0,
+      cusname: '',
+      cid: ''
+    }
+    $scope.pageChanged = function () {
+      refreshData()
+    }
+    //set current page
+    $scope.setCurrentPage = function () {
+      $scope.paginator.currentPage = $scope.currentPage;
+      refreshData()
+    }
+    $scope.searchItem = {
+      companyname: ''
+    };
+    $scope.search = function () {
+      $scope.searchItem.companyname = $scope.search.CompanyName;
+      refreshData()
+    }
+
+    function refreshData() {
+      var data = angular.extend({
+        offset: ($scope.paginator.currentPage - 1) * $scope.paginator.perPage,
+        limit: $scope.paginator.perPage
+      }, $scope.searchItem)
+      $http.get('/api/order/customer?' + $.param(data)).success(function (res) {
+        $scope.paginator.total = res.data.total
+        $scope.customers = res.data.list
+      })
+    }
+    refreshData()
+
+    $scope.select = function (item) {
+      $uibModalInstance.close(item);
+    }
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss();
+    }
+}])

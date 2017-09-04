@@ -201,16 +201,16 @@ angular.module('crmApp').controller('Finance_manageContract', ['$scope', '$http'
     if ($scope.paginator.total > 4000) {
       alert('总条数过多，请缩小查询范围')
     } else {
-      console.log(downItem.belongCompany,
-      downItem.contractId,
-      downItem.firstParty,
-      downItem.contacts,
-      downItem.salesId,
-      downItem.contractstatus,
-      downItem.contracttype,
-      downItem.accountstatus,
-      downItem.starttime,
-      downItem.endtime,)
+      // console.log(downItem.belongCompany,
+      // downItem.contractId,
+      // downItem.firstParty,
+      // downItem.contacts,
+      // downItem.salesId,
+      // downItem.contractstatus,
+      // downItem.contracttype,
+      // downItem.accountstatus,
+      // downItem.starttime,
+      // downItem.endtime,)
       // var url = `/api/download/getrechargedetails?starttime=${starttime || ''}&endtime=${endtime || ''}&channelname=${channelname || ''}&type=${type || 0}`
       // // console.log(url)
       // window.open(url)

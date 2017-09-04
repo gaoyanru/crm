@@ -1,0 +1,34 @@
+<div ng-if="title" class="modal-header">
+    <span class="close" ng-click="cancel()">&times;</span>
+    <h3 class="modal-title">{{title}}</h3>
+</div>
+<div class="modal-body clearfix">
+    <form name="refuseform" novalidate class="form-inline">
+      <div ng-if="sign" class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>标签</label>：
+        <select ng-model="postData.tagStatus" class="form-control" ng-disabled="isEdit">
+          <option value="">请选择</option>
+          <option  ng-repeat="(key,value) in tags" value="{{key}}" ng-selected="postData.tagStatus == key">{{value}}</option>
+        </select>
+      </div>
+	    <textarea cols="60" rows="3" ng-model="Remark" placeholder="请填写原因" ng-disabled="isEdit"></textarea>
+    </form>
+    <div class="clearfix" ng-if="isEdit">
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>动作</label>：
+        <span>{{postData.Operation | HanddleOperation}}</span>
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>操作人</label>：
+        <span>{{postData.OperatorId}}</span>
+      </div>
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <label>操作时间</label>：
+        <span>{{postData.OperationTime}}</span>
+      </div>
+    </div>
+</div>
+<div class="modal-footer" ng-if="!isEdit">
+  <button class="btn btn-warning" type="button" ng-click="cancel()">取消</button>
+  <button class="btn btn-primary" type="button" ng-click="save()">确认</button>
+</div>

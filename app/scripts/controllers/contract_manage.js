@@ -205,7 +205,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
     $scope.geteveryAmount = function(rlist) {
       // console.log(rlist)
       var arr = [0, 0, 0, 0]
-      for (let i in rlist) {
+      for (var i in rlist) {
         if (rlist[i].MainItemId === '1') {
           $scope.chargeAmount = arr[0] += rlist[i].Amount || 0
         } else if (rlist[i].MainItemId === '2') {
@@ -241,7 +241,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
     }
     $scope.uploader1[0] = addFileUploadInstance()
     function addFileUploadInstance () {
-      var uploader = {}
+      var uploader1 = {}
       uploader1 = new FileUploader({
           autoUpload: true,
           url: uploadUrl
@@ -546,7 +546,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
     $scope.geteveryAmount = function(rlist) {
       // console.log(rlist)
       var arr = [0, 0, 0, 0]
-      for (let i in rlist) {
+      for (var i in rlist) {
         if (rlist[i].MainItemId === '1') {
           arr[0] += rlist[i].Amount || 0
         } else if (rlist[i].MainItemId === '2') {
@@ -597,7 +597,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
     }
     $scope.uploader1[0] = addFileUploadInstance()
     function addFileUploadInstance () {
-      var uploader = {}
+      var uploader1 = {}
       uploader1 = new FileUploader({
           autoUpload: true,
           url: uploadUrl
@@ -784,7 +784,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
 
       // 开始计算修改时候总金额
       var arr = [0, 0, 0, 0]
-      for (let i in $scope.rlist) {
+      for (var i in $scope.rlist) {
         if ($scope.rlist[i].MainItemId === '1') {
           $scope.chargeAmount = arr[0] += $scope.rlist[i].Amount || 0
         } else if ($scope.rlist[i].MainItemId === '2') {

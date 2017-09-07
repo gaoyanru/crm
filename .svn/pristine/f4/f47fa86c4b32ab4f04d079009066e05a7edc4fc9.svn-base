@@ -108,10 +108,10 @@
           <!-- 点击标记 标记按钮不显示 显示取消 -->
           <button ng-if="!customer.RemarkSignId" class="btn btn-link" href="javascript:;" ng-click="mark(customer)">标记</button>
           <button ng-if="customer.RemarkSignId" class="btn btn-link" href="javascript:;" ng-click="cancelmark(customer)">取消</button>
-          <!-- 挂起：RemarkSuspendId有值显示取消 没值显示挂起；ServiceStatus==2可以点击 1 3的时候可以挂起-->
-          <button ng-if="customer.IfCancelHangup == 0 &&  !customer.RemarkSuspendId " class="btn btn-link" href="javascript:;" ng-click="gq(customer)" ng-disabled="customer.ServiceStatus == 2">挂起</button>
+          <!-- 挂起：判断可挂起条件会计审核状态审核后 当前时间在服务结束时间之内 -->
+          <!-- <button ng-if="customer.AccountantStatus == 2 && beforeServiceEnd" class="btn btn-link" href="javascript:;" ng-click="gq(customer)">挂起</button> -->
           <!-- 挂起取消：当前时间在服务结束时间之内 -->
-          <button ng-if="customer.IfCancelHangup == 0 &&  customer.RemarkSuspendId" class="btn btn-link" href="javascript:;" ng-click="cancelgq(customer)" ng-disabled="customer.ServiceStatus != 2">取消</button>
+          <!-- <button ng-if="beforeServiceEnd" class="btn btn-link" href="javascript:;" ng-click="cancelgq(customer)">取消</button> -->
         </td>
       </tr>
     </tbody>

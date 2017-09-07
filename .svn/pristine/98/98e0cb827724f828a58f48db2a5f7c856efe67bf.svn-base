@@ -17,8 +17,8 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
       // 查看详情
       $scope.detail = function(item) {
         // 点击请求接口返回 tab1信息 然后顶部公共部分需要从列表带过去
-        var customerId = item.CustomerId
-        // var customerId = '100017'
+        // var customerId = item.customerId
+        var customerId = '100017'
         $http.get('/api/customerdetail/' + customerId).success(function(res) {
           console.log(res)
           var data = res.data
@@ -481,7 +481,7 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
   $scope.refreshData2 = function() {
     // 点击页卡请求当前页卡数据内容
     $scope.contractTab = $scope.itemDetail23
-    var customerId = $scope.item.CustomerId
+    var customerId = $scope.item.customerId
     var searchIt = {}
     searchIt.customerId = customerId
     var data = angular.extend({
@@ -552,7 +552,7 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
   $scope.refreshData3 = function() {
     // 点击页卡请求当前页卡数据内容
     $scope.contractTab = $scope.itemDetail23
-    var customerId = $scope.item.CustomerId
+    var customerId = $scope.item.customerId
     var searchIt = {}
     searchIt.customerId = customerId
     var data = angular.extend({

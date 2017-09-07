@@ -157,12 +157,9 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
     });
   }
   // 取消挂起
-  $scope.cancelgq = function(item) {
-    var post = {}
-    post.CompanyId = item.CustomerId
-    post.SubsidiaryId = item.SubsidiaryId
-    post.Description = ''
-    $http.put('/api/order/expire/suspendcancel', post).success(function(res) {
+  $scope.cancelgq = function() {
+    var customerId = item.customerId
+    $http.put('/api/cancelcompanysign?customerId=' + customerId).success(function(res) {
       console.log(res)
       if(res.status) {
         refreshData()
@@ -279,7 +276,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   console.log(users)
   console.log(signFrom, title, 'title')
   console.log(contract, 'contract')
-  $scope.postData = angular.copy(contract)
+  $scope.postData = contract
   $scope.Remark = ''
   $scope.sign = signFrom // 区分挂起还是标记  标记true 挂起false
   $scope.title = title
@@ -290,14 +287,18 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   }
   // 挂起和标记公用一个页面 需要判断是挂起还是标记 发送不同请求
   $scope.save = function() {
+    if ($scope.Remark) {
+      var RealName = users.RealName
+      $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+    }
     var post = {}
     if (!$scope.sign) { // 挂起
-      post.CompanyId = $scope.postData.CustomerId
-      post.SubsidiaryId = $scope.postData.SubsidiaryId
-      post.Description = $scope.Remark
+      post.OrderId = $scope.postData.OrderId
+      post.CustomerId = $scope.postData.customerId
+      post.Remark = $scope.postData.Remark
 
       console.log(post)
-      var url = '/api/order/expire/suspend'
+      var url = '/api/suspentcontract'
       $http.put(url, post).success(function(res) {
         console.log(res)
         if(res.status) {
@@ -305,10 +306,6 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         }
       })
     } else if ($scope.sign) { // 标记
-      if ($scope.Remark) {
-        var RealName = users.RealName
-        $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
-      }
       post.CustomerId = $scope.postData.customerId
       post.SignVal = $scope.postData.RemarkSignId
       post.Remark = $scope.postData.Remark
@@ -345,9 +342,20 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   // contract.AreaCode = '110101'
   // contract.AddedValue = 1
   $scope.postDetail = contract
+  // 提交会计 提交外勤是否可点
+  $scope.isSubmitAccount = false
+  $scope.isSubmitOutwork = false
+  // 根据顶部公司信息里面的 会计审核状态和外勤审核状态 还有驳回来源 判断按钮是否可点
 
-  // DisableCommitAccount提交会计 DisableOutWorkCommitAccount提交外勤 1禁止 0可以提交
-  console.log($scope.item.DisableCommitAccount, $scope.item.DisableOutWorkCommitAccount, '提交会计外勤')
+  if ($scope.item.OutWorkerStatus == 3) { // 外勤状态驳回 则都可点
+    $scope.isSubmitAccount = false
+    $scope.isSubmitOutwork = false
+  }
+  if ($scope.item.AccountantStatus == 2) {
+    $scope.isSubmitAccount = false
+    $scope.isSubmitOutwork = false
+  }
+
   // 获取所属行业列表信息
   function getIndustries() {
     $http.get('/api/industry').success(function(res) {
@@ -386,26 +394,24 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
       backdrop: 'static'
     })
     modalInstance.result.then(function(result) {
-      // 成功时关闭弹窗刷新页面
-      $uibModalInstance.close()
-      // console.log(result, 'res')
-      // if (result.partT == 0) { // 资料齐全 两个按钮都禁止
-      //   $scope.isSubmitAccount = true
-      //   $scope.isSubmitOutwork = true
-      // } else { // 部分提交 判断有没有提交外勤 有的话两个都禁止 没有的话禁止会计 外勤不禁止
-      //   if (result) { //已经提交外勤
-      //     $scope.isSubmitAccount = true
-      //     $scope.isSubmitOutwork = true
-      //   } else { // 没有提交外勤 但是如果之前已经提交过外勤 这时候即使点取消 还是不能提交外勤
-      //     if ($scope.isSubmitOutwork) {
-      //       $scope.isSubmitAccount = true
-      //       $scope.isSubmitOutwork = true
-      //     } else {
-      //       $scope.isSubmitAccount = true
-      //       $scope.isSubmitOutwork = false
-      //     }
-      //   }
-      // }
+      console.log(result, 'res')
+      if (result.partT == 0) { // 资料齐全 两个按钮都禁止
+        $scope.isSubmitAccount = true
+        $scope.isSubmitOutwork = true
+      } else { // 部分提交 判断有没有提交外勤 有的话两个都禁止 没有的话禁止会计 外勤不禁止
+        if (result) { //已经提交外勤
+          $scope.isSubmitAccount = true
+          $scope.isSubmitOutwork = true
+        } else { // 没有提交外勤 但是如果之前已经提交过外勤 这时候即使点取消 还是不能提交外勤
+          if ($scope.isSubmitOutwork) {
+            $scope.isSubmitAccount = true
+            $scope.isSubmitOutwork = true
+          } else {
+            $scope.isSubmitAccount = true
+            $scope.isSubmitOutwork = false
+          }
+        }
+      }
       // 提交会计完成后操作 1.选择资料齐全提交 需要把两个按钮都禁止 2.部分提交需要弹窗选国地税报到外勤任务 如果不选需要禁止会计提交但是提交外勤可以点击 让他可以分配外勤任务 提交完成外勤任务后按钮不可点
 
     }, function() {
@@ -427,10 +433,12 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         }
     });
     modalInstance.result.then(function(result) {
-        // 成功时关闭弹窗刷新页面
-        $uibModalInstance.close()
+      console.log(result, '添加完外勤任务返回结果')
+      // 如果提交了外勤就 传给上一个弹框 两个按钮都不能点 如果每天提交或者提交失败 提交外勤按钮还能点
+      $scope.isSubmitOutwork = true
+        // $uibModalInstance.close()
     }, function(result) {
-
+      console.log(result, '点击取消时候传递的参数')
     })
   }
   // 弹框关闭
@@ -1047,8 +1055,8 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
   $scope.sign = signFrom
   $scope.title = title
   $scope.isEdit = sign
-  // $scope.postData.tagStatus = $scope.postData.Sign + ''// 标记高中低
-  // console.log($scope.postData.tagStatus)
+  $scope.postData.tagStatus = $scope.postData.Sign + ''// 标记高中低
+  console.log($scope.postData.tagStatus)
   $scope.Remark = $scope.postData.Content // 备注内容
   $scope.tags = {
     1: '低',
@@ -1074,9 +1082,8 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
         console.log(res, 'res')
         if(res.status) {
           console.log($scope.partT, '$scope.partT')
-          if ($scope.partT == 0) { // 资料齐全 提交完成后两个按钮都是禁止点击 弹框关闭刷新页面
-            // $uibModalInstance.close({partT:0})
-            $uibModalInstance.close()
+          if ($scope.partT == 0) { // 资料齐全 提交完成后两个按钮都是禁止点击 传给上一个弹框partT == 0 全部资料
+            $uibModalInstance.close({partT:0})
           } else if ($scope.partT != 0) { // 国地税报告 提交完成弹出选择外勤任务的弹框
             var modalInstance = $uibModal.open({
                 templateUrl: 'views/order_outworker_add.html',
@@ -1090,11 +1097,11 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
                 }
             });
             modalInstance.result.then(function(result) {
-              // console.log(result, '添加完外勤任务返回结果')
-                $uibModalInstance.close() // 添加外勤任务成功后关闭外勤任务弹框 同事关闭之前两个弹窗 刷新页面
+              console.log(result, '添加完外勤任务返回结果')
+                $uibModalInstance.close(res)
             }, function(result) {
-              // console.log(result, '第二个弹框接收是否提交外勤') // 如果没有选择外勤任务 也是关闭弹窗 不过此时外勤任务按钮可点
-              $uibModalInstance.close()
+              console.log(result, '第二个弹框接收是否提交外勤')
+              $uibModalInstance.close(result)
             })
           }
           // 根据选择国地税报到和外请任务确定按钮是否可点
@@ -1244,7 +1251,9 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
     function submit() {
       $http.post('/api/maintask', data).success(function(res) {
         if (res.status) {
-          $uibModalInstance.close();
+            // 需要传递是否提交了外请任务给上一个弹窗 判断提交外勤按钮是否可点
+            var isSubmitOutwork = true
+            $uibModalInstance.close(isSubmitOutwork);
         }
       });
     }
@@ -1283,8 +1292,29 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
     }
     $scope.cancel = function() {
       // 关闭弹框时候需要弹框提示 是否取消创建
-      if (!confirm("确认要取消任务吗？")) return
-      $uibModalInstance.dismiss()
+      var modalInstance = $uibModal.open({
+          templateUrl: 'views/sure.html',
+          controller: 'Sure',
+          size: 'sm',
+          backdrop: 'static',
+          resolve: {}
+      })
+      modalInstance.result.then(function(result) {
+        console.log(result, '添加完外勤任务返回结果')
+        // 确定不添加外勤任务 直接关闭弹窗
+        $uibModalInstance.dismiss(result)
+      }, function(result) {
+        // 点击取消继续停留在外请选择任务弹框
+        console.log(result, '点击取消时候传递的参数')
+      })
     }
   }
-])
+]).controller("Sure", ['$scope', '$http', '$uibModal', '$uibModalInstance', function($scope, $http, $uibModal, $uibModalInstance,) {
+  $scope.ok = function() {
+    var isSubmitOutwork = false
+    $uibModalInstance.close(isSubmitOutwork);
+  }
+  $scope.cancel = function() {
+    $uibModalInstance.dismiss()
+  }
+}])

@@ -157,12 +157,9 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
     });
   }
   // 取消挂起
-  $scope.cancelgq = function(item) {
-    var post = {}
-    post.CompanyId = item.CustomerId
-    post.SubsidiaryId = item.SubsidiaryId
-    post.Description = ''
-    $http.put('/api/order/expire/suspendcancel', post).success(function(res) {
+  $scope.cancelgq = function() {
+    var customerId = item.customerId
+    $http.put('/api/cancelcompanysign?customerId=' + customerId).success(function(res) {
       console.log(res)
       if(res.status) {
         refreshData()
@@ -279,7 +276,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   console.log(users)
   console.log(signFrom, title, 'title')
   console.log(contract, 'contract')
-  $scope.postData = angular.copy(contract)
+  $scope.postData = contract
   $scope.Remark = ''
   $scope.sign = signFrom // 区分挂起还是标记  标记true 挂起false
   $scope.title = title
@@ -290,14 +287,18 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   }
   // 挂起和标记公用一个页面 需要判断是挂起还是标记 发送不同请求
   $scope.save = function() {
+    if ($scope.Remark) {
+      var RealName = users.RealName
+      $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+    }
     var post = {}
     if (!$scope.sign) { // 挂起
-      post.CompanyId = $scope.postData.CustomerId
-      post.SubsidiaryId = $scope.postData.SubsidiaryId
-      post.Description = $scope.Remark
+      post.OrderId = $scope.postData.OrderId
+      post.CustomerId = $scope.postData.customerId
+      post.Remark = $scope.postData.Remark
 
       console.log(post)
-      var url = '/api/order/expire/suspend'
+      var url = '/api/suspentcontract'
       $http.put(url, post).success(function(res) {
         console.log(res)
         if(res.status) {
@@ -305,10 +306,6 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         }
       })
     } else if ($scope.sign) { // 标记
-      if ($scope.Remark) {
-        var RealName = users.RealName
-        $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
-      }
       post.CustomerId = $scope.postData.customerId
       post.SignVal = $scope.postData.RemarkSignId
       post.Remark = $scope.postData.Remark
@@ -1047,8 +1044,8 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
   $scope.sign = signFrom
   $scope.title = title
   $scope.isEdit = sign
-  // $scope.postData.tagStatus = $scope.postData.Sign + ''// 标记高中低
-  // console.log($scope.postData.tagStatus)
+  $scope.postData.tagStatus = $scope.postData.Sign + ''// 标记高中低
+  console.log($scope.postData.tagStatus)
   $scope.Remark = $scope.postData.Content // 备注内容
   $scope.tags = {
     1: '低',

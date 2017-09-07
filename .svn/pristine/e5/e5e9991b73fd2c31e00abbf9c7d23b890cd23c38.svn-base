@@ -58,8 +58,8 @@
       <button class="btn btn-primary" type="button" ng-click="rejected()" ng-disabled="item.AccountantStatus ==2 || item.AccountantStatus == 3">会计驳回</button>
     </div>
     <div ng-show="!isAccouting" class="con-header-right fr">
-      <button class="btn btn-primary mt10" type="button" ng-click="submitAccount()" ng-disabled="item.DisableCommitAccount == 1">审核提交会计</button>
-      <button class="btn btn-primary" type="button" ng-click="submitOutwork()" ng-disabled="item.DisableOutWorkCommitAccount == 1">审核提交外勤</button>
+      <button class="btn btn-primary mt10" type="button" ng-click="submitAccount()" ng-disabled="isSubmitAccount">审核提交会计</button>
+      <button class="btn btn-primary" type="button" ng-click="submitOutwork()" ng-disabled="isSubmitOutwork">审核提交外勤</button>
     </div>
   </div>
   <div class="content-tab">

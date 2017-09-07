@@ -89,52 +89,41 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
               }
               $scope.contracts[i].markBg = $scope.markBg
             }
-            console.log($scope.contracts)
-        })
+        });
+        console.log($scope.contracts)
+
     }
     refreshData()
-    // 挂起操作
+        // 挂起操作
     $scope.gq = function(item) {
-      var modalInstance = $uibModal.open({
-          templateUrl: 'views/contractend_refuse.html',
-          controller: 'MarkRefuseEnd',
-          resolve: {
-              contractMsg: function() {
-                  return item
-              },
-              signFrom: function() {
-                  return false
-              },
-              title: function() {
-                  return ''
-              }
-          },
-          backdrop: 'static'
-      })
-      modalInstance.result.then(function(result) {
-          refreshData()
-      }, function() {
+            var modalInstance = $uibModal.open({
+                templateUrl: 'views/contractend_refuse.html',
+                controller: 'MarkRefuse_end',
+                resolve: {
+                    contractMsg: function() {
+                        return item
+                    },
+                    signFrom: function() {
+                        return false
+                    },
+                    title: function() {
+                        return ''
+                    }
+                },
+                backdrop: 'static'
+            })
+            modalInstance.result.then(function(result) {
+                // 挂起后公司状态跟新为挂起
+                item.companystatus = 6
+            }, function() {
 
-      })
-    }
-    // 取消挂起
-    $scope.cancelgq = function(item) {
-      var post = {}
-      post.CompanyId = item.CustomerId
-      post.SubsidiaryId = item.SubsidiaryId
-      post.Description = ''
-      $http.put('/api/order/expire/suspendcancel', post).success(function(res) {
-        console.log(res)
-        if(res.status) {
-          refreshData()
+            });
         }
-      })
-    }
-    // 标记操作
+        // 标记操作
     $scope.mark = function(item) {
       var modalInstance = $uibModal.open({
           templateUrl: 'views/contractend_refuse.html',
-          controller: 'MarkRefuseEnd',
+          controller: 'MarkRefuse_end',
           resolve: {
               contractMsg: function() {
                   return item
@@ -149,20 +138,16 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
           backdrop: 'static'
       })
       modalInstance.result.then(function(result) {
-          refreshData()
+          // 挂起后公司状态跟新为挂起
+          item.companystatus = 6
       }, function() {
 
       });
     }
     // 取消标记
     $scope.cancelmark = function(item) {
-      var customerId = item.CustomerId
-      $http.put('/api/cancelcompanysign?customerId=' + customerId).success(function(res) {
-        console.log(res)
-        if(res.status) {
-          refreshData()
-        }
-      })
+      // 取消标记  点击发送请求 修改tagStatus值为空
+      item.tagStatus = ''
     }
     // 查看详情
     $scope.detail = function(item) {
@@ -228,7 +213,7 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
       $scope.search.contractDateEnd = d2
   }
   // 日期功能结束
-}]).controller('MarkRefuseEnd', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'signFrom', 'title', 'user', function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
+}]).controller('MarkRefuse_end', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'signFrom', 'title', 'user', function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   var users = users.get()
   console.log(users)
   console.log(signFrom, title, 'title')
@@ -237,7 +222,6 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
   $scope.Remark = ''
   $scope.sign = signFrom // 区分挂起还是标记  标记true 挂起false
   $scope.title = title
-  $scope.RemarkSignId = $scope.postData.RemarkSignId
   $scope.tags = {
     1: '低',
     2: '中',
@@ -245,15 +229,19 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
   }
   // 挂起和标记公用一个页面 需要判断是挂起还是标记 发送不同请求
   $scope.save = function() {
+    if ($scope.Remark) {
+      var RealName = users.RealName
+      $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+    }
     var post = {}
     if (!$scope.sign) { // 挂起杨城接口
       console.log($scope.postData)
-      post.CompanyId = $scope.postData.CustomerId
-      post.SubsidiaryId = $scope.postData.SubsidiaryId
-      post.Description = $scope.Remark
+      post.OrderId = $scope.postData.OrderId
+      post.CustomerId = $scope.postData.customerId
+      post.Remark = $scope.postData.Remark
 
       console.log(post)
-      var url = '/api/order/expire/suspend'
+      var url = '/api/suspentcontract'
       $http.put(url, post).success(function(res) {
         console.log(res)
         if(res.status) {
@@ -261,14 +249,10 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
         }
       })
     } else if ($scope.sign) { // 标记陈凯接口
-      if ($scope.Remark) {
-        var RealName = users.RealName
-        $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
-      }
-      console.log($scope.postData.RemarkSignId)
-      post.CustomerId = $scope.postData.CustomerId
-      post.SignVal = 2
+      post.CustomerId = $scope.postData.customerId
+      post.SignVal = $scope.postData.RemarkSignId
       post.Remark = $scope.postData.Remark
+      console.log(post)
       var url = '/api/companySign'
       $http.put(url, post).success(function(res) {
         console.log(res)

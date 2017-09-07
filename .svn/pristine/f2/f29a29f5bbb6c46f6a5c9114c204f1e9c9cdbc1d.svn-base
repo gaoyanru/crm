@@ -157,12 +157,9 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
     });
   }
   // 取消挂起
-  $scope.cancelgq = function(item) {
-    var post = {}
-    post.CompanyId = item.CustomerId
-    post.SubsidiaryId = item.SubsidiaryId
-    post.Description = ''
-    $http.put('/api/order/expire/suspendcancel', post).success(function(res) {
+  $scope.cancelgq = function() {
+    var customerId = item.customerId
+    $http.put('/api/cancelcompanysign?customerId=' + customerId).success(function(res) {
       console.log(res)
       if(res.status) {
         refreshData()
@@ -292,12 +289,12 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   $scope.save = function() {
     var post = {}
     if (!$scope.sign) { // 挂起
-      post.CompanyId = $scope.postData.CustomerId
-      post.SubsidiaryId = $scope.postData.SubsidiaryId
-      post.Description = $scope.Remark
+      post.OrderId = $scope.postData.OrderId
+      post.CustomerId = $scope.postData.customerId
+      post.Remark = $scope.postData.Remark
 
       console.log(post)
-      var url = '/api/order/expire/suspend'
+      var url = '/api/suspentcontract'
       $http.put(url, post).success(function(res) {
         console.log(res)
         if(res.status) {

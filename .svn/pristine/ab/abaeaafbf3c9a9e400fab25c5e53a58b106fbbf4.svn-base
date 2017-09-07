@@ -291,6 +291,52 @@ angular.module('crmApp').filter('filterAddValue', function() {
         return str
     }
     return contracttype
+}).filter('CustomerCompanyStatus', function() {
+    var companystatus = function(status) {
+        var str = ''
+        switch (+status) {
+            case 1:
+                str = '待分配'
+                break;
+            case 2:
+                str = '未开始'
+                break;
+            case 3:
+                str = '外勤服务'
+                break;
+            case 4:
+                str = '会计服务'
+                break;
+            case 5:
+                str = '外勤会计服务'
+                break;
+            case 6:
+                str = '挂起'
+                break;
+            case 7:
+                str = '已结束'
+                break;
+        }
+        return str
+    }
+    return companystatus
+}).filter('CustomerOutworkStatus', function() {
+    var customerOutworkStatus = function(status) {
+        var str = ''
+        switch (+status) {
+            case 1:
+                str = '待审核'
+                break;
+            case 2:
+                str = '已审核'
+                break;
+            case 3:
+                str = '已驳回'
+                break;
+        }
+        return str
+    }
+    return customerOutworkStatus
 }).filter('CustomeraccountStatus', function() {
     var customeraccountStatus = function(status) {
         var str = ''
@@ -427,6 +473,32 @@ angular.module('crmApp').filter('filterAddValue', function() {
         return str
     }
     return status
+}).filter('ACauditStatus', function() {
+    var status = function(status) {
+        var str = ''
+        switch (+status) {
+            case 1:
+                str = '待审核'
+                break;
+            case 2:
+                str = '已审核'
+                break;
+            case 3:
+                str = '已驳回'
+                break;
+            case 4:
+                str = '外勤提交'
+                break;
+            case 5:
+                str = '部分审核'
+                break;
+            case 6:
+                str = '已提交'
+                break;
+        }
+        return str
+    }
+    return status
 }).filter('partTax', function() {
     var status = function(status) {
         var str = ''
@@ -501,79 +573,4 @@ angular.module('crmApp').filter('filterAddValue', function() {
         return str
     }
     return handdleOperation
-}).filter('NewAgentStatus', function() { // 报税状态
-    var newAgentStatus = function(status) {
-        var str = ''
-        switch (+status) {
-            case 1:
-                str = '未开始'
-                break;
-            case 2:
-                str = '挂起'
-                break;
-            case 3:
-                str = '服务中'
-                break;
-        }
-        return str
-    }
-    return newAgentStatus
-}).filter('NewServiceStatus', function() { // 服务状态
-    var newServiceStatus = function(status) {
-        var str = ''
-        switch (+status) {
-            case 1:
-                str = '等待分配'
-                break;
-            case 2:
-                str = '未开始'
-                break;
-            case 3:
-                str = '外勤服务'
-                break;
-            case 4:
-                str = '外勤会计服务'
-                break;
-            case 5:
-                str = '会计服务'
-                break;
-            case 7:
-                str = '结束'
-                break;
-            case 8:
-                str = '中止'
-                break;
-        }
-        return str
-    }
-    return newServiceStatus
-}).filter('NewCheckStatus', function() { // 审核状态 会计和外勤
-    var newCheckStatus = function(status) {
-        var str = ''
-        switch (+status) {
-            case 1:
-                str = '待审核'
-                break;
-            case 2:
-                str = '已审核'
-                break;
-            case 3:
-                str = '已驳回'
-                break;
-            case 4:
-                str = '外勤提交'
-                break;
-            case 5:
-                str = '部分审核'
-                break;
-            case 7:
-                str = '已提交'
-                break;
-            case 8:
-                str = '已结束'
-                break;
-        }
-        return str
-    }
-    return newCheckStatus
 })

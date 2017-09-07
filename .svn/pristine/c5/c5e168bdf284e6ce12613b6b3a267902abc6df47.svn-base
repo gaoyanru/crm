@@ -79,8 +79,8 @@
         <tbody>
             <tr ng-repeat="contract in contracts">
               <td style="text-align:center;width: 140px;vertical-align: middle;">
-                <div ng-show="contract.RemarkSignId" class="mark-style fl" ng-style="{{contract.markBg}}">{{contract.RemarkSignId | CustomerMarkStyle}}</div>
-                <div class="fr">{{contract.SequenceNo}}</div>
+                <div ng-show="customer.RemarkSignId" class="mark-style fl" ng-style="{{customer.markBg}}">{{customer.RemarkSignId | CustomerMarkStyle}}</div>
+                <div class="fr">{{customer.SequenceNo}}</div>
               </td>
                 <td style="text-align:center">{{contract.CompanyName}}</td>
                 <td style="text-align:center">{{contract.AreaName}}</td>
@@ -93,14 +93,11 @@
                 <td style="text-align:center">{{contract.AgentStatus | NewAgentStatus}}</td>
                 <td style="text-align:center">{{contract.ServiceStatus | NewServiceStatus}}</td>
                 <td class="table-opt" style="text-align:center;width:200px">
-                  <button class="btn btn-link" href="javascript:;" ng-click="detail(contract)">查看</button>
-                  <!-- 标记RemarkSignId>0可以标记 =0可以取消 -->
-                  <button ng-if="!contract.RemarkSignId" class="btn btn-link" href="javascript:;" ng-click="mark(contract)">标记</button>
-                  <button ng-if="contract.RemarkSignId" class="btn btn-link" href="javascript:;" ng-click="cancelmark(contract)">取消</button>
-                  <!-- 挂起：判断可挂起条件会计审核状态审核后 当前时间在服务结束时间之内 -->
-                  <button ng-if="!contract.RemarkSuspendId " class="btn btn-link" href="javascript:;" ng-click="gq(contract)" ng-disabled="!contract.IfCancelHangup">挂起</button>
-                  <!-- 挂起取消：当前时间在服务结束时间之内 -->
-                  <button ng-if="contract.RemarkSuspendId" class="btn btn-link" href="javascript:;" ng-click="cancelgq(contract)" ng-disabled="!contract.IfCancelHangup">取消</button>
+                    <button class="btn btn-link" href="javascript:;" ng-click="detail(contract)">查看</button>
+                    <!-- 点击标记 标记按钮不显示 显示取消 -->
+                    <button ng-if="!contract.tagStatus" class="btn btn-link" href="javascript:;" ng-click="mark(contract)">标记</button>
+                    <button ng-if="contract.tagStatus" class="btn btn-link" href="javascript:;" ng-click="cancelmark(contract)">取消</button>
+                    <button class="btn btn-link" href="javascript:;" ng-click="gq(contract)">挂起</button>
                 </td>
             </tr>
         </tbody>

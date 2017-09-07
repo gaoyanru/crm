@@ -157,12 +157,9 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
     });
   }
   // 取消挂起
-  $scope.cancelgq = function(item) {
-    var post = {}
-    post.CompanyId = item.CustomerId
-    post.SubsidiaryId = item.SubsidiaryId
-    post.Description = ''
-    $http.put('/api/order/expire/suspendcancel', post).success(function(res) {
+  $scope.cancelgq = function() {
+    var customerId = item.customerId
+    $http.put('/api/cancelcompanysign?customerId=' + customerId).success(function(res) {
       console.log(res)
       if(res.status) {
         refreshData()
@@ -232,7 +229,7 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
           backdrop: 'static'
         })
         modalInstance.result.then(function(result) {
-          refreshData()
+
         }, function() {
 
         });
@@ -279,7 +276,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   console.log(users)
   console.log(signFrom, title, 'title')
   console.log(contract, 'contract')
-  $scope.postData = angular.copy(contract)
+  $scope.postData = contract
   $scope.Remark = ''
   $scope.sign = signFrom // 区分挂起还是标记  标记true 挂起false
   $scope.title = title
@@ -290,14 +287,18 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   }
   // 挂起和标记公用一个页面 需要判断是挂起还是标记 发送不同请求
   $scope.save = function() {
+    if ($scope.Remark) {
+      var RealName = users.RealName
+      $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+    }
     var post = {}
     if (!$scope.sign) { // 挂起
-      post.CompanyId = $scope.postData.CustomerId
-      post.SubsidiaryId = $scope.postData.SubsidiaryId
-      post.Description = $scope.Remark
+      post.OrderId = $scope.postData.OrderId
+      post.CustomerId = $scope.postData.customerId
+      post.Remark = $scope.postData.Remark
 
       console.log(post)
-      var url = '/api/order/expire/suspend'
+      var url = '/api/suspentcontract'
       $http.put(url, post).success(function(res) {
         console.log(res)
         if(res.status) {
@@ -305,10 +306,6 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         }
       })
     } else if ($scope.sign) { // 标记
-      if ($scope.Remark) {
-        var RealName = users.RealName
-        $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
-      }
       post.CustomerId = $scope.postData.customerId
       post.SignVal = $scope.postData.RemarkSignId
       post.Remark = $scope.postData.Remark
@@ -329,7 +326,6 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   var users = users.get()
   console.log(users)
   console.log(contract, 'contract')
-  $scope.isAccouting = false
   $scope.isEdit = true
   $scope.postDetail = {} // tab1内容
   $scope.item = item // 顶部公共信息 列表带过来
@@ -346,8 +342,6 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   // contract.AddedValue = 1
   $scope.postDetail = contract
 
-  // DisableCommitAccount提交会计 DisableOutWorkCommitAccount提交外勤 1禁止 0可以提交
-  console.log($scope.item.DisableCommitAccount, $scope.item.DisableOutWorkCommitAccount, '提交会计外勤')
   // 获取所属行业列表信息
   function getIndustries() {
     $http.get('/api/industry').success(function(res) {
@@ -360,7 +354,6 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   getIndustries()
   // 合同详情 页卡2 3及页卡2 3详情 都用原来老接口
   function gettabmsg() {
-    // var OrderId = $scope.item.OrderId
     var OrderId = 561
     $http.get('/api/contractdetail/' + OrderId).success(function(res) {
       console.log(res)
@@ -371,67 +364,11 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
 
   // 审核提交会计
   $scope.submitAccount = function() {
-    var post = {}
-    post.orderId = $scope.itemDetail23.OrderId
-    post.partTax = ''
-    var modalInstance = $uibModal.open({
-      templateUrl: 'views/order_outworker_detail_sub.html',
-      controller: 'SubmitAccount',
-      size: '',
-      resolve: {
-        post: function() { // 提交会计传递参数
-          return post
-        }
-      },
-      backdrop: 'static'
-    })
-    modalInstance.result.then(function(result) {
-      // 成功时关闭弹窗刷新页面
-      $uibModalInstance.close()
-      // console.log(result, 'res')
-      // if (result.partT == 0) { // 资料齐全 两个按钮都禁止
-      //   $scope.isSubmitAccount = true
-      //   $scope.isSubmitOutwork = true
-      // } else { // 部分提交 判断有没有提交外勤 有的话两个都禁止 没有的话禁止会计 外勤不禁止
-      //   if (result) { //已经提交外勤
-      //     $scope.isSubmitAccount = true
-      //     $scope.isSubmitOutwork = true
-      //   } else { // 没有提交外勤 但是如果之前已经提交过外勤 这时候即使点取消 还是不能提交外勤
-      //     if ($scope.isSubmitOutwork) {
-      //       $scope.isSubmitAccount = true
-      //       $scope.isSubmitOutwork = true
-      //     } else {
-      //       $scope.isSubmitAccount = true
-      //       $scope.isSubmitOutwork = false
-      //     }
-      //   }
-      // }
-      // 提交会计完成后操作 1.选择资料齐全提交 需要把两个按钮都禁止 2.部分提交需要弹窗选国地税报到外勤任务 如果不选需要禁止会计提交但是提交外勤可以点击 让他可以分配外勤任务 提交完成外勤任务后按钮不可点
-
-    }, function() {
-
-    });
+    alert('审核提交会计')
   }
   // 审核提交外勤
-  $scope.submitOutwork = function() {
-    // 提交外勤完毕后按钮禁止
-    var modalInstance = $uibModal.open({
-        templateUrl: 'views/order_outworker_add.html',
-        controller: 'Signed_outworker_add',
-        backdrop: 'static',
-        size: 'hg',
-        resolve: {
-            isShow: function () {
-              return true
-            }
-        }
-    });
-    modalInstance.result.then(function(result) {
-        // 成功时关闭弹窗刷新页面
-        $uibModalInstance.close()
-    }, function(result) {
-
-    })
+  $scope.submitOutwork =function() {
+    alert('审核提交外勤')
   }
   // 弹框关闭
   $scope.cancel = function() {
@@ -444,23 +381,16 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   // 编辑完成
   $scope.save = function() {
     // 保存提交后台信息 后变成不可编辑
-    if (!$scope.postDetail.Connector) {
-      alert ('请填写公司联系人')
-      return
-    }
-    if (!$scope.postDetail.Mobile) {
-      alert ('请联系人电话')
-      return
-    }
+
     var url = '/api/Customer/500?verify=1'
     if ($scope.postDetail.NoDeadLine) {
       $scope.postDetail.NoDeadLine = 1
     } else {
       $scope.postDetail.NoDeadLine = 0
     }
-    // console.log($scope.postDetail, '保存提交')
+    console.log($scope.postDetail, '保存提交')
     $http.put(url, $scope.postDetail).success(function(res) {
-      // console.log(res)
+      console.log(res)
       if(res.status) {
           $uibModalInstance.close()
       }
@@ -1047,8 +977,8 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
   $scope.sign = signFrom
   $scope.title = title
   $scope.isEdit = sign
-  // $scope.postData.tagStatus = $scope.postData.Sign + ''// 标记高中低
-  // console.log($scope.postData.tagStatus)
+  $scope.postData.tagStatus = $scope.postData.Sign + ''// 标记高中低
+  console.log($scope.postData.tagStatus)
   $scope.Remark = $scope.postData.Content // 备注内容
   $scope.tags = {
     1: '低',
@@ -1059,232 +989,4 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
   $scope.cancel = function() {
     $uibModalInstance.dismiss('cancel');
   }
-}]).controller('SubmitAccount', ['$scope', '$http', '$uibModal', '$uibModalInstance', 'post', function($scope, $http, $uibModal, $uibModalInstance, post) {
-  console.log(post, 'post')
-  $scope.postData = post
-  $scope.title = '提交会计'
-  $scope.partT = '' // 存放提交给后台选择类型 0全部1国税2地税
-
-  // 提交
-  $scope.sub = function() {
-    if (!$scope.partT) {
-      alert('国税地税报道必须选一个')
-    } else {
-      $http.put('/api/order/audit/toaccountant/' + $scope.postData.orderId + '/?partTax=' + $scope.partT ).success(function(res) {
-        console.log(res, 'res')
-        if(res.status) {
-          console.log($scope.partT, '$scope.partT')
-          if ($scope.partT == 0) { // 资料齐全 提交完成后两个按钮都是禁止点击 弹框关闭刷新页面
-            // $uibModalInstance.close({partT:0})
-            $uibModalInstance.close()
-          } else if ($scope.partT != 0) { // 国地税报告 提交完成弹出选择外勤任务的弹框
-            var modalInstance = $uibModal.open({
-                templateUrl: 'views/order_outworker_add.html',
-                controller: 'Signed_outworker_add',
-                backdrop: 'static',
-                size: 'hg',
-                resolve: {
-                    isShow: function () {
-                      return true
-                    }
-                }
-            });
-            modalInstance.result.then(function(result) {
-              // console.log(result, '添加完外勤任务返回结果')
-                $uibModalInstance.close() // 添加外勤任务成功后关闭外勤任务弹框 同事关闭之前两个弹窗 刷新页面
-            }, function(result) {
-              // console.log(result, '第二个弹框接收是否提交外勤') // 如果没有选择外勤任务 也是关闭弹窗 不过此时外勤任务按钮可点
-              $uibModalInstance.close()
-            })
-          }
-          // 根据选择国地税报到和外请任务确定按钮是否可点
-
-        }
-      })
-    }
-  }
-  $scope.close = function() {
-    $uibModalInstance.close()
-  }
-}]).controller("Signed_outworker_add", ['$scope', '$http', '$uibModal', '$uibModalInstance', 'isShow', 'user', function($scope, $http, $uibModal, $uibModalInstance, isShow, UserServe) {
-  var user = UserServe.get()
-  $scope.isShow = isShow // 是否显示选择公司 选择区域
-  $scope.title = "添加外勤任务"
-
-  $http.get('/api/mycity').success(function(res) {
-      $scope.city = res.data[0]
-  });
-  $http.get('/api/commontask').success(function(res) {
-    $scope.tasksArr = formatData(_.filter(res.data, {
-        Status: 1
-    }))
-  })
-  $scope.open1 = false;
-  $scope.open2 = false;
-  $scope.checkTB = function(tbItem) {
-    if (tbItem.checked) {
-      _.each($scope.tasksArr, function(item) {
-          if (tbItem.CommonTaskId !== item.CommonTaskId) item.checked = false;
-      })
-    }
-  }
-  $scope.tbIsDisable = function() {
-    return !!_.chain($scope.tasks).pluck('list').flatten().find({
-        selected: true
-    }).value()
-  }
-  $scope.otherIsDisable = function() {
-    return !!_.find($scope.tasksArr, {
-        checked: true
-    })
-  }
-
-  function formatData(data) {
-    var result = []
-    var last = {}
-    _.each(data, function(item) {
-        if (last.CommonTaskId !== item.CommonTaskId) {
-            last = _.pick(item, 'CommonTaskName', 'Status', 'CommonTaskId', 'CommonWeight')
-            last.TaskList = [_.pick(item, 'TaskName', 'OuterTaskId', 'Weight')]
-            result.push(last)
-        } else {
-            last.TaskList.push(_.pick(item, 'TaskName', 'OuterTaskId', 'Weight'))
-        }
-    })
-    return result
-  }
-
-  $scope.areaSele = 0
-  $scope.postData = {}
-
-  $scope.ok = function(ev) {
-    var tb = _.find($scope.tasksArr, {
-      checked: true
-    });
-    var data = {
-      // CustomerId: $scope.postData.Customer.Id,
-      // AreaCode: $scope.areaSele,
-      Remark: $scope.postData.Remark
-    };
-    var isOthers = false;
-    if (tb) { //
-      data.CommonTaskId = tb.CommonTaskId;
-      data.ChildTasks = _.map(tb.TaskList, function(item) {
-          var t = _.chain($scope.tasks).pluck('list').flatten().find({
-              Id: item.OuterTaskId
-          }).value();
-          var temp = _.pick(t, 'TaskName', 'Price', 'Weight', 'Remark');
-          temp.TaskId = item.OuterTaskId;
-          temp.Weight = item.Weight;
-          temp.CustomerId = data.CustomerId;
-          return temp;
-      });
-      data.MainTaskName = tb.CommonTaskName;
-    } else {
-        isOthers = true;
-        var subTasks = _.chain($scope.tasks).pluck('list').flatten().filter({
-            selected: true
-        }).map(function(item) {
-            // delete item.selected;
-            //item.MainTaskId =
-            return item;
-        }).value();
-        data.ChildTasks = _.map(subTasks, function(item) {
-            var temp = _.pick(item, 'TaskName', 'Price', 'Weight', 'Remark', 'selected');
-            temp.TaskId = item.Id;
-            temp.CustomerId = data.CustomerId;
-            return temp;
-        });
-        data.MainTaskName = "其他";
-        if (data.ChildTasks.length === 0) {
-            alert('请选择任务！');
-            return;
-        }
-      }
-      if (isOthers) {
-          var modalInstance = $uibModal.open({
-              templateUrl: 'views/outwork_weight_setting.html',
-              controller: 'outworkWeightSetting',
-              size: 'lg',
-              backdrop: 'static',
-              resolve: {
-                tasks: function() {
-                    return data.ChildTasks;
-                }
-              }
-          });
-
-          modalInstance.result.then(function(result) {
-            reSelect(result);
-            var tasks = _.map(_.filter(result, { selected: true }), function(t) {
-                t.Weight = t._weight;
-                delete t.selected;
-                return t;
-            });
-            data.ChildTasks = tasks;
-            submit()
-          }, function(result) {
-              reSelect(result);
-          });
-
-          function reSelect(result) {
-            _.chain($scope.tasks).pluck('list').flatten().filter(function(t) {
-              var temp = _.find(result, { TaskId: t.Id });
-              if (temp) {
-                  t.selected = temp.selected;
-              }
-              return !!temp;
-            }).value();
-          }
-
-      } else {
-          submit()
-      }
-
-    function submit() {
-      $http.post('/api/maintask', data).success(function(res) {
-        if (res.status) {
-          $uibModalInstance.close();
-        }
-      });
-    }
-  };
-  $http.get('/api/outertasksub?taskname=&BusinessType=&status=0&offset=0&limit=10000').success(function(res) {
-    var data = _.map(_.groupBy(_.filter(res.data.list, {
-        Status: 1
-    }), 'BusinessType'), function(val, key) {
-        var item = {
-            list: val
-        };
-        if (key == 1) {
-            item.Name = '税务';
-        } else if (key == 2) {
-            item.Name = '工商';
-        } else {
-            item.Name = '其他';
-        }
-        return item;
-    });
-
-    $scope.tasks = data;
-  });
-    // $http.get("/api/code/area").success(function(res) {
-    //     $scope.areaArr = res.data
-    // })
-    $scope.tbIsDisable = function() {
-        return !!_.chain($scope.tasks).pluck('list').flatten().find({
-            selected: true
-        }).value();
-    }
-    $scope.otherIsDisable = function() {
-        return !!_.find($scope.tasksArr, {
-            checked: true
-        });
-    }
-    $scope.cancel = function() {
-      // 关闭弹框时候需要弹框提示 是否取消创建
-      if (!confirm("确认要取消任务吗？")) return
-      $uibModalInstance.dismiss()
-    }
-  }
-])
+}])

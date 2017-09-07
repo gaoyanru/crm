@@ -1,0 +1,7 @@
+<div class="modal-body clearfix">
+    <div>外勤任务还未创建，确认取消创建？</div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-warning" type="button" ng-click="cancel()">取消</button>
+  <button class="btn btn-primary" type="button" ng-click="ok()">确认</button>
+</div>

@@ -118,12 +118,9 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
       })
     }
     // 取消挂起
-    $scope.cancelgq = function(item) {
-      var post = {}
-      post.CompanyId = item.CustomerId
-      post.SubsidiaryId = item.SubsidiaryId
-      post.Description = ''
-      $http.put('/api/order/expire/suspendcancel', post).success(function(res) {
+    $scope.cancelgq = function() {
+      var customerId = item.CustomerId
+      $http.put('/api/cancelcompanysign?customerId=' + customerId).success(function(res) {
         console.log(res)
         if(res.status) {
           refreshData()
@@ -248,12 +245,12 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
     var post = {}
     if (!$scope.sign) { // 挂起杨城接口
       console.log($scope.postData)
-      post.CompanyId = $scope.postData.CustomerId
-      post.SubsidiaryId = $scope.postData.SubsidiaryId
-      post.Description = $scope.Remark
+      post.OrderId = $scope.postData.OrderId
+      post.CustomerId = $scope.postData.customerId
+      post.Remark = $scope.postData.Remark
 
       console.log(post)
-      var url = '/api/order/expire/suspend'
+      var url = '/api/suspentcontract'
       $http.put(url, post).success(function(res) {
         console.log(res)
         if(res.status) {

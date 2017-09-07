@@ -37,7 +37,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             });
         };
 
-        $scope.taskStatus = { // 任务状态
+        $scope.taskStatus = {
             1: "待分配",
             2: "待处理",
             3: "进行中",
@@ -48,12 +48,12 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             delete $scope.taskStatus["1"];
         }
         $scope.search = {
-            SequenceNo: "",
+            Id: "",
             companyname: "",
             connector: "",
             taskname: "",
             childtaskname: "",
-            outworkId: "",
+            currOutworker: "",
             starttime: "",
             endtime: "",
             areacode: "",
@@ -67,6 +67,13 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
                 if (res.status) refreshData();
             });
         };
+        $scope.ifCheck = function(item) {
+            if (item.OutWorkerStatus == 1) {
+                return false
+            } else {
+                return true
+            }
+        }
         $scope.isSub = function(item) {
             if (!item.PartTax && item.OutWorkerStatus == 2) {
                 return false
@@ -76,7 +83,6 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             }
             return true
         }
-        // 审核提交
         $scope.check = function(item) {
             if (!confirm("确认资料齐全？")) return;
             var PartTax
@@ -228,18 +234,16 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             // return deferred.promise;
         }
         refreshData();
-        // 获取销售人员
         $http.get("/api/contract/sales").success(function(res) {
             $scope.users = res.data;
         });
-        // 获取外勤人员
         $http.get('api/outworkers').success(function(res) {
             $scope.outworkers = res.data.list;
         });
-        // 获取当前子任务
         $http.get('/api/commontask').success(function(res) {
-            $scope.Tasks = formatData(res.data);
-        })
+
+                $scope.Tasks = formatData(res.data);
+            })
             // $scope.taskchange = function () {
             //     if (!$scope.search.taskname) {
             //         return

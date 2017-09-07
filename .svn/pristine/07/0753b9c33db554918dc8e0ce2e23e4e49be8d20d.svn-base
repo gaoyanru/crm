@@ -65,7 +65,7 @@
           </tbody>
         </table>
         <div class="modal-footer">
-          <button ng-if="!canSave" class="btn btn-primary" type="button" ng-click="canCompile()" ng-disabled="isEdit">编辑</button>
+          <button ng-if="!canSave" class="btn btn-primary" type="button" ng-click="canCompile()">编辑</button>
           <button ng-if="canSave" class="btn btn-primary" type="button" ng-disabled="cusform.$invalid" ng-click="ok($event)">保存并提交</button>
         </div>
       </div>

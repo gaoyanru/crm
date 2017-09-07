@@ -3,11 +3,11 @@
         <form class="form-inline" style="position:relative;padding-right:150px">
             <div class="form-group" style="margin: 5px 10px 5px 10px;">
                 <label>序列ID</label>：
-                <input type="text" ng-model="search.SequenceNo" class="form-control">
+                <input type="text" ng-model="search.id" class="form-control">
             </div>
             <div class="form-group" style="margin: 5px 10px 5px 10px;">
                 <label>公司名称</label>：
-                <input type="text" ng-model="search.companyName" class="form-control">
+                <input type="text" ng-model="search.companyname" class="form-control">
             </div>
             <div class="form-group" style="margin: 5px 10px 5px 10px;">
                 <label>公司联系人</label>：
@@ -108,7 +108,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="customer in customers">
-                <td style="text-align:center">{{customer.SequenceNo}}</td>
+                <td style="text-align:center">{{customer.Id}}</td>
                 <td style="text-align:center">{{customer.CompanyName}}</td>
                 <td style="text-align:center">{{customer.AreaName}}</td>
                 <td style="text-align:center">{{customer.Connector}}</td>

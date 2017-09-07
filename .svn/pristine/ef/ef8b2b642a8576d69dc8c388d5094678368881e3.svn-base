@@ -80,8 +80,7 @@
           <th>公司联系人</th>
           <th>销售人员</th>
           <th>合同签订日期</th>
-          <th>报税状态</th>
-          <th>服务状态</th>
+          <th>公司状态</th>
           <th>外勤处理状态</th>
           <th>会计处理状态</th>
           <th>操作</th>
@@ -89,7 +88,7 @@
     </thead>
     <tbody>
       <tr ng-repeat="customer in customers">
-        <td style="text-align:center;width: 140px;vertical-align: middle;padding-left: 0px;">
+        <td style="text-align:center;width: 140px;vertical-align: middle;">
           <div ng-show="customer.RemarkSignId" class="mark-style fl" ng-style="{{customer.markBg}}">{{customer.RemarkSignId | CustomerMarkStyle}}</div>
           <div class="fr">{{customer.SequenceNo}}</div>
         </td>
@@ -99,19 +98,17 @@
         <td style="text-align:center">{{customer.Connector}}</td>
         <td style="text-align:center">{{customer.SaleName}}</td>
         <td style="text-align:center">{{customer.ContractDate}}</td>
-        <td style="text-align:center">{{customer.AgentStatus | NewAgentStatus}}</td>
-        <td style="text-align:center">{{customer.ServiceStatus | NewServiceStatus}}</td>
-        <td style="text-align:center">{{customer.OutWorkerStatus | NewCheckStatus}}</td>
-        <td style="text-align:center">{{customer.AccountantStatus | NewCheckStatus}}</td>
+        <td style="text-align:center">{{customer.ServiceStatus | CustomerCompanyStatus}}</td>
+        <td style="text-align:center">{{customer.OutWorkerStatus | CustomerOutworkStatus}}</td>
+        <td style="text-align:center">{{customer.AccountantStatus | CustomeraccountStatus}}</td>
         <td class="table-opt" style="text-align:center;width:200px">
           <button class="btn btn-link" href="javascript:;" ng-click="detail(customer)">查看</button>
           <!-- 点击标记 标记按钮不显示 显示取消 -->
           <button ng-if="!customer.RemarkSignId" class="btn btn-link" href="javascript:;" ng-click="mark(customer)">标记</button>
           <button ng-if="customer.RemarkSignId" class="btn btn-link" href="javascript:;" ng-click="cancelmark(customer)">取消</button>
-          <!-- 挂起：RemarkSuspendId有值显示取消 没值显示挂起；ServiceStatus==2可以点击 1 3的时候可以挂起-->
-          <button ng-if="customer.IfCancelHangup == 0 &&  !customer.RemarkSuspendId " class="btn btn-link" href="javascript:;" ng-click="gq(customer)" ng-disabled="customer.ServiceStatus == 2">挂起</button>
-          <!-- 挂起取消：当前时间在服务结束时间之内 -->
-          <button ng-if="customer.IfCancelHangup == 0 &&  customer.RemarkSuspendId" class="btn btn-link" href="javascript:;" ng-click="cancelgq(customer)" ng-disabled="customer.ServiceStatus != 2">取消</button>
+          <!-- 公司状态是6的时候已挂起 显示取消按钮 -->
+          <button ng-if="customer.ServiceStatus != 6" class="btn btn-link" href="javascript:;" ng-click="gq(customer)">挂起</button>
+          <button ng-if="customer.ServiceStatus == 6" class="btn btn-link" href="javascript:;" ng-click="cancelgq(customer)">取消</button>
         </td>
       </tr>
     </tbody>

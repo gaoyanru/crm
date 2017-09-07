@@ -7,59 +7,36 @@
     <form name="contractBelongform" novalidate class="con-header-left fl">
       <div class="form-group ml5">
         <label>序列ID</label>：
-        <!-- <input flex ng-model="item.SequenceNo" required readonly class="input-border"/> -->
-        <span class="detail-top">{{item.SequenceNo}}</span>
+        <input flex ng-model="item.SequenceNo" required readonly class="input-border"/>
       </div>
       <div class="form-group ml5">
         <label>公司名称</label>：
-        <!-- <input flex ng-model="item.CompanyName" required readonly class="input-border" style="width:200px"/> -->
-        <span class="detail-top">{{item.CompanyName}}</span>
+        <input flex ng-model="item.CompanyName" required readonly class="input-border" style="width:200px"/>
       </div>
       <div class="form-group ml5">
         <label>当前合同编号</label>：
-        <!-- <input flex ng-model="item.ContractNo" required readonly class="input-border"/> -->
-        <span class="detail-top">{{item.ContractNo}}</span>
+        <input flex ng-model="item.ContractNo" required readonly class="input-border"/>
       </div>
       <div class="form-group ml5">
         <label>当前服务日期</label>：
-        <span class="detail-top">{{item.ServiceStart | tDate}}</span>
-        <span>-</span>
-        <span class="detail-top">{{item.ServiceEnd | tDate}}</span>
-        <!-- <input flex ng-model="item.serviceDate" required readonly class="input-border"/> -->
+        <input flex ng-model="item.serviceDate" required readonly class="input-border"/>
       </div>
       <div class="form-group ml5">
-        <label>服务状态</label>：
-        <span class="detail-top">{{item.ServiceStatus | NewServiceStatus}}</span>
-        <!-- <input flex value="{{item.ServiceStatus | NewServiceStatus}}" required readonly class="input-border" style="width:100px"/> -->
+        <label>公司状态</label>：
+        <input flex value="{{item.ServiceStatus | CustomerCompanyStatus}}" required readonly class="input-border" style="width:100px"/>
       </div>
       <div class="form-group ml5">
         <label>外勤审核状态</label>：
-        <span class="detail-top">{{item.OutWorkerStatus | NewCheckStatus}}</span>
-        <!-- <input flex value="{{item.OutWorkerStatus | NewCheckStatus}}" required readonly class="input-border" style="width:100px"/> -->
-      </div>
-      <div ng-show="isAccouting" class="form-group ml5">
-        <label>部分报税</label>：
-        <span class="detail-top">{{item.PartTax | partTax}}</span>
-        <!-- <input flex value="{{item.PartTax | partTax}}" required readonly class="input-border" style="width:100px"/> -->
+        <input flex value="{{item.OutWorkerStatus | CustomerOutworkStatus}}" required readonly class="input-border" style="width:100px"/>
       </div>
       <div class="form-group ml5">
         <label>会计审核状态</label>：
-        <span class="detail-top">{{item.AccountantStatus | NewCheckStatus}}</span>
-        <!-- <input flex value="{{item.AccountantStatus | NewCheckStatus}}" required readonly class="input-border" style="width:100px"/> -->
-      </div>
-      <div ng-show="isAccouting" class="form-group ml5">
-        <label>来源</label>：
-        <span class="detail-top">{{item.AccountantTaskSource}}</span>
-        <!-- <input flex value="{{item.AccountantTaskSource}}" required readonly class="input-border" style="width:100px"/> -->
+        <input flex value="{{item.AccountantStatus | CustomeraccountStatus}}" required readonly class="input-border" style="width:100px"/>
       </div>
     </form>
-    <div ng-show="isAccouting" class="con-header-right fr" style="width:10%">
-      <button class="btn btn-primary mt10" type="button" ng-click="AccountCheck()" ng-disabled="item.AccountantStatus ==2 || item.AccountantStatus == 3">会计审核</button>
-      <button class="btn btn-primary" type="button" ng-click="rejected()" ng-disabled="item.AccountantStatus ==2 || item.AccountantStatus == 3">会计驳回</button>
-    </div>
-    <div ng-show="!isAccouting" class="con-header-right fr">
-      <button class="btn btn-primary mt10" type="button" ng-click="submitAccount()" ng-disabled="item.DisableCommitAccount == 1">审核提交会计</button>
-      <button class="btn btn-primary" type="button" ng-click="submitOutwork()" ng-disabled="item.DisableOutWorkCommitAccount == 1">审核提交外勤</button>
+    <div class="con-header-right fr">
+      <button class="btn btn-primary mt10" type="button" ng-click="submitAccount()">审核提交会计</button>
+      <button class="btn btn-primary" type="button" ng-click="submitOutwork()">审核提交外勤</button>
     </div>
   </div>
   <div class="content-tab">
@@ -71,7 +48,7 @@
               <div class="fl belong-left">
                 <span>客户基本信息</span>
               </div>
-              <div ng-show="!isAccouting" class="fr belong-right">
+              <div class="fr belong-right">
                 <button ng-if="isEdit" class="btn" type="button" ng-click="edit()">编辑</button>
                 <button ng-if="!isEdit" class="btn" type="button" ng-click="save()">完成</button>
               </div>
@@ -223,8 +200,7 @@
                   <td class="table-opt" style="text-align:center;width:200px">
                     <button class="btn btn-link" href="javascript:;" ng-click="detailTab2(contrac)">查看详情</button>
                     <!-- 公司状态是挂起4 时候禁止点击终止合同 -->
-                    <button ng-show="!isAccouting" ng-disabled="isStop" class="btn btn-link" ng-disabled="contrac.Status == 4" ng-click="stop(contrac)">终止合同</button>
-                    <button ng-show="isAccouting" ng-disabled="isAccouting" class="btn btn-link">终止合同</button>
+                    <button ng-disabled="isStop" class="btn btn-link" ng-disabled="contrac.Status == 4" ng-click="stop(contrac)">终止合同</button>
                   </td>
                 </tr>
               </tbody>

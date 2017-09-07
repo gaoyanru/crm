@@ -98,9 +98,9 @@
                   <button ng-if="!contract.RemarkSignId" class="btn btn-link" href="javascript:;" ng-click="mark(contract)">标记</button>
                   <button ng-if="contract.RemarkSignId" class="btn btn-link" href="javascript:;" ng-click="cancelmark(contract)">取消</button>
                   <!-- 挂起：判断可挂起条件会计审核状态审核后 当前时间在服务结束时间之内 -->
-                  <button ng-if="!contract.RemarkSuspendId " class="btn btn-link" href="javascript:;" ng-click="gq(contract)" ng-disabled="!contract.IfCancelHangup">挂起</button>
+                  <button ng-if="contract.AccountantStatus == 2 && beforeServiceEnd" class="btn btn-link" href="javascript:;" ng-click="gq(contract)">挂起</button>
                   <!-- 挂起取消：当前时间在服务结束时间之内 -->
-                  <button ng-if="contract.RemarkSuspendId" class="btn btn-link" href="javascript:;" ng-click="cancelgq(contract)" ng-disabled="!contract.IfCancelHangup">取消</button>
+                  <button ng-if="beforeServiceEnd" class="btn btn-link" href="javascript:;" ng-click="cancelgq(contract)">取消</button>
                 </td>
             </tr>
         </tbody>

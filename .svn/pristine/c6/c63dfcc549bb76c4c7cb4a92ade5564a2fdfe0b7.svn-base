@@ -244,7 +244,6 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
   var users = users.get()
   console.log(users)
   console.log(contract, 'contract')
-  $scope.title = '会计审核管理>查看'
   $scope.isAccouting = true
   $scope.isEdit = true
   $scope.postDetail = {} // tab1内容

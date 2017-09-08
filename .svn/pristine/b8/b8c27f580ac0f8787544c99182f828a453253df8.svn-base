@@ -8,8 +8,8 @@
       <div class="fl belong-left">
         <span>合同归属信息</span>
       </div>
-      <!-- 审单人员有此三个按钮操作权限  财务审核通过后，审核人员有终止操作  Category=7-->
-      <div ng-if="user.IsCenter == 0 && user.Category == 7" class="fr belong-right">
+      <!-- 审单人员有此三个按钮操作权限  财务审核通过后，审核人员有终止操作 财务审核之前，合同是可以删除 -->
+      <div ng-if="user.IsCenter == 0 && user.Category == 2" class="fr belong-right">
         <button class="btn" type="button" ng-disabled="!(postDetail.OrderStatus == 1)" ng-click="check()">审核</button>
         <button class="btn" type="button" ng-disabled="!(postDetail.OrderStatus == 1)" ng-click="refuse()">驳回</button>
         <button class="btn" type="button" ng-disabled="!(postDetail.FinancialAudit == 2)" ng-click="stop()">中止</button>
@@ -26,7 +26,7 @@
       </div>
       <div class="form-group" style="margin: 5px 10px 5px 10px;">
         <label>财务状态</label>：
-        <input flex value="{{postDetail.FinancialAudit|NewCheckStatus}}" required readonly class="input-border"/>
+        <input flex value="{{postDetail.FinancialAudit|FinanceStatus}}" required readonly class="input-border"/>
       </div>
     </form>
   </div>
@@ -213,8 +213,8 @@
     </div>
   </div>
 </div>
-<!-- 提单人员有修改和保存提交订单的权限  Category == 5-->
-<div ng-if="user.Category == 5" class="modal-footer">
+<!-- 提单人员有修改和保存提交订单的权限  user.Category == ？-->
+<div ng-if="user.Category == 2" class="modal-footer">
 <!-- <div class="modal-footer"> -->
   <button ng-if="(postDetail.OrderStatus == 1 && !canSave )|| (postDetail.OrderStatus == 3 && !canSave)" class="btn btn-primary" type="button" ng-click="canCompile()">编辑</button>
   <button ng-if="canSave" class="btn btn-primary" type="button" ng-disabled="cusform.$invalid" ng-click="ok($event)">保存并提交</button>

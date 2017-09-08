@@ -330,7 +330,6 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   console.log(users)
   console.log(contract, 'contract')
   $scope.isAccouting = false
-  $scope.title = '签约客户管理>查看'
   $scope.isEdit = true
   $scope.postDetail = {} // tab1内容
   $scope.item = item // 顶部公共信息 列表带过来

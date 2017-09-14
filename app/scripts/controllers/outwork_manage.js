@@ -47,7 +47,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             delete $scope.taskStatus["1"];
         }
         $scope.search = {
-            SequenceNo: "",
+            sequenceNo: "",
             companyname: "",
             connector: "",
             taskname: "",
@@ -158,7 +158,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
         };
 
         $scope.searchItem = {
-            Id: "",
+            sequenceNo: "",
             companyname: "",
             connector: "",
             taskname: "",
@@ -214,7 +214,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
         }
         $scope.searchFn = function() {
             $scope.searchItem.companyname = $scope.search.companyname;
-            $scope.searchItem.Id = $scope.search.Id;
+            $scope.searchItem.sequenceNo = $scope.search.sequenceNo;
             $scope.searchItem.connector = $scope.search.connector; //???
             $scope.searchItem.taskname = $scope.search.taskname;
             $scope.searchItem.childtaskname = $scope.search.childtaskname;

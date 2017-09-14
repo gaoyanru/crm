@@ -1,0 +1,118 @@
+<div class="recharge">
+    <div class="well well-sm u-search clearfix">
+        <form class="form-inline" style="position:relative;padding-right:150px">
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label>序列ID</label>：
+                <input type="text" ng-model="search.SequenceNo" class="form-control">
+            </div>
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label>公司名称</label>：
+                <input type="text" ng-model="search.companyName" class="form-control">
+            </div>
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label>公司联系人</label>：
+                <input type="text" ng-model="search.connector" class="form-control">
+            </div>
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label>销售人员</label>：
+                <input type="text" ng-model="search.salesName" class="form-control">
+            </div>
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label>服务状态</label>：
+                <select ng-model="search.serviceStatus" class="form-control">
+                  <option value="" ng-selected="true">请选择</option>
+                  <option  ng-repeat="(key,value) in companyStatus" ng-value="key">{{value}}</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label>合同结束期</label>：
+                <select ng-model="search.contractEndPeriod" class="form-control">
+                  <option value="0" ng-selected="true">请选择</option>
+                  <option value="1" >近一个月</option>
+                  <option value="2" >近两个月</option>
+                  <option value="3" >近三个月</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin: 5px 10px 5px 10px;min-width:300px">
+                <lable style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">合同签订日期：</lable>
+                <div class="row" style="float:left">
+                    <div class="col-md-6">
+                        <p class="input-group" style="margin:0">
+                            <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dt1" is-open="popup1.opened" datepicker-options="dateOptions" close-text="Close" alt-input-formats="altInputFormats" ng-change="changeDate()" id="date1" style="padding:6px;"
+                            />
+                            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="input-group" style="margin:0">
+                            <input type="text" class="form-control" uib-datepicker-popup ng-model="dt2" is-open="popup2.opened" datepicker-options="dateOptions" close-text="Close" ng-change="changeDate()" id="date2" style="padding:6px;" />
+                            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary" ng-click="searchFn()" style="position:absolute;right:20px;top:5px;">搜索</button>
+            <!-- <button class="btn btn-primary pull-right" ng-click="toExcel()" style="position:absolute;right:20px;top:50px">导出</button> -->
+        </form>
+    </div>
+    <table class="table table-striped table-hover table-bordered">
+        <thead>
+            <tr class="info">
+                <th>序列ID</th>
+                <th>公司名称</th>
+                <th>所属区域</th>
+                <th>公司联系人</th>
+                <th>当前合同编号</th>
+                <th>销售人员</th>
+                <th>合同签订日期</th>
+                <th>服务开始</th>
+                <th>服务结束</th>
+                <th>报税状态</th>
+                <th>服务状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="contract in contracts">
+              <td style="text-align:center;width: 140px;vertical-align: middle;">
+                <div ng-show="contract.RemarkSignId" class="mark-style fl" ng-style="{{contract.markBg}}">{{contract.RemarkSignId | CustomerMarkStyle}}</div>
+                <div class="fr">{{contract.SequenceNo}}</div>
+              </td>
+                <td style="text-align:center">{{contract.CompanyName}}</td>
+                <td style="text-align:center">{{contract.AreaName}}</td>
+                <td style="text-align:center">{{contract.Connector}}</td>
+                <td style="text-align:center">{{contract.ContractNo}}</td>
+                <td style="text-align:center">{{contract.Sales}}</td>
+                <td style="text-align:center">{{contract.ContractDate|tDate}}</td>
+                <td style="text-align:center">{{contract.ServiceStart|tDate}}</td>
+                <td style="text-align:center">{{contract.ServiceEnd|tDate}}</td>
+                <td style="text-align:center">{{contract.AgentStatus | NewAgentStatus}}</td>
+                <td style="text-align:center">{{contract.ServiceStatus | NewServiceStatus}}</td>
+                <td class="table-opt" style="text-align:center;width:190px">
+                  <button class="btn btn-link" href="javascript:;" ng-click="detail(contract)">查看</button>
+                  <!-- 标记RemarkSignId>0可以标记 =0可以取消 -->
+                  <button ng-if="!contract.RemarkSignId" class="btn btn-link" href="javascript:;" ng-click="mark(contract)">标记</button>
+                  <button ng-if="contract.RemarkSignId" class="btn btn-link" href="javascript:;" ng-click="cancelmark(contract)">取消</button>
+                  <!-- 挂起：判断可挂起条件会计审核状态审核后 当前时间在服务结束时间之内 -->
+                  <button ng-if="!contract.RemarkSuspendId " class="btn btn-link" href="javascript:;" ng-click="gq(contract)" ng-disabled="!contract.IfCancelHangup">挂起</button>
+                  <!-- 挂起取消：当前时间在服务结束时间之内 -->
+                  <button ng-if="contract.RemarkSuspendId" class="btn btn-link" href="javascript:;" ng-click="cancelgq(contract)" ng-disabled="!contract.IfCancelHangup">取消</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="u-paginator">
+        <uib-pagination total-items="paginator.total" items-per-page="paginator.perPage" boundary-links="true" ng-model="paginator.currentPage" previous-text="{{::paginator.previousText}}" next-text="{{::paginator.nextText}}" first-text="{{::paginator.firstText}}"
+            last-text="{{::paginator.lastText}}" force-ellipses="true" max-size="6" num-pages="paginator.numPages" ng-change="pageChanged()"> </uib-pagination>
+        <div class="u-pages"> <span>{{paginator.currentPage}}</span> / <span>{{paginator.numPages}}</span> &nbsp; <span>合计:{{paginator.total}}</span> </div>
+        <form name="paginatorForm" novalidate>
+            <div class="input-group">
+                <input type="number" name="paginatorInput" ng-model="currentPage" required min="1" max="{{paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-disabled="!paginatorForm.$valid" ng-click="setCurrentPage()">Go!</button> </span>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,161 @@
+.title {
+  padding-left: 5px;
+  font-weight: 600;
+  height: 40px;
+  line-height: 40px;
+  background-color: #337ab7;
+}
+.clearfix:after{content:"";display:block;height:0;clear:both;visibility:hidden}
+.clearfix{*+height:1%;}
+.form-group {
+  float: left;
+}
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+.required::before {
+  content: '*';
+  color: red;
+}
+.add-icon {
+  height: 24px;
+  display: inline-block;
+  width: 24px;
+  text-align: center;
+  background-color: #eee;
+  border: 1px solid #ccc;
+}
+.input-width {
+  width: 80px;
+  height: 30px;
+}
+.input-width1 {
+  width: 100px;
+  height: 30px;
+}
+.amount .contract-inputWidth {
+  display: inline-block;
+  background-color: #eee;
+  width: 100px;
+  margin-right: 5px;
+  text-align: center;
+}
+.select-width {
+  width: 100%;
+}
+.input-border {
+  height: 34px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
+.pay-style {
+  height: 34px;
+  line-height: 34px;
+}
+.contract-img-style {
+  float: left;
+  padding-right: 10px;
+}
+.contract-img-style  img, .contract-img{
+  height: 34px;
+  width: 34px;
+}
+.uploader-outter {
+  overflow: hidden;
+  position: relative;
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  background-color: #eee;
+  cursor: pointer;
+  text-align: center;
+  z-index: 1;
+  border: 1px solid #ccc;
+}
+.uploader-img {
+  opacity: 0;
+  width: 34px;
+  position: absolute;
+  top: 0;
+  height: 34px;
+  line-height: 34px;
+  background: #eee;
+  cursor: pointer;
+}
+.img-bottom {
+  margin-bottom: 0;
+}
+.remark-style {
+  padding: 5px;
+  float: right;
+  width: 950px;
+  height: 80px;
+  border: 1px solid #ccc;
+  color: #ccc;
+  overflow: hidden;
+}
+.textarea-style {
+  outline: none;
+  width: 100%;
+  color: rgb(204, 204, 204);
+  border: none;
+  background: #fff;
+  height: 80%;
+}
+.mark-style {
+  width: 30px;
+  height: 20px;
+  background-color: red;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  color: #fff;
+}
+.con-header-left {
+  width: 85%;
+}
+.con-header-right {
+  width: 15%;
+}
+.mt10 {
+  margin-bottom: 10px;
+}
+.ml5 {
+  margin-left: 5px;
+}
+.input-border{
+  padding-left: 5px
+}
+.content-tab .companyTypeStyle {
+  display: inline-block;
+  width: 100px;
+  vertical-align: middle;
+  line-height: 34px;
+}
+.flex-style {
+  display: flex;
+  align-items: center;
+}
+.belong-right {
+  margin-right: 5px;
+}
+.detail-top {
+  display: inline-block;
+  text-align: center;
+  min-width: 90px;
+  height: 20px;
+  line-height: 20px;
+}
+.info th {
+  text-align: center;
+}
+.inner-date {
+  float: left;
+  width: 4%;
+  text-align: center;
+  height: 34px;
+  font-size: 20px;
+  line-height: 34px;
+}

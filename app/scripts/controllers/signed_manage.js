@@ -4,14 +4,14 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
   $scope.areas = [] // 所属区域列表
   $scope.markBg = {}
 
-  $scope.companyStatus = { // 公司状态
-    1: "待分配",
+  $scope.companyStatus = { // 服务状态
+    1: "等待分配",
     2: "未开始",
     3: "外勤服务",
-    4: "会计服务",
-    5: "外勤会计服务",
-    6: "挂起",
-    7: "已结束"
+    4: "外勤会计服务",
+    5: "会计服务",
+    7: "结束",
+    8: "中止"
   }
   $scope.outworkStatus = { // 外勤处理状态
     1: "待审核",
@@ -20,9 +20,9 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
   }
   $scope.accountStatus = { // 会计处理状态
     1: "待审核",
-    2: "已驳回",
-    3: "部分确认",
-    4: "已审核"
+    2: "已审核",
+    3: "已驳回",
+    5: "部分审核"
   }
   $scope.companys = [] // 所属公司列表
 
@@ -62,7 +62,7 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
   // 获取所属区域
   function getareasList() {
     $http.get('/api/code/area').success(function(res) {
-      console.log(res)
+      // console.log(res)
       if(res.status) {
         $scope.areas = res.data
       }
@@ -72,7 +72,7 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
 
   // 查询条件
   $scope.searchFn = function () {
-    console.log($scope.search)
+    // console.log($scope.search)
     refreshData()
   }
   // 合同列表
@@ -83,9 +83,9 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
         offset: ($scope.paginator.currentPage - 1) * $scope.paginator.perPage,
         limit: $scope.paginator.perPage
     }, searchIt, data);
-    console.log(data, '查询参数')
+    // console.log(data, '查询参数')
     $http.get('api/signcustomerlist?' + $.param(data)).success(function(res) {
-      console.log(res, 'res')
+      // console.log(res, 'res')
       $scope.paginator.total = res.data.total
       $scope.customers = res.data.list
       for (var i in $scope.customers) {
@@ -94,42 +94,16 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
         } else if ($scope.customers[i].RemarkSignId == 2) {
           $scope.markBg = {'background-color': 'blue'}
         } else if ($scope.customers[i].RemarkSignId == 1) {
-          $scope.markBg = {'background-color': 'yellow'}
+          $scope.markBg = {'background-color': '#FFCC33'}
         }
         $scope.customers[i].markBg = $scope.markBg
       }
-      console.log($scope.customers)
+      // console.log($scope.customers)
     })
 
   }
   refreshData()
 
-  // 导出
-  // $scope.toExcel = function() {
-  //   var downItem = $scope.search
-  //   if ($scope.paginator.total > 4000) {
-  //     alert('总条数过多，请缩小查询范围')
-  //   } else {
-  //     console.log(downItem.Id,
-  //     downItem.companyName,
-  //     downItem.contacts,
-  //     downItem.salesId,
-  //     downItem.companystatus,
-  //     downItem.area,
-  //     downItem.outworkstatus,
-  //     downItem.accountstatus,
-  //     downItem.starttime,
-  //     downItem.endtime)
-  //     // var url = `/api/download/getrechargedetails?starttime=${starttime || ''}&endtime=${endtime || ''}&channelname=${channelname || ''}&type=${type || 0}`
-  //     // // console.log(url)
-  //     // window.open(url)
-  //   }
-  //   // var exportHref = Excel.tableToExcel('dataTable', 'sheet name')
-  //   // $timeout(function() { location.href = exportHref }, 100)
-  //
-  //   // $scope.exportHref = Excel.tableToExcel('div[js-height]>#dataTable', 'sheet name');
-  //   // $timeout(function() { location.href = $scope.exportHref; }, 100);
-  // }
   // 挂起操作
   $scope.gq = function(item) {
     var modalInstance = $uibModal.open({
@@ -159,11 +133,11 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
   // 取消挂起
   $scope.cancelgq = function(item) {
     var post = {}
-    post.CompanyId = item.CustomerId
+    post.CompanyId = item.customerId
     post.SubsidiaryId = item.SubsidiaryId
     post.Description = ''
     $http.put('/api/order/expire/suspendcancel', post).success(function(res) {
-      console.log(res)
+      // console.log(res)
       if(res.status) {
         refreshData()
       }
@@ -200,7 +174,7 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
     // 取消标记  点击发送请求 修改tagStatus值为空
     var customerId = item.customerId
     $http.put('/api/cancelcompanysign?customerId=' + customerId).success(function(res) {
-      console.log(res)
+      // console.log(res)
       if(res.status) {
         refreshData()
       }
@@ -210,8 +184,10 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
   $scope.detail = function(item) {
     // 点击请求接口返回 tab1信息 然后顶部公共部分需要从列表带过去
     var customerId = item.customerId
+    // var PartTax = item.PartTax
+    // console.log(customerId, 'customerId')
     $http.get('/api/customerdetail/' + customerId).success(function(res) {
-      console.log(res)
+      // console.log(res)
       var data = res.data
       if(res.status) {
         var modalInstance = $uibModal.open({
@@ -276,9 +252,9 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
 }]).controller('MarkRefuse', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'signFrom', 'title', 'user',
 function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   var users = users.get()
-  console.log(users)
-  console.log(signFrom, title, 'title')
-  console.log(contract, 'contract')
+  // console.log(users)
+  // console.log(signFrom, title, 'title')
+  // console.log(contract, 'contract')
   $scope.postData = angular.copy(contract)
   $scope.Remark = ''
   $scope.sign = signFrom // 区分挂起还是标记  标记true 挂起false
@@ -292,14 +268,15 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   $scope.save = function() {
     var post = {}
     if (!$scope.sign) { // 挂起
-      post.CompanyId = $scope.postData.CustomerId
+      console.log($scope.postData, '$scope.postData')
+      post.CompanyId = $scope.postData.customerId
       post.SubsidiaryId = $scope.postData.SubsidiaryId
       post.Description = $scope.Remark
 
-      console.log(post)
+      // console.log(post)
       var url = '/api/order/expire/suspend'
       $http.put(url, post).success(function(res) {
-        console.log(res)
+        // console.log(res)
         if(res.status) {
           $uibModalInstance.close()
         }
@@ -309,17 +286,21 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         var RealName = users.RealName
         $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
       }
-      post.CustomerId = $scope.postData.customerId
-      post.SignVal = $scope.postData.RemarkSignId
-      post.Remark = $scope.postData.Remark
-      console.log(post)
-      var url = '/api/companySign'
-      $http.put(url, post).success(function(res) {
-        console.log(res)
-        if(res.status) {
-          $uibModalInstance.close()
-        }
-      })
+      if (!$scope.postData.RemarkSignId) {
+        alert('请选择标记状态')
+      } else {
+        post.CustomerId = $scope.postData.customerId
+        post.SignVal = $scope.postData.RemarkSignId
+        post.Remark = $scope.postData.Remark
+        // console.log(post)
+        var url = '/api/companySign'
+        $http.put(url, post).success(function(res) {
+          // console.log(res)
+          if(res.status) {
+            $uibModalInstance.close()
+          }
+        })
+      }
     }
   }
   $scope.cancel = function() {
@@ -327,11 +308,11 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   }
 }]).controller('SignedDetail1', ['$scope', '$http', '$uibModal', '$uibModalInstance', 'FileUploader','$filter', 'contractMsg', 'item', 'areas', 'user', function($scope, $http, $uibModal, $uibModalInstance, FileUploader, $filter, contract, item, areas, users) {
   var users = users.get()
-  console.log(users)
+  // console.log(users)
   console.log(contract, 'contract')
-  $scope.isAccouting = false
-  $scope.title = '签约客户管理>查看'
-  $scope.isEdit = true
+  $scope.isAccouting = false;
+  $scope.title = '签约客户管理>查看';
+  $scope.isEdit = true;
   $scope.postDetail = {} // tab1内容
   $scope.item = item // 顶部公共信息 列表带过来
   console.log($scope.item, '$scope.item')
@@ -346,13 +327,16 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   // contract.AreaCode = '110101'
   // contract.AddedValue = 1
   $scope.postDetail = contract
+  // console.log($scope.item, '$scope.item')
+  $scope.customerId = $scope.item.customerId
+  // console.log($scope.customerId, 'customerId')
 
   // DisableCommitAccount提交会计 DisableOutWorkCommitAccount提交外勤 1禁止 0可以提交
-  console.log($scope.item.DisableCommitAccount, $scope.item.DisableOutWorkCommitAccount, '提交会计外勤')
+  // console.log($scope.item.DisableCommitAccount, $scope.item.DisableOutWorkCommitAccount, '提交会计外勤')
   // 获取所属行业列表信息
   function getIndustries() {
     $http.get('/api/industry').success(function(res) {
-      console.log(res)
+      // console.log(res)
       if(res.status) {
         $scope.industries = res.data
       }
@@ -363,17 +347,30 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   function gettabmsg() {
     var OrderId = $scope.item.OrderId
     $http.get('/api/contractdetail/' + OrderId).success(function(res) {
-      console.log(res)
+      // console.log(res)
       $scope.itemDetail23 = res.data
     })
   }
   gettabmsg()
+
+  $scope.postDataOut = {} // 提交外勤需要这些字段
+  $scope.postDataOut.CustomerId = $scope.customerId
+  $scope.postDataOut.AreaCode = $scope.postDetail.AreaCode
+  $scope.postDataOut.OrderId = $scope.item.OrderId
 
   // 审核提交会计
   $scope.submitAccount = function() {
     var post = {}
     post.orderId = $scope.itemDetail23.OrderId
     post.partTax = ''
+    // 部分提交 会计驳回 外勤待审核 再次提交会计时候 只能选择部分 禁用全部
+    var isOnlyPartChoose
+    if ($scope.item.DisableCommitAccount == 0 && $scope.item.DisableOutWorkCommitAccount == 1) {
+      isOnlyPartChoose = true
+    } else {
+      isOnlyPartChoose = false
+    }
+
     var modalInstance = $uibModal.open({
       templateUrl: 'views/order_outworker_detail_sub.html',
       controller: 'SubmitAccount',
@@ -381,6 +378,15 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
       resolve: {
         post: function() { // 提交会计传递参数
           return post
+        },
+        postDataOut: function() {
+          return $scope.postDataOut
+        },
+        isOnlyPartChoose: function() {
+          return isOnlyPartChoose
+        },
+        item: function() {
+          return $scope.item
         }
       },
       backdrop: 'static'
@@ -388,24 +394,6 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
     modalInstance.result.then(function(result) {
       // 成功时关闭弹窗刷新页面
       $uibModalInstance.close()
-      // console.log(result, 'res')
-      // if (result.partT == 0) { // 资料齐全 两个按钮都禁止
-      //   $scope.isSubmitAccount = true
-      //   $scope.isSubmitOutwork = true
-      // } else { // 部分提交 判断有没有提交外勤 有的话两个都禁止 没有的话禁止会计 外勤不禁止
-      //   if (result) { //已经提交外勤
-      //     $scope.isSubmitAccount = true
-      //     $scope.isSubmitOutwork = true
-      //   } else { // 没有提交外勤 但是如果之前已经提交过外勤 这时候即使点取消 还是不能提交外勤
-      //     if ($scope.isSubmitOutwork) {
-      //       $scope.isSubmitAccount = true
-      //       $scope.isSubmitOutwork = true
-      //     } else {
-      //       $scope.isSubmitAccount = true
-      //       $scope.isSubmitOutwork = false
-      //     }
-      //   }
-      // }
       // 提交会计完成后操作 1.选择资料齐全提交 需要把两个按钮都禁止 2.部分提交需要弹窗选国地税报到外勤任务 如果不选需要禁止会计提交但是提交外勤可以点击 让他可以分配外勤任务 提交完成外勤任务后按钮不可点
 
     }, function() {
@@ -423,6 +411,12 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         resolve: {
             isShow: function () {
               return true
+            },
+            postDataOut: function () {
+              return $scope.postDataOut
+            },
+            item: function() {
+              return $scope.item
             }
         }
     });
@@ -452,7 +446,9 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
       alert ('请联系人电话')
       return
     }
-    var url = '/api/Customer/500?verify=1'
+    console.log($scope.item)
+    var OrderId = $scope.item.OrderId
+    var url = '/api/Customer/' + OrderId + '?verify=1'
     if ($scope.postDetail.NoDeadLine) {
       $scope.postDetail.NoDeadLine = 1
     } else {
@@ -596,9 +592,9 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         offset: ($scope.tab2.paginator.currentPage - 1) * $scope.tab2.paginator.perPage,
         limit: $scope.tab2.paginator.perPage
     }, searchIt, data);
-    console.log(data, '查询参数')
+    // console.log(data, '查询参数')
     $http.get('/api/contractlistbycustomerId?'+ $.param(data)).success(function(res){
-      console.log(res)
+      // console.log(res)
       if(res.status) {
         $scope.contractTab = res.data.list
         $scope.tab2.paginator.total = res.data.total
@@ -619,6 +615,9 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
       resolve: {
         contractItem: function() {
           return $scope.itemDetail23
+        },
+        PartTax: function() {
+          return PartTax
         }
       }
     })
@@ -645,7 +644,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
           return item
         },
         title: function() {
-          return '终止合同'
+          return '中止合同'
         }
       },
       backdrop: 'static'
@@ -691,9 +690,9 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         offset: ($scope.tab3.paginator.currentPage - 1) * $scope.tab3.paginator.perPage,
         limit: $scope.tab3.paginator.perPage
     }, searchIt, data);
-    console.log(data, '查询参数')
+    // console.log(data, '查询参数')
     $http.get('/api/servicefeedbycustomerId?'+ $.param(data)).success(function(res){
-      console.log(res)
+      // console.log(res)
       if(res.status) {
         $scope.contractTab3 = res.data.list
         $scope.tab3.paginator.total = res.data.total
@@ -708,7 +707,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   $scope.detailTab3 = function(item) {
     // 弹框查看
     $http.get('api/contract/getmainitemlist').success(function(res) {
-      console.log(res, 'res')
+      // console.log(res, 'res')
       if (res.status) {
         $scope.projectItems = res.data
         var modalInstance = $uibModal.open({
@@ -757,15 +756,16 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   // tab4页卡内容
   $scope.refreshData4 = function() {
     // 点击页卡请求当前页卡数据内容
-    // var customerId = $scope.postDetail.CustomerId
-    var customerId = '1201043653'
+    // console.log($scope.postDetail, '$scope.postDetail')
+    var customerId = $scope.customerId
+    // var customerId = '1201043653'
     var url = '/api/maintask/listforCustomerId/' + customerId + '?'
     var data = angular.extend({
         offset: ($scope.tab4.paginator.currentPage - 1) * $scope.tab4.paginator.perPage,
         limit: $scope.tab4.paginator.perPage
     }, data);
     $http.get(url + $.param(data)).success(function(res) {
-      console.log(res)
+      // console.log(res)
       if (res.status) {
         $scope.contractTab4 = res.data.list
         $scope.tab4.paginator.total = res.data.total
@@ -774,10 +774,11 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   }
   $scope.detailTab4 = function(item) {
     // 弹框查看
-    // var Id = item.Id
-    var Id = 193
+    // console.log(item)
+    var Id = item.Id
+    // var Id = 193
     $http.get('api/maintask/' + Id).success(function(res) {
-      console.log(res, 'res')
+      // console.log(res, 'res')
       if (res.status) {
         $scope.outworkItems = res.data
         var modalInstance = $uibModal.open({
@@ -810,7 +811,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
       lastText: '最后一页',
       firstText: '首页'
   }
-  $scope.tab3.pageChanged = function () {
+  $scope.tab4.pageChanged = function () {
       $scope.refreshData4()
   }
   $scope.tab4.setCurrentPage = function () {
@@ -822,15 +823,15 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   // tab5页卡内容
   $scope.refreshData5 = function() {
     // 点击页卡请求当前页卡数据内容
-    // var customerId = $scope.postDetail.CustomerId
-    var customerId = '1201043653'
+    var customerId = $scope.customerId
+    // var customerId = '1201043653'
     var url = '/api/customer/remark/list/' + customerId + '?'
     var data = angular.extend({
         offset: ($scope.tab5.paginator.currentPage - 1) * $scope.tab5.paginator.perPage,
         limit: $scope.tab5.paginator.perPage
     }, data);
     $http.get(url + $.param(data)).success(function(res) {
-      console.log(res)
+      // console.log(res)
       if (res.status) {
         $scope.contractTab5 = res.data.list
         $scope.tab5.paginator.total = res.data.total
@@ -913,8 +914,8 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
     // 分页功能结束
   $scope.refreshData6 = function() {
     // 点击页卡请求当前页卡数据内容
-    // var customerId = $scope.postDetail.CustomerId
-    var customerId = '111'
+    var customerId = $scope.item.customerId
+    // var customerId = '111'
     var post = {}
     post.customerId = customerId
     // var data = angular.extend({
@@ -925,29 +926,29 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         offset: 0,
         limit: 10
     }, post, data)
-    $http.get('/api/customer/logs?' + $.param(data)).success(function(res) {
-      console.log(res)
+    $http.get('/api/customer/rz?' + $.param(data)).success(function(res) {
+      // console.log(res)
       if (res.status) {
         $scope.contractTab6 = res.data.list
         $scope.tab6.paginator.total = res.data.total
-        console.log($scope.contractTab6)
+        // console.log($scope.contractTab6)
       }
     })
   }
 
 }]).controller('Tab2Detail',  ['$scope', '$http', '$uibModal', '$uibModalInstance', '$filter', 'user', 'contractItem', function($scope, $http, $uibModal, $uibModalInstance, $filter, UserServe, contractItem) {
-  console.log(contractItem, 'contractItem')
+  // console.log(contractItem, 'contractItem')
   $scope.paylist = [{}]
   $scope.postDetail = {}
   $scope.canChange = true
   $scope.postDetail = contractItem
-  $scope.postDetail.ContractDate = $scope.postDetail.ContractDate.slice(0, 10)
-  $scope.postDetail.ServiceStart = $scope.postDetail.ServiceStart.slice(0, 10)
-  $scope.postDetail.ServiceEnd = $scope.postDetail.ServiceEnd.slice(0, 10)
-  console.log($scope.postDetail.ContractDate)
+  // $scope.postDetail.ContractDate = $scope.postDetail.ContractDate.slice(0, 10)
+  // $scope.postDetail.ServiceStart = $scope.postDetail.ServiceStart.slice(0, 10)
+  // $scope.postDetail.ServiceEnd = $scope.postDetail.ServiceEnd.slice(0, 10)
+  // console.log($scope.postDetail.ContractDate)
   for (var i in $scope.postDetail.PayInfoList) {
     $scope.postDetail.PayInfoList[i].PayTypeId = $scope.postDetail.PayInfoList[i].PayTypeId + ''
-    $scope.postDetail.PayInfoList[i].PayTime = $scope.postDetail.PayInfoList[i].PayTime.slice(0, 10)
+    // $scope.postDetail.PayInfoList[i].PayTime = $scope.postDetail.PayInfoList[i].PayTime.slice(0, 10)
   }
   $scope.paylist = $scope.postDetail.PayInfoList
 
@@ -957,8 +958,8 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   }
 }]).controller('ContractRefuseSigned', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'title', 'user', function($scope, $http, $uibModalInstance, contract, title, users) {
   var users = users.get()
-  console.log(users)
-  console.log(contract, 'contract')
+  // console.log(users)
+  // console.log(contract, 'contract')
   $scope.postData = contract
   $scope.title = title
   $scope.Remark = ''
@@ -972,7 +973,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
     post.CustomerId = $scope.postData.CustomerId
     post.Remark = $scope.postData.Remark
     $http.put('/api/endcontract', post).success(function(res) {
-      console.log(res)
+      // console.log(res)
       if (res.status) {
           $uibModalInstance.close();
       }
@@ -982,7 +983,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
     $uibModalInstance.dismiss('cancel');
   }
 }]).controller('Tab3Detail',  ['$scope', '$http', '$uibModal', '$uibModalInstance', '$filter', 'user', 'contractItem', 'projectItems', function($scope, $http, $uibModal, $uibModalInstance, $filter, UserServe, contractItem, projectItems) {
-  console.log(contractItem, 'contractItem')
+  // console.log(contractItem, 'contractItem')
   $scope.canChange = true
   $scope.isChange = true
   $scope.canSave = false // 编辑和保存按钮切换
@@ -997,7 +998,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
     $scope.postDetail.Details[i].ChildItemId = $scope.postDetail.Details[i].ChildItemId + ''
     var contractprojectChildOptions = []
     for (var j in $scope.projectItems) {
-      console.log($scope.postDetail.Details[i].MainItemId == $scope.projectItems[j].Id)
+      // console.log($scope.postDetail.Details[i].MainItemId == $scope.projectItems[j].Id)
       if ($scope.postDetail.Details[i].MainItemId == $scope.projectItems[j].Id) {
         $scope.postDetail.Details[i].contractprojectChildOptions = $scope.projectItems[j].Children
       }
@@ -1013,10 +1014,10 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   // 保存提交修改
   $scope.ok = function() {
     $scope.postDetail.Details = $scope.rlist
-    console.log($scope.postDetail.Details)
+    // console.log($scope.postDetail.Details)
     var url = '/api/receivefee/'
     $http.put(url, $scope.postDetail.Details).success(function(res) {
-      console.log(res)
+      // console.log(res)
       if (res.status) {
         $uibModalInstance.close();
       }
@@ -1027,7 +1028,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
     $uibModalInstance.dismiss()
   }
 }]).controller('Tab4Detail',  ['$scope', '$http', '$uibModal', '$uibModalInstance', '$filter', 'user', 'contractItem', function($scope, $http, $uibModal, $uibModalInstance, $filter, UserServe, contractItem) {
-  console.log(contractItem, 'contractItem')
+  // console.log(contractItem, 'contractItem')
 
   $scope.customers = contractItem
 
@@ -1038,10 +1039,10 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
 }]).controller('MarkRefuseTab5', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'signFrom', 'title', 'sign', 'user',
 function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, users) {
   var users = users.get()
-  console.log(users)
-  console.log(signFrom, title, 'title')
-  console.log(contract, 'contract')
-  console.log(sign, 'sign')
+  // console.log(users)
+  // console.log(signFrom, title, 'title')
+  // console.log(contract, 'contract')
+  // console.log(sign, 'sign')
   $scope.postData = contract
   $scope.Remark = ''
   $scope.sign = signFrom
@@ -1059,25 +1060,49 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
   $scope.cancel = function() {
     $uibModalInstance.dismiss('cancel');
   }
-}]).controller('SubmitAccount', ['$scope', '$http', '$uibModal', '$uibModalInstance', 'post', function($scope, $http, $uibModal, $uibModalInstance, post) {
-  console.log(post, 'post')
+}]).controller('SubmitAccount', ['$scope', '$http', '$uibModal', '$uibModalInstance', 'postDataOut', 'isOnlyPartChoose', 'post', 'item', function($scope, $http, $uibModal, $uibModalInstance, postDataOut, isOnlyPartChoose, post, item) {
+  // console.log(isOnlyPartChoose, 'isOnlyPartChoose')
+  $scope.postDataOut = postDataOut
   $scope.postData = post
   $scope.title = '提交会计'
-  $scope.partT = '' // 存放提交给后台选择类型 0全部1国税2地税
+  // $scope.partT = '' // 存放提交给后台选择类型 0全部1国税2地税
+  $scope.isChange = false // 判断选中状态是否可以改变
 
+  console.log(item, 'item')
+  // 如果外勤审核状态是空或者已驳回 可以编辑
+  if (!item.OutWorkerStatus || item.OutWorkerStatus == 3) {
+    $scope.isChange = false
+  } else {
+    $scope.isChange = true
+  }
+  // $scope.oldPartTax = PartTax
+  // if (isOnlyPartChoose) {
+  //   $scope.part = false
+  // } else {
+  //   $scope.part = true
+  // }
+  // if ($scope.oldPartTax == null) {
+  //   $scope.partT = ''
+  // } else {
+  //   $scope.partT = $scope.oldPartTax
+  // }
   // 提交
   $scope.sub = function() {
     if (!$scope.partT) {
-      alert('国税地税报道必须选一个')
+      alert('请选择部分还是全部提交')
     } else {
+      if (isOnlyPartChoose && $scope.partT == 0) { // 部分审核 会计驳回 外勤待审核 只能选择部分提交
+        alert('只能选择部分提交')
+        return
+      }
       $http.put('/api/order/audit/toaccountant/' + $scope.postData.orderId + '/?partTax=' + $scope.partT ).success(function(res) {
-        console.log(res, 'res')
+        // console.log(res, 'res')
         if(res.status) {
-          console.log($scope.partT, '$scope.partT')
+          // console.log($scope.partT, '$scope.partT')
           if ($scope.partT == 0) { // 资料齐全 提交完成后两个按钮都是禁止点击 弹框关闭刷新页面
             // $uibModalInstance.close({partT:0})
             $uibModalInstance.close()
-          } else if ($scope.partT != 0) { // 国地税报告 提交完成弹出选择外勤任务的弹框
+          } else if ($scope.partT != 0 && !isOnlyPartChoose) { // 国地税报告 提交完成弹出选择外勤任务的弹框
             var modalInstance = $uibModal.open({
                 templateUrl: 'views/order_outworker_add.html',
                 controller: 'Signed_outworker_add',
@@ -1086,6 +1111,9 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
                 resolve: {
                     isShow: function () {
                       return true
+                    },
+                    postDataOut: function() {
+                      return $scope.postDataOut
                     }
                 }
             });
@@ -1096,6 +1124,8 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
               // console.log(result, '第二个弹框接收是否提交外勤') // 如果没有选择外勤任务 也是关闭弹窗 不过此时外勤任务按钮可点
               $uibModalInstance.close()
             })
+          } else {
+            $uibModalInstance.close()
           }
           // 根据选择国地税报到和外请任务确定按钮是否可点
 
@@ -1106,10 +1136,17 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
   $scope.close = function() {
     $uibModalInstance.close()
   }
-}]).controller("Signed_outworker_add", ['$scope', '$http', '$uibModal', '$uibModalInstance', 'isShow', 'user', function($scope, $http, $uibModal, $uibModalInstance, isShow, UserServe) {
+}]).controller("Signed_outworker_add", ['$scope', '$http', '$uibModal', '$uibModalInstance', 'isShow', 'postDataOut', 'item', 'user', function($scope, $http, $uibModal, $uibModalInstance, isShow, postDataOut, item, UserServe) {
   var user = UserServe.get()
   $scope.isShow = isShow // 是否显示选择公司 选择区域
   $scope.title = "添加外勤任务"
+  $scope.postDataOut = postDataOut // 提交外勤任务传递参数
+
+  if (item.AccountantStatus == 3) { // 已驳回请求接口
+    $http.get('/api/maintaske/editbyorderid/' + item.OrderId).success(function(res) {
+      console.log(res, 'res')
+    })
+  }
 
   $http.get('/api/mycity').success(function(res) {
       $scope.city = res.data[0]
@@ -1162,8 +1199,9 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
       checked: true
     });
     var data = {
-      // CustomerId: $scope.postData.Customer.Id,
-      // AreaCode: $scope.areaSele,
+      CustomerId: $scope.postDataOut.CustomerId,
+      AreaCode: $scope.postDataOut.AreaCode,
+      OrderId: $scope.postDataOut.OrderId,
       Remark: $scope.postData.Remark
     };
     var isOthers = false;

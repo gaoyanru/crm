@@ -1,0 +1,119 @@
+<div class="recharge">
+  <div class="well well-sm u-search clearfix">
+    <form class="form-inline" style="position:relative;padding-right:100px">
+      <div class="form-group" style="margin: 5px;">
+        <label>合同编号</label>：
+        <input type="text" ng-model="search.contractNo" class="form-control" style="width: 100px;">
+      </div>
+      <div class="form-group" style="margin: 5px;">
+        <label>甲方</label>：
+        <input type="text" ng-model="search.companyname" class="form-control">
+      </div>
+      <div class="form-group" style="margin: 5px">
+        <label>联系人</label>：
+        <input type="text" ng-model="search.contact" class="form-control" style="width: 100px;">
+      </div>
+      <div class="form-group" style="margin: 5px">
+        <label>销售人员</label>：
+        <input type="text" ng-model="search.saleName" class="form-control" style="width: 100px;">
+      </div>
+      <div class="form-group" style="margin: 5px">
+        <label>合同状态</label>：
+        <select ng-model="search.contractStatus" class="form-control">
+          <option value="0">请选择</option>
+          <option  ng-repeat="(key,value) in ContractStatus" ng-value="key">{{value}}</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin: 5px">
+        <label>合同类型</label>：
+        <select ng-model="search.contractType" class="form-control">
+          <option value="0">请选择</option>
+          <option  ng-repeat="(key,value) in ContractType" ng-value="key">{{value}}</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin: 5px">
+        <label>财务审核状态</label>：
+        <select ng-model="search.financeStatus " class="form-control">
+          <option value="0">请选择</option>
+          <option  ng-repeat="(key,value) in FinanceStatus" ng-value="key">{{value}}</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin: 5px;min-width:300px">
+        <lable style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">合同签订日期：</lable>
+        <div class="row" style="float:left;width:300px">
+          <div class="col-md-6" style="width: 48%;padding-right: 0">
+            <p class="input-group" style="margin:0">
+            <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dt1" is-open="popup1.opened" datepicker-options="dateOptions"  close-text="Close" alt-input-formats="altInputFormats" ng-change="changeDate()" id="date1" style="padding:6px;"/>
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+            </p>
+          </div>
+          <span class="inner-date">-</span>
+          <div class="col-md-6" style="width: 48%;padding: 0">
+            <p class="input-group" style="margin:0">
+            <input type="text" class="form-control" uib-datepicker-popup ng-model="dt2" is-open="popup2.opened" datepicker-options="dateOptions"  close-text="Close" ng-change="changeDate()" id="date2" style="padding:6px;"/>
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary" ng-click="searchFn()" style="position:absolute;right:20px;top:5px;">搜索</button>
+      <!-- 只有提单人员有新增合同的权限 -->
+      <button class="btn btn-primary pull-right" ng-click="open()" style="position:absolute;right:20px;top:50px" ng-disabled="Category != 5">新增</button>
+    </form>
+  </div>
+  <div style="overflow-x: scroll;">
+    <table class="table table-striped table-hover table-bordered" style="width:1300px">
+      <thead>
+        <tr class="info">
+            <th style="width:100px">合同编号</th>
+            <th style="width:130px">甲方</th>
+            <th style="width:80px">联系人</th>
+            <th style="width:80px">销售人员</th>
+            <th style="width:100px">合同类型</th>
+            <th style="width:100px">合同状态</th>
+            <th style="width:120px">合同签订日期</th>
+            <th style="width:100px">合同总金额</th>
+            <th style="width:100px">财务审核</th>
+            <th style="width:100px">最后操作人</th>
+            <th style="width:180px">最后修改日期</th>
+            <th style="width:180px">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="contract in contracts">
+          <td style="text-align:center;">{{contract.ContractNo}}</td>
+          <td style="text-align:center;"><span class="nowrap" title="{{contract.CompanyName}}">{{contract.CompanyName}}</span></td>
+          <td style="text-align:center;">{{contract.Connector}}</td>
+          <td style="text-align:center;">{{contract.SaleName}}</td>
+          <td style="text-align:center;">{{contract.OrderType | ContractType}}</td>
+          <td style="text-align:center;">{{contract.OrderStatus | NewCheckStatus}}</td>
+          <td style="text-align:center;">{{contract.ContractDate | formateDate}}</td>
+          <td style="text-align:center;">{{contract.Amount}}</td>
+          <td style="text-align:center;">{{contract.FinancialAuditStatus | NewCheckStatus}}</td>
+          <td style="text-align:center;">{{contract.ModifyUserName}}</td>
+          <td style="text-align:center;">{{contract.ModifyDate}}</td>
+          <td class="table-opt" style="text-align:center;">
+            <button class="btn btn-link" href="javascript:;" ng-click="detail(contract)">查看详情</button>
+            <!-- 判断财务审核状态是已审核=2就不可以删除  只有提单员Category=5可以点击-->
+            <button class="btn btn-link" ng-click="delete(contract)" ng-disabled="contract.FinancialAuditStatus == 2 || Category != 5">删除</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="u-paginator">
+    <uib-pagination total-items="paginator.total" items-per-page="paginator.perPage" boundary-links="true" ng-model="paginator.currentPage" previous-text="{{::paginator.previousText}}" next-text="{{::paginator.nextText}}" first-text="{{::paginator.firstText}}"
+        last-text="{{::paginator.lastText}}" force-ellipses="true" max-size="6" num-pages="paginator.numPages" ng-change="pageChanged()"> </uib-pagination>
+    <div class="u-pages"> <span>{{paginator.currentPage}}</span> / <span>{{paginator.numPages}}</span> &nbsp; <span>合计:{{paginator.total}}</span> </div>
+    <form name="paginatorForm" novalidate>
+      <div class="input-group">
+        <input type="number" name="paginatorInput" ng-model="currentPage" required min="1" max="{{paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-disabled="!paginatorForm.$valid" ng-click="setCurrentPage()">Go!</button> </span>
+      </div>
+    </form>
+  </div>
+</div>

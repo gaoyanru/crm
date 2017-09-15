@@ -110,11 +110,11 @@
                 <a href="">导出Excel表格</a>
             </div>-->
             <button type="button" class="btn btn-primary" ng-click="searchFn()" style="position:absolute;right:0;top:5px">搜索</button>
-            <button class="btn btn-primary pull-right" ng-click="open()" style="position:absolute;right:0;top:50px" ng-if="user.Category == 2 || user.Category== 8 || user.Category== 5">新增</button>
+            <button class="btn btn-primary pull-right" ng-click="open()" style="position:absolute;right:0;top:50px" ng-if="user.Category ==2 || user.Category==8 || user.Category==5">新增</button>
         </form>
     </div>
     <div style="overflow-x: scroll;">
-      <table class="table table-striped table-hover table-bordered" style="min-width:1750px">
+      <table class="table table-striped table-hover table-bordered" style="min-width:1650px">
           <thead>
               <tr class="info">
                   <th>外勤序列ID</th>
@@ -163,8 +163,8 @@
                 <td class="table-opt" style="text-align:center;padding:4px">
                   <button class="btn btn-link" href="javascript:;" ng-click="detail(customer)" style="padding:1px">查看</button>
                   <!-- 外勤审核状态是1待审核的时候 可以点击审核或者是驳回 因为此处就涉及到 1待审核 2已审核 3已驳回 7已提交 四个状态-->
-                  <button ng-if="(user.IsCenter == 1 && user.Category == 8) || (user.IsCenter == 0 && user.Category == 2)" class="btn btn-link" href="javascript:;" ng-click="check(customer)" style="padding:1px" ng-disabled="customer.OutWorkerStatus != 1">审核</button>
-                  <button ng-if="(user.IsCenter == 1 && user.Category == 8) || (user.IsCenter == 0 && user.Category == 2)" class="btn btn-link" href="javascript:;" ng-click="reject(customer)" style="padding:1px" ng-disabled="customer.OutWorkerStatus != 1">驳回</button>
+                  <button class="btn btn-link" href="javascript:;" ng-click="check(customer)" style="padding:1px" ng-disabled="customer.OutWorkerStatus != 1">审核</button>
+                  <button class="btn btn-link" href="javascript:;" ng-click="reject(customer)" style="padding:1px" ng-disabled="customer.OutWorkerStatus != 1">驳回</button>
                   <!-- 取消不涉及可点不可点 -->
                   <button class="btn btn-link" href="javascript:;" ng-click="cancel(customer)" style="padding:1px">取消</button>
                   <!-- 提交分三种情况
@@ -173,7 +173,7 @@
                     3. 审单提交给外勤 外勤部分提交给会计 外勤状态已审核OutWorkerStatus=2 会计审核状态已驳回AccountantStatus=3 来源是外勤提交的时候 提交的时候选择资料齐全或者部分
                    -->
 
-                  <button ng-if="(user.IsCenter == 1 && user.Category == 8) || (user.IsCenter == 0 && user.Category == 2)" class="btn btn-link" href="javascript:;" ng-click="sub(customer)" style="padding:1px" ng-disabled="isSub(customer)">提交</button>
+                  <button class="btn btn-link" href="javascript:;" ng-click="sub(customer)" style="padding:1px" ng-disabled="isSub(customer)">提交</button>
                 </td>
               </tr>
           </tbody>

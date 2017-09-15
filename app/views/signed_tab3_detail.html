@@ -53,7 +53,7 @@
                 <input class="select-width input-border" type="number" ng-model="rg.Amount" ng-blur="getAmount(rg)" readonly>
               </td>
               <td style="height:34px;line-height: 20px; padding: 6px 12px;">
-                <input class="select-width input-border" type="number" ng-model="rg.ReceiveAmount" ng-disabled="canChange">
+                <input class="select-width input-border" type="number" ng-model="rg.ReceiveAmount" ng-disabled="canChange" ng-blur="getAmount(rg)">
               </td>
               <td style="height:34px;line-height: 20px; padding: 6px 12px;">
                 <input class="select-width input-border" type="text" ng-model="rg.ReceiveUser" ng-disabled="canChange">

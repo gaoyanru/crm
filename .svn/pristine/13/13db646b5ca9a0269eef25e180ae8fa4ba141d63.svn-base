@@ -5,43 +5,52 @@
 <div class="modal-body">
   <div class="content-header clearfix">
     <form name="contractBelongform" novalidate class="con-header-left fl">
-      <div class="form-group ml5 ht">
+      <div class="form-group ml5">
         <label>序列ID</label>：
+        <!-- <input flex ng-model="item.SequenceNo" required readonly class="input-border"/> -->
         <span class="detail-top">{{item.SequenceNo}}</span>
       </div>
-      <div class="form-group ml5 ht">
+      <div class="form-group ml5">
         <label>公司名称</label>：
+        <!-- <input flex ng-model="item.CompanyName" required readonly class="input-border" style="width:200px"/> -->
         <span class="detail-top">{{item.CompanyName}}</span>
       </div>
-      <div class="form-group ml5 ht">
+      <div class="form-group ml5">
         <label>当前合同编号</label>：
+        <!-- <input flex ng-model="item.ContractNo" required readonly class="input-border"/> -->
         <span class="detail-top">{{item.ContractNo}}</span>
       </div>
-      <div class="form-group ml5 ht">
+      <div class="form-group ml5">
         <label>当前服务日期</label>：
-        <span class="detail-top">{{itemDetail23.ServiceStart | tDate}}</span>
+        <span class="detail-top">{{item.ServiceStart | tDate}}</span>
         <span>-</span>
-        <span class="detail-top">{{itemDetail23.ServiceEnd | tDate}}</span>
+        <span class="detail-top">{{item.ServiceEnd | tDate}}</span>
+        <!-- <input flex ng-model="item.serviceDate" required readonly class="input-border"/> -->
       </div>
-      <div class="form-group ml5 ht">
+      <div class="form-group ml5">
         <label>服务状态</label>：
         <span class="detail-top">{{item.ServiceStatus | NewServiceStatus}}</span>
+        <!-- <input flex value="{{item.ServiceStatus | NewServiceStatus}}" required readonly class="input-border" style="width:100px"/> -->
       </div>
-      <div class="form-group ml5 ht">
+      <div class="form-group ml5">
         <label>外勤审核状态</label>：
         <span class="detail-top">{{item.OutWorkerStatus | NewCheckStatus}}</span>
+        <!-- <input flex value="{{item.OutWorkerStatus | NewCheckStatus}}" required readonly class="input-border" style="width:100px"/> -->
       </div>
-      <div ng-show="isAccouting" class="form-group ml5 ht">
+      <div ng-show="isAccouting" class="form-group ml5">
         <label>部分报税</label>：
         <span class="detail-top">{{item.PartTax | partTax}}</span>
+        <!-- <input flex value="{{item.PartTax | partTax}}" required readonly class="input-border" style="width:100px"/> -->
       </div>
-      <div class="form-group ml5 ht">
+      <div class="form-group ml5">
         <label>会计审核状态</label>：
         <span class="detail-top">{{item.AccountantStatus | NewCheckStatus}}</span>
+        <!-- <input flex value="{{item.AccountantStatus | NewCheckStatus}}" required readonly class="input-border" style="width:100px"/> -->
       </div>
-      <div ng-show="isAccouting" class="form-group ml5 ht">
+      <div ng-show="isAccouting" class="form-group ml5">
         <label>来源</label>：
         <span class="detail-top">{{item.AccountantTaskSource}}</span>
+        <!-- <input flex value="{{item.AccountantTaskSource}}" required readonly class="input-border" style="width:100px"/> -->
       </div>
     </form>
     <div ng-show="isAccouting" class="con-header-right fr" style="width:10%">
@@ -91,7 +100,7 @@
               <div class="form-group ml5">
                 <label>所属行业</label>：
                 <select ng-model="postDetail.SubsidiaryId" class="input-border" ng-disabled="isEdit" style="width:100px;">
-                  <option value="0">请选择</option>
+                  <option value="">请选择</option>
                   <option  ng-repeat="item in industries" value="{{item.IndustryId}}" ng-selected="postDetail.SubsidiaryId == item.IndustryId" >{{item.IndustryName}}</option>
                 </select>
               </div>
@@ -113,7 +122,7 @@
             <form name="companyform" novalidate class="clearfix">
               <div class="form-group ml5">
                 <label>法人姓名</label>：
-                <input flex ng-model="postDetail.LegalPerson" required ng-disabled="isEdit" class="input-border" maxlength="5"/>
+                <input flex ng-model="postDetail.LegalPerson" required ng-disabled="isEdit" class="input-border"/>
               </div>
               <div class="form-group ml5 flex-style">
                 <label>法人身份证</label>：
@@ -129,7 +138,7 @@
               </div>
               <div class="form-group ml5">
                 <label>注册号</label>：
-                <input flex ng-model="postDetail.RegNO" required ng-disabled="isEdit" class="input-border" style="width: 180px" maxlength="20"/>
+                <input flex ng-model="postDetail.RegNO" required ng-disabled="isEdit" class="input-border" style="width: 180px"/>
               </div>
               <div class="form-group ml5 flex-style">
                 <label>营业执照</label>：
@@ -145,15 +154,15 @@
               </div>
               <div class="form-group ml5">
                 <label>国税登记号</label>：
-                <input flex ng-model="postDetail.NationalTaxNO" required ng-disabled="isEdit" class="input-border" style="width: 180px" maxlength="20"/>
+                <input flex ng-model="postDetail.NationalTaxNO" required ng-disabled="isEdit" class="input-border" style="width: 180px"/>
               </div>
               <div class="form-group ml5">
                 <label>地税登记号</label>：
-                <input flex ng-model="postDetail.LocalTaxNO" required ng-disabled="isEdit" class="input-border" style="width: 180px" maxlength="20"/>
+                <input flex ng-model="postDetail.LocalTaxNO" required ng-disabled="isEdit" class="input-border" style="width: 180px"/>
               </div>
               <div class="form-group ml5">
                 <label>注册资金</label>：
-                <input flex ng-model="postDetail.RegisteredCapital" required ng-disabled="isEdit" class="input-border" maxlength="20"/>
+                <input flex ng-model="postDetail.RegisteredCapital" required ng-disabled="isEdit" class="input-border"/>
               </div>
               <div class="form-group ml5">
                 <lable style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">营业期限：</lable>
@@ -181,7 +190,7 @@
               </div>
               <div class="form-group" style="margin: 5px 10px 5px 10px;">
                 <label>经营范围：</label>
-                <textarea cols="120" rows="5" ng-model="postDetail.BusinessScope" ng-disabled="isEdit" maxlength="300"></textarea>
+                <textarea cols="120" rows="5" ng-model="postDetail.BusinessScope" ng-disabled="isEdit"></textarea>
               </div>
             </form>
           </div>
@@ -207,7 +216,7 @@
                   <td style="text-align:center;">{{contrac.ContractNo}}</td>
                   <td style="text-align:center">{{contrac.OrderType | ContractType}}</td>
                   <td style="text-align:center">{{contrac.ContractDate | tDate}}</td>
-                  <td style="text-align:center">{{contrac.OrderMonths+contrac.GiftMonth}}</td>
+                  <td style="text-align:center">{{contrac.service}}</td>
                   <td style="text-align:center">{{contrac.ServiceStart | tDate}}</td>
                   <td style="text-align:center">{{contrac.ServiceEnd | tDate}}</td>
                   <td style="text-align:center">{{contrac.Amount}}</td>
@@ -299,7 +308,7 @@
                   <td style="text-align:center">{{contrac.childTaskName}}</td>
                   <td style="text-align:center">{{contrac.Status | ChildoutworkStatus}}</td>
                   <td style="text-align:center">{{contrac.OutWorkerName}}</td>
-                  <td style="text-align:center">{{contrac.SubmitTaskTime | tDateTime}}</td>
+                  <td style="text-align:center">{{contrac.SubmitTaskTime}}</td>
                   <td class="table-opt" style="text-align:center;width:200px">
                     <button class="btn btn-link" href="javascript:;" ng-click="detailTab4(contrac)">查看详情</button>
                   </td>
@@ -374,7 +383,7 @@
                   <td style="text-align:center;">{{contrac.Id}}</td>
                   <td style="text-align:center">{{contrac.Content}}</td>
                   <td style="text-align:center">{{contrac.RealName}}</td>
-                  <td style="text-align:center">{{contrac.OperationTime | tDateTime}}</td>
+                  <td style="text-align:center">{{contrac.OperationTime}}</td>
                 </tr>
               </tbody>
             </table>

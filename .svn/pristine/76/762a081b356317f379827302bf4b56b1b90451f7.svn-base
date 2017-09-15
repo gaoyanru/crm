@@ -82,8 +82,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             $scope.onlyInformationIsAll = true // 这种情况的时候只能选择资料齐全提交会计
             return false
           }
-          if (item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
-          // if (item.OutWorkerStatus == 2 && item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
+          if (item.OutWorkerStatus == 2 && item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
             $scope.onlyInformationIsAll = false
             return false
           }

@@ -149,8 +149,8 @@
   display: inline-block;
   text-align: center;
   min-width: 90px;
-  height: 20px;
-  line-height: 20px;
+  /*height: 20px;
+  line-height: 20px;*/
 }
 .info th {
   text-align: center;
@@ -171,4 +171,12 @@
   height: 34px;
   font-size: 20px;
   line-height: 34px;
+}
+.ht {
+  height: 25px;
+  line-height: 25px;
+}
+.table > tbody > tr > td {
+  vertical-align: middle;
+  padding: 4px 4px;
 }

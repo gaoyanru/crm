@@ -5,7 +5,7 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
   $scope.markBg = {}
 
   $scope.companyStatus = { // 服务状态
-    1: "待分配",
+    1: "等待分配",
     2: "未开始",
     3: "外勤服务",
     4: "外勤会计服务",
@@ -282,16 +282,16 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         }
       })
     } else if ($scope.sign) { // 标记
-      // if ($scope.Remark) {
-      //   var RealName = users.RealName
-      //   $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
-      // }
+      if ($scope.Remark) {
+        var RealName = users.RealName
+        $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+      }
       if (!$scope.postData.RemarkSignId) {
         alert('请选择标记状态')
       } else {
         post.CustomerId = $scope.postData.customerId
         post.SignVal = $scope.postData.RemarkSignId
-        post.Remark = $scope.Remark
+        post.Remark = $scope.postData.Remark
         // console.log(post)
         var url = '/api/companySign'
         $http.put(url, post).success(function(res) {
@@ -309,7 +309,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
 }]).controller('SignedDetail1', ['$scope', '$http', '$uibModal', '$uibModalInstance', 'FileUploader','$filter', 'contractMsg', 'item', 'areas', 'user', function($scope, $http, $uibModal, $uibModalInstance, FileUploader, $filter, contract, item, areas, users) {
   var users = users.get()
   // console.log(users)
-  // console.log(contract, 'contract')
+  console.log(contract, 'contract')
   $scope.isAccouting = false;
   $scope.title = '签约客户管理>查看';
   $scope.isEdit = true;
@@ -326,21 +326,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   // contract.IndustryId = 1
   // contract.AreaCode = '110101'
   // contract.AddedValue = 1
-  // console.log(contract.BusnissDeadline, contract.RegisterDate)
-  if (new Date(contract.BusnissDeadline).getTime() < 0) {
-    contract.BusnissDeadline = ''
-  }
-  if (new Date(contract.RegisterDate).getTime() < 0) {
-    contract.RegisterDate = ''
-  }
-  // contract.BusnissDeadline = contract.BusnissDeadline + ''
-  // if (contract.BusnissDeadline.substr(0, 4) == "0001") {
-  //   contract.BusnissDeadline = ''
-  // } else {
-  //   contract.BusnissDeadline.replace('T', ' ')
-  // }
   $scope.postDetail = contract
-
   // console.log($scope.item, '$scope.item')
   $scope.customerId = $scope.item.customerId
   // console.log($scope.customerId, 'customerId')
@@ -371,7 +357,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   $scope.postDataOut.CustomerId = $scope.customerId
   $scope.postDataOut.AreaCode = $scope.postDetail.AreaCode
   $scope.postDataOut.OrderId = $scope.item.OrderId
-  // console.log($scope.postDataOut, '$scope.postDataOut')
+  console.log($scope.postDataOut, '$scope.postDataOut')
   // 审核提交会计
   $scope.submitAccount = function() {
     var post = {}
@@ -458,10 +444,6 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
     }
     if (!$scope.postDetail.Mobile) {
       alert ('请联系人电话')
-      return
-    }
-    if (!$scope.postDetail.AreaCode) {
-      alert ('请选择所属区域')
       return
     }
     console.log($scope.item)
@@ -665,7 +647,9 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
       backdrop: 'static'
     })
     modalInstance.result.then(function(result) {
-      $scope.refreshData2()
+      $uibModalInstance.close()
+      // $scope.postDetail.isCheck = true
+      // $scope.postDetail.financestatus = 3
     }, function() {
 
     });
@@ -1002,11 +986,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   $scope.canSave = false // 编辑和保存按钮切换
   $scope.rlist = [{}]
   $scope.postDetail = {}
-  $scope.Math = Math
-  $scope.getAmount = function (rg) {
-    // console.log(rg.Amount)
-    rg.ReceiveAmount = +($scope.Math.abs(rg.ReceiveAmount)).toFixed(2)
-  }
+
   $scope.projectItems = projectItems
   $scope.postDetail = contractItem
   // 处理项目list
@@ -1096,7 +1076,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
   } else {
     $scope._partT = false
   }
-  if ($scope.AccountantStatus == 3 && $scope.OutWorkerStatus != 3) {
+  if ($scope.AccountantStatus == 3 && $scope.OutWorkerStatus == 1) {
     $scope.isSecondAccount = true
   } else {
     $scope.isSecondAccount = false
@@ -1118,7 +1098,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
           if ($scope.partT == 0) { // 资料齐全 提交完成后两个按钮都是禁止点击 弹框关闭刷新页面
             // $uibModalInstance.close({partT:0})
             $uibModalInstance.close()
-          } else if ($scope.AccountantStatus == 3 && $scope.OutWorkerStatus != 3) {
+          } else if ($scope.AccountantStatus == 3 && $scope.OutWorkerStatus == 1) {
             $http.put('/api/order/audit/toaccountant/' + $scope.postData.orderId + '/?partTax=' + $scope.partT).success(function(res) {
               if(res.status) {
                 $uibModalInstance.close()

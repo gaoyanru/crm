@@ -11,7 +11,7 @@
           <option  ng-repeat="(key,value) in tags" ng-value="key" ng-selected="postData.RemarkSignId == key">{{value}}</option>
         </select>
       </div>
-	    <textarea cols="60" rows="3" ng-model="Remark" placeholder="请填写原因" ng-disabled="isEdit" maxlength="150"></textarea>
+	    <textarea cols="60" rows="3" ng-model="Remark" placeholder="请填写原因" ng-disabled="isEdit"></textarea>
     </form>
     <div class="clearfix" ng-if="isEdit">
       <div class="form-group" style="margin: 5px 10px 5px 10px;">

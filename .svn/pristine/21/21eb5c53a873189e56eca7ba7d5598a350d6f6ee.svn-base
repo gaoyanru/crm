@@ -48,6 +48,9 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
           }
         })
       }
+        if ($scope.user.Category !== 2 && $scope.user.Category !== 8) {
+            delete $scope.taskStatus["1"];
+        }
 
         $scope.search = {
             SequenceNo: "",

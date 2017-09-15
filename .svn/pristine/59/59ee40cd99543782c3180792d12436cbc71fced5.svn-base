@@ -1,11 +1,11 @@
-angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state', '$uibModal', 'user', '$q',
+angular.module('crmApp').controller('Order_outworker', ['$scope', '$http', '$state', '$uibModal', 'user', '$q',
     function($scope, $http, $state, $uibModal, user, $q) {
         $scope.user = user.get();
         // console.log($scope.user)
         $scope.open = function(item) {
             var modalInstance = $uibModal.open({
                 templateUrl: 'views/order_outworker_add.html',
-                controller: 'Order_outworker_a',
+                controller: 'Order_outworker_add',
                 backdrop: 'static',
                 size: 'hg',
                 resolve: {
@@ -19,24 +19,25 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             });
         };
         $scope.detail = function(item) {
-          var modalInstance = $uibModal.open({
-              templateUrl: 'views/order_outworker_detail.html',
-              controller: 'Order_outworker_detail',
-              size: 'hg',
-              resolve: {
-                item: function() {
-                    return item
-                }
-              }
-          });
-          modalInstance.result.then(function(result) {
-              refreshData();
-          }, function() {
 
-          });
+            var modalInstance = $uibModal.open({
+                templateUrl: 'views/order_outworker_detail.html',
+                controller: 'Order_outworkerDetail',
+                size: 'hg',
+                resolve: {
+                    taskId: function() {
+                        return item.Id
+                    }
+                }
+            });
+            modalInstance.result.then(function(result) {
+                refreshData();
+            }, function() {
+
+            });
         };
 
-        $scope.taskStatus = { // 任务状态
+        $scope.taskStatus = {
             1: "待分配",
             2: "待处理",
             3: "进行中",
@@ -52,7 +53,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             connector: "",
             taskname: "",
             childtaskname: "",
-            outworkId: "",
+            currOutworker: "",
             starttime: "",
             endtime: "",
             areacode: "",
@@ -60,75 +61,11 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             taskstatus: "",
             servicestatus: ""
         };
-        // 取消任务
-        $scope.cancel = function(item) {
-          if (!confirm("确认要取消任务吗？")) return
-          $http.put('api/maintask/cancelstatus/' + item.Id).success(function(res) {
-              if (res.status) refreshData()
-          })
-        }
-        // 判断提交按钮是不是可点
-        $scope.isSub = function(item) {
-          // console.log(item, '列表数据')
-          //  提交分三种情况
-          //   1. 审单直接提交给外勤的时候 外勤审核状态OutWorkerStatus=2已审核 会计审核状态AccountantStatus是null的时候 提交时候可以选择资料齐全或者部分
-          //   2. 审单分别提交给外勤和会计 审单提交给外勤后外勤要把剩下的部分提交给会计 外勤状态已审核OutWorkerStatus=2 会计审核状态部分审核 AccountantStatus=5 提交的时候只能选择资料齐全
-          //   3. 审单提交给外勤 外勤部分提交给会计 外勤状态已审核OutWorkerStatus=2 会计审核状态已驳回AccountantStatus=3 来源是外勤提交的时候AccountantTaskSource 提交的时候选择资料齐全或者部分
-          if (item.OutWorkerStatus == 2 && !item.AccountantStatus) {
-            $scope.onlyInformationIsAll = false
-            return false
-          }
-          if (item.OutWorkerStatus == 2 && item.AccountantStatus == 5) {
-            $scope.onlyInformationIsAll = true // 这种情况的时候只能选择资料齐全提交会计
-            return false
-          }
-          if (item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
-          // if (item.OutWorkerStatus == 2 && item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
-            $scope.onlyInformationIsAll = false
-            return false
-          }
-          $scope.onlyInformationIsAll = true
-          return true
-        }
-        // 审核提交
-        $scope.check = function(item) {
-            if (!confirm("确认资料齐全？")) return;
-            var PartTax
-            if (!item.PartTax) {
-                PartTax = 0
-            } else {
-                PartTax = item.PartTax
-            }
-            $http.put('api/maintask/audit/pass/' + item.OrderId + '?partTax=' + PartTax).success(function(res) {
+        $scope.delete = function(item) {
+            if (!confirm("确认要取消任务吗？")) return;
+            $http.put('api/maintask/cancelstatus/' + item.Id).success(function(res) {
                 if (res.status) refreshData();
             });
-        };
-        $scope.reject = function(item) {
-            if (!confirm("确认驳回？")) return;
-            $http.put('api/maintask/audit/reject/' + item.OrderId).success(function(res) {
-                if (res.status) refreshData();
-            });
-        };
-        // 外勤提交给会计弹框选择资料齐全还是部分报税 注意情况2的时候只能选择资料齐全
-        $scope.sub = function(item) {
-          var modalInstance = $uibModal.open({
-              templateUrl: 'views/order_outworker_detail_sub.html',
-              controller: 'Order_outworkerDetail_sub',
-              size: '',
-              resolve: {
-                item: function() {
-                    return item
-                },
-                onlyInformationIsAll: function() {
-                  return $scope.onlyInformationIsAll
-                }
-              }
-          });
-          modalInstance.result.then(function(result) {
-            refreshData();
-          }, function() {
-
-          });
         };
         //日期
         $scope.clear = function() { //清空
@@ -246,18 +183,16 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             // return deferred.promise;
         }
         refreshData();
-        // 获取销售人员
         $http.get("/api/contract/sales").success(function(res) {
             $scope.users = res.data;
         });
-        // 获取外勤人员
         $http.get('api/outworkers').success(function(res) {
             $scope.outworkers = res.data.list;
         });
-        // 获取当前子任务
         $http.get('/api/commontask').success(function(res) {
-            $scope.Tasks = formatData(res.data);
-        })
+
+                $scope.Tasks = formatData(res.data);
+            })
             // $scope.taskchange = function () {
             //     if (!$scope.search.taskname) {
             //         return
@@ -297,7 +232,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
         }
 
     }
-]).controller("Order_outworker_a", ['$scope', '$http', '$uibModal', '$uibModalInstance', 'customer', 'user',
+]).controller("Order_outworker_add", ['$scope', '$http', '$uibModal', '$uibModalInstance', 'customer', 'user',
     function($scope, $http, $uibModal, $uibModalInstance, customer, UserServe) {
         var user = UserServe.get();
         $http.get('/api/mycity').success(function(res) {
@@ -344,9 +279,11 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             return result;
 
         }
-        $scope.postData = {};
-        $scope.postData.areaSele = 0;
 
+        $scope.areaSele = 0
+
+
+        $scope.postData = {};
         if (customer.Id) {
             $scope.cus_selected = true;
             $scope.postData.Customer = customer;
@@ -364,7 +301,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             });
             var data = {
                 CustomerId: $scope.postData.Customer.Id,
-                AreaCode: $scope.postData.areaSele,
+                AreaCode: $scope.areaSele,
                 Remark: $scope.postData.Remark
             };
             var isOthers = false;
@@ -403,7 +340,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
                 }
             }
 
-            if (!$scope.postData.areaSele) {
+            if (!$scope.areaSele) {
                 alert('请选择区域！');
                 return;
             }
@@ -502,7 +439,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             modalInstance.result.then(function(result) {
                 $scope.postData.Customer = result;
                 if (result.AreaCode) {
-                    $scope.postData.areaSele = result.AreaCode;
+                    $scope.areaSele = result.AreaCode;
                 }
             }, function() {
 
@@ -511,31 +448,15 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
 
 
     }
-]).controller("Order_outworker_detail", ['$scope', '$http', '$uibModalInstance', 'item', '$mdDialog', 'user', '$uibModal',
-    function($scope, $http, $uibModalInstance, item, $mdDialog, user, $uibModal) {
-        $scope.isSub = function() {
-            if (!item.PartTax && item.OutWorkerStatus == 2) {
-                return false
-            }
-            if (item.PartTax && item.OutWorkerStatus == 2 && item.AccountantStatus == 5) {
-                return false
-            }
-            return true
-        }
-        console.log(item, 'item')
-        $scope.item = item
-        var taskId = item.Id
-        $scope.ifSub = true
+]).controller("Order_outworkerDetail", ['$scope', '$http', '$uibModalInstance', 'taskId', '$mdDialog', 'user', '$uibModal',
+    function($scope, $http, $uibModalInstance, taskId, $mdDialog, user, $uibModal) {
+        $scope.ifSub = false
         $scope.customers = [];
         $scope.user = user.get();
         $scope.forwards = {
             forwardUserId: '0',
             isSelectAll: false
         };
-        // $scope.dynamicPopover = {
-        //     content: item.Remark,
-        //     title: '备注'
-        // }
         var count = 0
 
         function refreshData() {
@@ -559,28 +480,6 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             }
             close();
         };
-        // 查看详情时候的提交
-        $scope.sub = function() {
-          var modalInstance = $uibModal.open({
-              templateUrl: 'views/order_outworker_detail_sub.html',
-              controller: 'Order_outworkerDetail_sub',
-              size: '',
-              resolve: {
-                item: function() {
-                    return item
-                },
-                onlyInformationIsAll: function() {
-                  return $scope.onlyInformationIsAll
-                }
-              }
-          });
-          modalInstance.result.then(function(result) {
-              close()
-              refreshData();
-          }, function() {
-
-          });
-        }
 
         function close() {
             if (count > 0) {
@@ -906,31 +805,5 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
                 $uibModalInstance.close($scope.Tasks);
             }
         }
-    }
-]).controller("Order_outworkerDetail_sub", ['$scope', '$http', '$uibModalInstance', 'onlyInformationIsAll', 'item',
-    function($scope, $http, $uibModalInstance, onlyInformationIsAll, item) {
-      console.log(onlyInformationIsAll, '是否只能选择资料齐全')
-      $scope.title = '外勤提交会计'
-      $scope.close = function() {
-        $uibModalInstance.close();
-      }
-
-      if (onlyInformationIsAll) { // true的时候只能点击资料齐全
-        $scope.isSecondAccount = true
-      } else {
-        $scope.isSecondAccount = false
-      }
-      $scope.sub = function() {
-        console.log(item.OrderId, $scope.partT, item.ServiceStatus, '提交数据')
-        $http.put('/api/maintask/audit/submit/' + item.OrderId + '?partTax=' + $scope.partT + '&serviceStatus=' + item.ServiceStatus).success(function(res) {
-            $scope.close()
-        })
-      }
-      // 只有选择一个提交按钮才能点
-      $scope.dis = function() {
-        return $scope.partT === undefined ? true : false
-      }
-      // 只有选择是部分报税的时候 国税地税才能被选择
-      $scope.part = item.PartTax == 1 || item.PartTax == 2
     }
 ]);

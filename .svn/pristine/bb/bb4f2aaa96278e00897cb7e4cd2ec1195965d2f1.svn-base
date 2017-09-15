@@ -20,7 +20,7 @@
             <div class="form-group" style="margin: 5px">
                 <label>服务状态</label>：
                 <select ng-model="search.serviceStatus" class="form-control">
-                    <option value="" ng-selected="true">请选择</option>
+                    <option value="0" ng-selected="true">请选择</option>
                     <!-- <option value="1" >等待分配</option> -->
                     <option value="2" >未开始</option>
                     <option value="3" >外勤服务</option>
@@ -33,7 +33,7 @@
             <div class="form-group" style="margin: 5px">
                 <label>会计审核状态</label>：
                 <select ng-model="search.accountantStatus" class="form-control">
-                    <option value="" ng-selected="true">请选择</option>
+                    <option value="0" ng-selected="true">请选择</option>
                     <option value="1" >待审核</option>
                     <option value="2" >已审核</option>
                     <option value="3" >已驳回</option>
@@ -50,9 +50,9 @@
             <div class="form-group" style="margin: 5px 10px 5px 10px;">
                 <label>来源</label>：
                 <select ng-model="search.accountantTaskSource" class="form-control">
-                    <option value="" ng-selected="true">请选择</option>
-                    <option value="审单" >审单</option>
-                    <option value="外勤" >外勤</option>
+                    <option value="0" ng-selected="true">请选择</option>
+                    <option value="1" >审单</option>
+                    <option value="2" >外勤</option>
 
                 </select>
             </div>
@@ -84,7 +84,7 @@
         </form>
     </div>
     <div style="overflow-x: scroll;">
-      <table class="table table-striped table-hover table-bordered" style="min-width:1750px">
+      <table class="table table-striped table-hover table-bordered" style="min-width:1650px">
           <thead>
               <tr class="info">
                   <th style="width:100px">序列ID</th>

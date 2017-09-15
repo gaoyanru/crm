@@ -5,7 +5,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
         $scope.open = function(item) {
             var modalInstance = $uibModal.open({
                 templateUrl: 'views/order_outworker_add.html',
-                controller: 'Order_outworker_a',
+                controller: 'Order_outworker_add',
                 backdrop: 'static',
                 size: 'hg',
                 resolve: {
@@ -82,12 +82,10 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             $scope.onlyInformationIsAll = true // 这种情况的时候只能选择资料齐全提交会计
             return false
           }
-          if (item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
-          // if (item.OutWorkerStatus == 2 && item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
+          if (item.OutWorkerStatus == 2 && item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
             $scope.onlyInformationIsAll = false
             return false
           }
-          $scope.onlyInformationIsAll = true
           return true
         }
         // 审核提交
@@ -297,7 +295,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
         }
 
     }
-]).controller("Order_outworker_a", ['$scope', '$http', '$uibModal', '$uibModalInstance', 'customer', 'user',
+]).controller("Order_outworker_add", ['$scope', '$http', '$uibModal', '$uibModalInstance', 'customer', 'user',
     function($scope, $http, $uibModal, $uibModalInstance, customer, UserServe) {
         var user = UserServe.get();
         $http.get('/api/mycity').success(function(res) {
@@ -344,9 +342,11 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             return result;
 
         }
-        $scope.postData = {};
-        $scope.postData.areaSele = 0;
 
+        $scope.areaSele = 0
+
+
+        $scope.postData = {};
         if (customer.Id) {
             $scope.cus_selected = true;
             $scope.postData.Customer = customer;
@@ -364,7 +364,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             });
             var data = {
                 CustomerId: $scope.postData.Customer.Id,
-                AreaCode: $scope.postData.areaSele,
+                AreaCode: $scope.areaSele,
                 Remark: $scope.postData.Remark
             };
             var isOthers = false;
@@ -403,7 +403,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
                 }
             }
 
-            if (!$scope.postData.areaSele) {
+            if (!$scope.areaSele) {
                 alert('请选择区域！');
                 return;
             }
@@ -502,7 +502,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             modalInstance.result.then(function(result) {
                 $scope.postData.Customer = result;
                 if (result.AreaCode) {
-                    $scope.postData.areaSele = result.AreaCode;
+                    $scope.areaSele = result.AreaCode;
                 }
             }, function() {
 
@@ -916,9 +916,9 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
       }
 
       if (onlyInformationIsAll) { // true的时候只能点击资料齐全
-        $scope.isSecondAccount = true
+        $scope.part = true
       } else {
-        $scope.isSecondAccount = false
+        $scope.part = false
       }
       $scope.sub = function() {
         console.log(item.OrderId, $scope.partT, item.ServiceStatus, '提交数据')

@@ -355,7 +355,7 @@ angular.module('crmApp').filter('filterAddValue', function() {
   return payType
 }).filter('handdleAmount', function() {
   var amount = function (amount) {
-  return '￥' + amount
+  return '￥:' + amount
   }
   return amount
 }).filter('mainTaskStatus', function() {
@@ -386,7 +386,7 @@ angular.module('crmApp').filter('filterAddValue', function() {
         var str = ''
         switch (+status) {
             case 1:
-                str = '待分配'
+                str = '等待分配'
                 break;
             case 2:
                 str = '未开始'
@@ -506,7 +506,7 @@ angular.module('crmApp').filter('filterAddValue', function() {
         var str = ''
         switch (+status) {
             case 1:
-                str = '待分配'
+                str = '等待分配'
                 break;
             case 2:
                 str = '未开始'

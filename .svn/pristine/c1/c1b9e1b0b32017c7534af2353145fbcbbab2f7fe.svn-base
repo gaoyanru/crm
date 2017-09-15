@@ -162,7 +162,6 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
   function ($scope, $http, $uibModal, $uibModalInstance, FileUploader, $filter, UserServe) {
     var user = UserServe.get()
     // console.log('user')
-    $scope.Math = Math
     $scope.postData = {}
     $scope.areaSele = 0 // 选择用户列表
     $scope.canChange = true // 是否可编辑客户基本信息
@@ -205,10 +204,6 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       }
     }
 
-    $scope.getAmount = function (rg) {
-      // console.log(rg.Amount)
-      rg.Amount = +($scope.Math.abs(rg.Amount)).toFixed(2)
-    }
     $scope.geteveryAmount = function(rlist) {
       // console.log(rlist)
       var arr = [0, 0, 0, 0]
@@ -360,7 +355,6 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
         return
       }
       // 验证项目
-      // console.log($scope.rlist, '$scope.rlist')
       for (var i in $scope.rlist) {
         if (!$scope.rlist[i].MainItemId) {
           alert('请选择项目！')
@@ -372,18 +366,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
           alert('项目费用必须是大于0的数！')
           return
         }
-        // if ($scope.rlist[i].MainItemId._filter()) {
-        //   alert('小规模和一般纳税人只能选择一个')
-        //   return
-        // }
       }
-      var res = _.filter($scope.rlist, {MainItemId: '1'})
-      // console.log(res.length, 'res')
-      if (res.length > 1) {
-        alert('记账报税只能选择一个')
-        return
-      }
-      // console.log(res)
       // 验证支付方式
       for (var i in $scope.paylist) {
         if (!$scope.paylist[i].PayTypeId) {
@@ -504,10 +487,6 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
     $scope.rlistMoney = {}
     $scope.remark = ''
     $scope.projectItems = projectItems
-    $scope.getAmount = function (rg) {
-      // console.log(rg.Amount)
-      rg.Amount = +($scope.Math.abs(rg.Amount)).toFixed(2)
-    }
 
     contractItem.ContractDate = new Date(contractItem.ContractDate)
     $scope.postDetail = contractItem
@@ -799,12 +778,6 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
           alert('项目费用必须是大于0的数！')
           return
         }
-      }
-      var res = _.filter($scope.rlist, {MainItemId: '1'})
-      // console.log(res.length, 'res')
-      if (res.length > 1) {
-        alert('小规模和一般纳税人只能选择一个')
-        return
       }
       // 验证支付方式
       for (var i in $scope.paylist) {

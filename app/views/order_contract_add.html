@@ -31,7 +31,7 @@
       <form name="contractform" novalidate class="clearfix">
         <div class="form-group" style="margin: 5px 10px 5px 10px;">
           <label class="required">合同编号</label>：
-          <input flex ng-model="postData.ContractNo" required class="input-width1 input-border"/>
+          <input flex ng-model="postData.ContractNo" required class="input-width1 input-border" maxlength="20"/>
         </div>
         <div class="form-group" style="margin: 5px 10px 5px 10px;">
           <label class="required">合同类型</label>：
@@ -42,11 +42,11 @@
         </div>
         <div class="form-group" style="margin: 5px 10px 5px 10px;">
           <label>合同期限</label>：
-          <input flex ng-model="postData.OrderMonths" placeholder="个月" type="number" class="input-width input-border"/>
+          <input flex ng-model="postData.OrderMonths" placeholder="个月" type="number" class="input-width input-border" ng-change="postData.OrderMonths = Math.floor(Math.abs(postData.OrderMonths)) || ''" ng-model-options="{updateOn: 'blur'}"/>
         </div>
         <div class="form-group" style="margin: 5px 10px 5px 10px;">
           <label>赠送礼包</label>：
-          <input flex ng-model="postData.GiftMonth" placeholder="个月" type="number" class="input-width input-border"/>
+          <input flex ng-model="postData.GiftMonth" placeholder="个月" type="number" class="input-width input-border" ng-change="postData.GiftMonth = Math.floor(Math.abs(postData.GiftMonth)) || ''" ng-model-options="{updateOn: 'blur'}"/>
         </div>
         <div class="form-group col-md-4" style="margin: 5px 10px 5px 10px;min-width:300px">
           <lable class="required" style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">签订日期：</lable>
@@ -121,7 +121,7 @@
         </div>
         <div class="form-group" style="margin: 5px 10px 5px 10px;">
           <label>备注信息：</label>
-          <textarea style="width:950px" cols="100" rows="3" ng-model="postData.Remark"></textarea>
+          <textarea style="width:950px" cols="100" rows="3" ng-model="postData.Remark" maxlength="150"></textarea>
         </div>
       </form>
     </div>

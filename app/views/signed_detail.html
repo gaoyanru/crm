@@ -90,9 +90,9 @@
               </div>
               <div class="form-group ml5">
                 <label>所属行业</label>：
-                <select ng-model="postDetail.SubsidiaryId" class="input-border" ng-disabled="isEdit" style="width:100px;">
+                <select ng-model="postDetail.IndustryId" class="input-border" ng-disabled="isEdit" style="width:100px;">
                   <option value="0">请选择</option>
-                  <option  ng-repeat="item in industries" value="{{item.IndustryId}}" ng-selected="postDetail.SubsidiaryId == item.IndustryId" >{{item.IndustryName}}</option>
+                  <option  ng-repeat="item in industries" value="{{item.IndustryId}}" ng-selected="postDetail.IndustryId == item.IndustryId" >{{item.IndustryName}}</option>
                 </select>
               </div>
               <div class="form-group ml5">
@@ -159,7 +159,7 @@
                 <lable style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">营业期限：</lable>
                   <div style="display: inline-block;">
                     <p class="input-group" style="margin:0;width:150px">
-                      <input type="text" class="form-control" ng-click="open1()" ng-model="postDetail.BusnissDeadline" uib-datepicker-popup="yyyy-MM-dd" ng-model="dt" is-open="popup1.opened" datepicker-options="dateOptions" close-text="关闭" alt-input-formats="altInputFormats" style="padding:6px;" ng-disabled="isEdit"/>
+                      <input type="text" class="form-control" ng-click="open1()" ng-model="postDetail.RegisterDate" uib-datepicker-popup="yyyy-MM-dd" ng-model="dt" is-open="popup1.opened" datepicker-options="dateOptions" close-text="关闭" alt-input-formats="altInputFormats" style="padding:6px;" ng-disabled="isEdit"/>
                       <span class="input-group-btn">
                         <button type="button" class="btn btn-default" ng-click="open1()" ng-disabled="isEdit"><i class="glyphicon glyphicon-calendar"></i></button>
                       </span>
@@ -167,7 +167,7 @@
                   </div>
                   <div style="display: inline-block;">
                     <p class="input-group" style="margin:0;width:150px">
-                      <input type="text" class="form-control" ng-click="open2()" ng-model="postDetail.RegisterDate" uib-datepicker-popup="yyyy-MM-dd" ng-model="dt" is-open="popup2.opened" datepicker-options="dateOptions" close-text="关闭" alt-input-formats="altInputFormats" style="padding:6px;" ng-disabled="isEdit || (postDetail.NoDeadLine == 1)"/>
+                      <input type="text" class="form-control" ng-click="open2()" ng-model="postDetail.BusnissDeadline" uib-datepicker-popup="yyyy-MM-dd" ng-model="dt" is-open="popup2.opened" datepicker-options="dateOptions" close-text="关闭" alt-input-formats="altInputFormats" style="padding:6px;" ng-disabled="isEdit || (postDetail.NoDeadLine == 1)"/>
                       <span class="input-group-btn">
                         <button type="button" class="btn btn-default" ng-click="open2()" ng-disabled="isEdit || (postDetail.NoDeadLine == 1)"><i class="glyphicon glyphicon-calendar"></i></button>
                       </span>

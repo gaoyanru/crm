@@ -270,7 +270,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
     if (!$scope.sign) { // 挂起
       console.log($scope.postData, '$scope.postData')
       post.CompanyId = $scope.postData.customerId
-      post.SubsidiaryId = $scope.postData.SubsidiaryId
+      post.ChannelId = $scope.postData.SubsidiaryId
       post.Description = $scope.Remark
 
       // console.log(post)
@@ -333,6 +333,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   if (new Date(contract.RegisterDate).getTime() < 0) {
     contract.RegisterDate = ''
   }
+  contract.IndustryId = contract.IndustryId + ''
   // contract.BusnissDeadline = contract.BusnissDeadline + ''
   // if (contract.BusnissDeadline.substr(0, 4) == "0001") {
   //   contract.BusnissDeadline = ''
@@ -618,35 +619,30 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         $scope.tab2.paginator.total = res.data.total
       }
     })
-    // $scope.contractTab = [
-    //   {contractId: 'BJ-A00986', contractType: '2', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'},
-    //   {contractId: 'BJ-A00986', contractType: '1', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'},
-    //   {contractId: 'BJ-A00986', contractType: '2', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'}
-    // ]
   }
   $scope.detailTab2 = function(item) {
     // 弹框查看
-    var modalInstance = $uibModal.open({
-      templateUrl: 'views/signed_tab2_detail.html',
-      controller: 'Tab2Detail',
-      size: 'lg',
-      resolve: {
-        contractItem: function() {
-          return $scope.itemDetail23
-        }
+    var OrderId = item.OrderId
+    $http.get('/api/contractdetail/' + OrderId).success(function(res) {
+      $scope.itemDetail = res.data
+      if (res.status) {
+        var modalInstance = $uibModal.open({
+          templateUrl: 'views/signed_tab2_detail.html',
+          controller: 'Tab2Detail',
+          size: 'lg',
+          resolve: {
+            contractItem: function() {
+              return $scope.itemDetail
+            }
+          }
+        })
+        modalInstance.result.then(function (result) {
+          $scope.refreshData2()
+        }, function () {
+
+        })
       }
     })
-    modalInstance.result.then(function (result) {
-      $scope.refreshData2()
-    }, function () {
-
-    })
-    // item.OrderId = 561
-    // $http.get('/api/contractdetail/' + item.OrderId).success(function(res) {
-    //   console.log(res)
-    //   $scope.itemDetail2 = res.data
-    //
-    // })
   }
   $scope.stop = function(item) {
     // 根据返回状态判断是否是在服务器内 服务器过了就不能终止合同
@@ -711,35 +707,36 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         $scope.tab3.paginator.total = res.data.total
       }
     })
-    // $scope.contractTab3 = [
-    //   {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1},
-    //   {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1},
-    //   {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1}
-    // ]
   }
   $scope.detailTab3 = function(item) {
     // 弹框查看
-    $http.get('api/contract/getmainitemlist').success(function(res) {
-      // console.log(res, 'res')
+    var OrderId = item.OrderId
+    $http.get('/api/contractdetail/' + OrderId).success(function(res) {
+      $scope.itemDetail3 = res.data
       if (res.status) {
-        $scope.projectItems = res.data
-        var modalInstance = $uibModal.open({
-          templateUrl: 'views/signed_tab3_detail.html',
-          controller: 'Tab3Detail',
-          size: 'hg',
-          resolve: {
-            contractItem: function() {
-              return $scope.itemDetail23
-            },
-            projectItems: function() {
-              return $scope.projectItems
-            }
-          }
-        })
-        modalInstance.result.then(function (result) {
-          $scope.refreshData3()
-        }, function () {
+        $http.get('api/contract/getmainitemlist').success(function(res) {
+          // console.log(res, 'res')
+          if (res.status) {
+            $scope.projectItems = res.data
+            var modalInstance = $uibModal.open({
+              templateUrl: 'views/signed_tab3_detail.html',
+              controller: 'Tab3Detail',
+              size: 'hg',
+              resolve: {
+                contractItem: function() {
+                  return $scope.itemDetail3
+                },
+                projectItems: function() {
+                  return $scope.projectItems
+                }
+              }
+            })
+            modalInstance.result.then(function (result) {
+              $scope.refreshData3()
+            }, function () {
 
+            })
+          }
         })
       }
     })
@@ -844,7 +841,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         limit: $scope.tab5.paginator.perPage
     }, data);
     $http.get(url + $.param(data)).success(function(res) {
-      // console.log(res)
+      console.log(res)
       if (res.status) {
         $scope.contractTab5 = res.data.list
         $scope.tab5.paginator.total = res.data.total
@@ -931,13 +928,9 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
     // var customerId = '111'
     var post = {}
     post.customerId = customerId
-    // var data = angular.extend({
-    //     offset: ($scope.tab6.paginator.currentPage - 1) * $scope.tab6.paginator.perPage,
-    //     limit: $scope.tab6.paginator.perPage
-    // }, post, data)
     var data = angular.extend({
-        offset: 0,
-        limit: 10
+        offset: ($scope.tab6.paginator.currentPage - 1) * $scope.tab6.paginator.perPage,
+        limit: $scope.tab6.paginator.perPage
     }, post, data)
     $http.get('/api/customer/rz?' + $.param(data)).success(function(res) {
       // console.log(res)
@@ -1096,11 +1089,14 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, sign, user
   } else {
     $scope._partT = false
   }
-  if ($scope.AccountantStatus == 3 && $scope.OutWorkerStatus != 3) {
+  // 判断再次提交可点不可点
+  if ($scope.PartTax != 0 && $scope.AccountantStatus == 3 && $scope.OutWorkerStatus != 3) {
     $scope.isSecondAccount = true
   } else {
     $scope.isSecondAccount = false
   }
+  // 审单全部提交给会计后 会计驳回 再次提交时候部分和全部资料都可以选
+
   // 提交
   $scope.sub = function() {
     if ($scope.partT == null) {

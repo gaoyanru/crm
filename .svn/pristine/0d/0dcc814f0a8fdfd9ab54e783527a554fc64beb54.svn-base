@@ -1,0 +1,74 @@
+<div class="modal-header">
+  <span class="close" ng-click="cancel()">&times;</span>
+  <h3 class="modal-title">合同总金额：{{postDetail.Amount}} 元：</h3>
+</div>
+<div class="modal-body">
+  <div class="contract-belong-info clearfix">
+    <form name="contractBelongform" novalidate class="clearfix">
+      <div class="form-group" style="margin: 5px 10px 5px 10px;">
+        <div class="clearfix" style="margin-bottom:10px">
+          <div class="amount fl">
+            <span>记账报税费用：</span>
+            <span class="contract-inputWidth">{{postDetail.BookKeepFeed}}</span>
+          </div>
+          <div class="amount fl">
+            <span>财务服务费用：</span>
+            <span class="contract-inputWidth">{{postDetail.FinanceServiceFeed}}</span>
+          </div>
+          <div class="amount fl">
+            <span>外勤服务费用：</span>
+            <span class="contract-inputWidth">{{postDetail.OutWorkServiceFeed}}</span>
+          </div>
+          <div class="amount fl">
+            <span>代收费用：</span>
+            <span class="contract-inputWidth">{{postDetail.AgentFeed}}</span>
+          </div>
+        </div>
+        <table class="table table-hover table-bordered">
+          <thead>
+            <tr class="info">
+              <th>项目</th>
+              <th>子项目</th>
+              <th>费用</th>
+              <th>领用金额</th>
+              <th>领用人</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="rg in rlist">
+              <td style="height:34px;line-height: 20px; padding: 6px 12px;">
+                <select ng-model="rg.MainItemId" ng-change="getcurProject(rg, $index)" class="input-border select-width" ng-disabled="isChange">
+                  <option value="">请选择</option>
+                  <option ng-repeat="item in projectItems" value="{{item.Id}}" ng-selected="rg.MainItemId == item.Id">{{item.Name}}</option>
+                </select>
+              </td>
+              <td style="height:34px;line-height: 20px; padding: 6px 12px;">
+                <select ng-model="rg.ChildItemId" class="input-border select-width" ng-disabled="isChange">
+                  <option value="">请选择</option>
+                  <option ng-repeat="item in rg.contractprojectChildOptions" value="{{item.Id}}" ng-selected="rg.ChildItemId == item.Id">{{item.Name}}</option>
+                </select>
+              </td>
+              <td style="height:34px;line-height: 20px; padding: 6px 12px;">
+                <input class="select-width input-border" type="number" ng-model="rg.Amount" ng-blur="getAmount(rg)" readonly>
+              </td>
+              <td style="height:34px;line-height: 20px; padding: 6px 12px;">
+                <input class="select-width input-border" type="number" ng-model="rg.ReceiveAmount" ng-disabled="canChange" ng-blur="getAmount(rg)">
+              </td>
+              <td style="height:34px;line-height: 20px; padding: 6px 12px;">
+                <input class="select-width input-border" type="text" ng-model="rg.ReceiveUser" ng-disabled="canChange">
+              </td>
+              <td style="height:34px;line-height: 20px; padding: 6px 12px;">
+                <input class="select-width input-border" type="text" ng-model="rg.Remark" ng-disabled="canChange">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="modal-footer">
+          <button ng-if="!canSave" class="btn btn-primary" type="button" ng-click="canCompile()" ng-disabled="isEdit">编辑</button>
+          <button ng-if="canSave" class="btn btn-primary" type="button" ng-disabled="cusform.$invalid" ng-click="ok($event)">保存并提交</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<div class="modal-header">
+    <span class="close" ng-click="close()">&times;</span>
+    <!-- <h3 class="modal-title">外勤提交会计</h3> -->
+    <h3 class="modal-title">{{title}}</h3>
+</div>
+<div class="modal-body">
+    <label for="" style="display:block">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="radio" name="art" value="0" ng-model="partT" ng-click="_partT = false" ng-disabled="isSecondAccount">
+        <span style="display:inline-block;width:80%;height:80px;line-height:80px;padding-left:20px;border:1px dashed black">资料齐全，提交会计审核</span>
+    </label>
+    <label for="" style="display:block">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="radio" name="art" value="" ng-checked="_partT" style="position:relative;top:-20px" ng-disabled="isSecondAccount">
+        <span style="display:inline-block;width:80%;height:85px;line-height:40px;padding-left:20px;border:1px dashed black;position: relative;
+    left: -4px;">部分税务报道<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <label for="">
+          <input type="radio" name="art_sub" value="1" ng-model="partT" ng-click="_partT = true" ng-disabled="isSecondAccount">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;国税报道完毕
+        </label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <label for="">
+          <input type="radio" name="art_sub" value="2" ng-model="partT" ng-click="_partT = true" ng-disabled="isSecondAccount">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;地税报道完毕
+        </label>
+    </span>
+    </label>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="sub()" ng-disabled="dis()">提交</button>
+</div>

@@ -1,0 +1,195 @@
+<div class="modal-header">
+    <span class="close" ng-click="cancel()">&times;</span>
+    <h3 class="modal-title">合同查看</h3>
+</div>
+<div class="modal-body">
+    <div class="contract-belong-info clearfix">
+        <div class="title">
+            <div class="fl belong-left">
+                <span>合同归属信息</span>
+            </div>
+            <!-- <div class="fr belong-right">
+        <button class="btn" type="button" ng-disabled="postDetail.FinancialAudit != 1" ng-click="check()">财务审核</button>
+        <button class="btn" type="button" ng-disabled="postDetail.FinancialAudit != 1" ng-click="refuse()">财务驳回</button>
+      </div> -->
+        </div>
+        <form name="contractBelongform" novalidate class="clearfix">
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label>所属公司</label>：
+                <input flex ng-model="postDetail.SubsidiaryName" required readonly class="input-border" />
+            </div>
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label>合同状态</label>：
+                <input flex value="{{postDetail.OrderStatus|Contractstatus}}" required readonly class="input-border" />
+            </div>
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label>财务状态</label>：
+                <input flex value="{{postDetail.FinancialAudit|FinanceStatus}}" required readonly class="input-border" />
+            </div>
+        </form>
+    </div>
+    <div class="customer-info">
+        <div class="title">客户基本信息</div>
+        <form name="customerform" novalidate class="clearfix">
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label class="required">甲方</label>：
+                <input flex ng-model="postDetail.CompanyName" required ng-disabled="canChange" class="input-border" />
+                <!-- <span class="add-icon" ng-click="selectCustomer()">+</span> -->
+            </div>
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label class="required">联系人</label>：
+                <input flex ng-model="postDetail.Connector" required ng-disabled="canChange" class="input-border" />
+            </div>
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label class="required">联系人电话</label>：
+                <input flex ng-model="postDetail.Mobile" required ng-disabled="canChange" class="input-border" />
+            </div>
+            <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                <label class="required">所属销售</label>：
+                <input flex ng-model="postDetail.SalesName" required readonly class="input-border" />
+            </div>
+        </form>
+    </div>
+    <div class="contract-info">
+        <div class="title">合同信息</div>
+        <div class="content">
+            <form name="contractform" novalidate class="clearfix">
+                <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                    <label class="required">合同编号</label>：
+                    <input flex ng-model="postDetail.ContractNo" required ng-disabled="canChange" class="input-width1 input-border" />
+                </div>
+                <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                    <label class="required">合同类型</label>：
+                    <select ng-model="postDetail.OrderType" class="input-border" ng-disabled="canChange">
+            <option value="">请选择</option>
+            <option  ng-repeat="(key,value) in contractType" value="key" ng-selected="postDetail.OrderType == key" >{{value}}</option>
+          </select>
+                </div>
+                <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                    <label>合同期限</label>：
+                    <input flex ng-model="postDetail.OrderMonths" placeholder="个月" ng-disabled="canChange" type="number" class="input-width input-border" />
+                </div>
+                <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                    <label>赠送礼包</label>：
+                    <input flex ng-model="postDetail.GiftMonth" placeholder="个月" ng-disabled="canChange" type="number" class="input-width input-border" />
+                </div>
+                <div class="form-group col-md-4" style="margin: 5px 10px 5px 10px;min-width:300px">
+                  <lable class="required" style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">签订日期：</lable>
+                  <div class="col-md-8">
+                    <p class="input-group" style="margin:0">
+                      <input type="text" class="form-control" ng-click="open1()" ng-model="postDetail.ContractDate" uib-datepicker-popup="yyyy-MM-dd" ng-model="dt" is-open="popup1.opened" datepicker-options="dateOptions" close-text="关闭" alt-input-formats="altInputFormats" style="padding:6px;" ng-disabled="canChange"/>
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="open1()" ng-disabled="canChange"><i class="glyphicon glyphicon-calendar"></i></button>
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr class="info">
+                                <th>项目</th>
+                                <th>子项目</th>
+                                <th>费用</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="rg in rlist">
+                                <td style="height:34px;line-height: 20px; padding: 6px 12px;">
+                                    <select ng-model="rg.MainItemId" ng-change="getcurProject(rg, $index)" class="input-border select-width" ng-disabled="canChange">
+                    <option value="">请选择</option>
+                    <option ng-repeat="item in projectItems" value="{{item.Id}}" ng-selected="rg.MainItemId == item.Id">{{item.Name}}</option>
+                  </select>
+                                </td>
+                                <td style="height:34px;line-height: 20px; padding: 6px 12px;">
+                                    <select ng-model="rg.ChildItemId" class="input-border select-width" ng-disabled="canChange">
+                    <option value="">请选择</option>
+                    <option ng-repeat="item in rg.contractprojectChildOptions" value="{{item.Id}}" ng-selected="rg.ChildItemId == item.Id">{{item.Name}}</option>
+                  </select>
+                                </td>
+                                <td style="height:34px;line-height: 20px; padding: 6px 12px;">
+                                    <input class="select-width input-border" type="number" ng-model="rg.Amount" ng-blur="getAmount(rg)" ng-disabled="canChange">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:34px;line-height: 20px; padding: 6px 12px;" class="clearfix">
+                                    <div class="amount fl">
+                                        <span>记账报税费用：</span>
+                                        <span class="contract-inputWidth">{{postDetail.BookKeepFeed}}</span>
+                                    </div>
+                                    <div class="amount fl">
+                                        <span>财务服务费用：</span>
+                                        <span class="contract-inputWidth">{{postDetail.FinanceServiceFeed}}</span>
+                                    </div>
+                                    <div class="amount fl">
+                                        <span>外勤服务费用：</span>
+                                        <span class="contract-inputWidth">{{postDetail.OutWorkServiceFeed}}</span>
+                                    </div>
+                                    <div class="amount fl">
+                                        <span>代收费用：</span>
+                                        <span class="contract-inputWidth">{{postDetail.AgentFeed}}</span>
+                                    </div>
+                                    <div class="amount fl">
+                                        <span>合同总金额：</span>
+                                        <span class="contract-inputWidth" style="color: red;">{{postDetail.Amount}}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                    <label>备注信息：</label>
+                    <textarea style="width:950px;color:#ccc" cols="100" rows="3" ng-model="postDetail.Remark" ng-disabled="canChange"></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="pay-info">
+        <div class="title">支付信息</div>
+        <div class="content">
+            <form name="payform" novalidate class="clearfix">
+                <div class="item clearfix" ng-repeat="(pindex, pl) in paylist">
+                    <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                        <label class="required">支付方式</label>：
+                        <select ng-model="pl.PayTypeId" class="input-border" ng-disabled="canChange">
+              <option value="">请选择</option>
+              <option ng-repeat="(key,value) in payTypes" value="{{key}}" ng-selected="pl.PayTypeId == key">{{value}}</option>
+            </select>
+                    </div>
+                    <div class="form-group" style="margin: 5px 10px 5px 10px;">
+                        <label class="required">支付方账号</label>：
+                        <input flex ng-model="pl.PayAccountNo" required class="input-border" ng-disabled="canChange || pl.PayTypeId == 5" style="width:200px;" />
+                    </div>
+                    <div class="form-group col-md-3" style="margin: 5px 10px 5px 10px">
+                        <lable class="required" style="margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px">支付时间：</lable>
+                        <div class="col-md-8">
+                            <p class="input-group" style="margin:0">
+                                <input type="text" class="form-control" uib-datepicker-popup="yyyy/MM/dd" ng-model="pl.PayTime" is-open="pl.opened" datepicker-options="dateOptions" close-text="Close" style="padding:6px;" ng-disabled="canChange || pl.PayTypeId == 5" />
+                                <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="pl.opened = true" ng-disabled="canChange || pl.payType == 5"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin: 5px 10px 5px 10px; display: flex; align-items: center;">
+                        <label class="required img-bottom">凭证</label>：
+                        <div ng-if="canChange" style="display: inline-block;">
+                            <img ng-src="{{pl.PayImagePath}}" class="contract-img" pic-view>
+                        </div>
+                        <div ng-if="!canChange" style="display: inline-block;">
+                            <img ng-src="{{pl.PayImagePath}}" ng-if="pl.PayImagePath" alt="" pic-view class="contract-img-style">
+                            <div class="uploader-outter">
+                                <input ng-click="imgClick(pindex)" class="uploader-img" type="file" nv-file-select="" uploader="uploader1[pindex]" />
+                            </div>
+                            <div class="progress" style="width:80%;margin-left:90px" ng-if="uploader1[pindex].isUploading">
+                                <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader1[pindex].progress + '%' }" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,5 @@
-angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$state', '$uibModal', 'user', '$q',
-    function($scope, $http, $state, $uibModal, user, $q) {
+angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$state', '$uibModal', '$filter', 'user', '$q',
+    function($scope, $http, $state, $uibModal, $filter, user, $q) {
       $scope.user = user.get();
       $scope.areas = [] // 所属区域列表
 
@@ -110,27 +110,38 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
         $scope.open2 = function() {
             $scope.popup2.opened = true;
         }
-        $scope.changeDate = function() {
-
-            var d1 = angular.element($("#date1"))[0].value
-            var d2 = angular.element($("#date2"))[0].value
-            if (d2) {
-                var _d1 = d1.replace(/-/ig, "")
-                var _d2 = d2.replace(/-/ig, "")
-                if ((_d2 - _d1) < 0) {
-                    angular.element($("#date1"))[0].value = d2
-                }
-            }
-            $scope.search.contractDateStart = d1
-            $scope.search.contractDateEnd = d2
-        }
+        // $scope.changeDate = function(d) {
+        //     console.log(d)
+        //     // console.log(d2)
+        //     // var d1 = angular.element($("#date1"))[0].value
+        //     // var d2 = angular.element($("#date2"))[0].value
+        //     // if (d2) {
+        //     //     var _d1 = d1.replace(/-/ig, "")
+        //     //     var _d2 = d2.replace(/-/ig, "")
+        //     //     if ((_d2 - _d1) < 0) {
+        //     //         angular.element($("#date1"))[0].value = d2
+        //     //     }
+        //     // }
+        //     $scope.search.contractDateStart = d
+        //     $scope.search.contractDateEnd = d2
+        // }
         $scope.searchFn = function() {
-            refreshData()
+          refreshData()
         }
 
         function refreshData() {
             // var deferred = $q.defer();
             var searchIt;
+            // console.log($scope.dt1)
+            // console.log($scope.dt2)
+            // $scope.serviceEndDate = $filter('date')(enddate, 'yyyy-MM');
+            if ($scope.dt1 && $scope.dt2) {
+              if ($scope.dt1.getTime() > $scope.dt2.getTime()) {
+                $scope.dt1 = $scope.dt2
+              }
+              $scope.search.contractDateStart = $filter('date')($scope.dt1, 'yyyy-MM-dd')
+              $scope.search.contractDateEnd =  $filter('date')($scope.dt2, 'yyyy-MM-dd')
+            }
             searchIt = $scope.search
             var data = angular.extend({
                 offset: ($scope.paginator.currentPage - 1) * $scope.paginator.perPage,
@@ -239,7 +250,7 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
   $scope.isEdit = true
   $scope.postDetail = {} // tab1内容
   $scope.item = item // 顶部公共信息 列表带过来
-  // console.log($scope.item, '$scope.item')
+  console.log($scope.item, '$scope.item')
   $scope.industries = [] // 所属行业列表
   $scope.areas = areas // 所属区域列表
   $scope.contractTab = [] // 合同信息lsit页卡2
@@ -486,35 +497,33 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
         $scope.tab2.paginator.total = res.data.total
       }
     })
-    // $scope.contractTab = [
-    //   {contractId: 'BJ-A00986', contractType: '2', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'},
-    //   {contractId: 'BJ-A00986', contractType: '1', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'},
-    //   {contractId: 'BJ-A00986', contractType: '2', signTime: '2017-07-17', service: '14月', serviceDateStart: '2017-08', serviceDateEnd: '2018-10', contractAmount: '2400.00'}
-    // ]
   }
   $scope.detailTab2 = function(item) {
     // 弹框查看
-    var modalInstance = $uibModal.open({
-      templateUrl: 'views/signed_tab2_detail.html',
-      controller: 'Tab2DetailAccount',
-      size: 'lg',
-      resolve: {
-        contractItem: function() {
-          return $scope.itemDetail23
-        }
-      }
-    })
-    modalInstance.result.then(function (result) {
-      $scope.refreshData2()
-    }, function () {
+    $scope.detailTab2 = function(item) {
+      // 弹框查看
+      var OrderId = item.OrderId
+      $http.get('/api/contractdetail/' + OrderId).success(function(res) {
+        $scope.itemDetail = res.data
+        if (res.status) {
+          var modalInstance = $uibModal.open({
+            templateUrl: 'views/signed_tab2_detail.html',
+            controller: 'Tab2DetailAccount',
+            size: 'lg',
+            resolve: {
+              contractItem: function() {
+                return $scope.itemDetail
+              }
+            }
+          })
+          modalInstance.result.then(function (result) {
+            $scope.refreshData2()
+          }, function () {
 
-    })
-    // item.OrderId = 561
-    // $http.get('/api/contractdetail/' + item.OrderId).success(function(res) {
-    //   console.log(res)
-    //   $scope.itemDetail2 = res.data
-    //
-    // })
+          })
+        }
+      })
+    }
   }
 
   // tab2分页功能开始
@@ -557,35 +566,36 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
         $scope.tab3.paginator.total = res.data.total
       }
     })
-    // $scope.contractTab3 = [
-    //   {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1},
-    //   {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1},
-    //   {ContractNo: 'BJ-A00986', service: '14月', Amount: 22, BookKeepFeed: 1, FinanceServiceFeed: 2, OutWorkServiceFeed: 0, AgentFeed: 1}
-    // ]
   }
   $scope.detailTab3 = function(item) {
     // 弹框查看
-    $http.get('api/contract/getmainitemlist').success(function(res) {
-      // console.log(res, 'res')
+    var OrderId = item.OrderId
+    $http.get('/api/contractdetail/' + OrderId).success(function(res) {
+      $scope.itemDetail3 = res.data
       if (res.status) {
-        $scope.projectItems = res.data
-        var modalInstance = $uibModal.open({
-          templateUrl: 'views/signed_tab3_detail.html',
-          controller: 'Tab3DetailAccount',
-          size: 'hg',
-          resolve: {
-            contractItem: function() {
-              return $scope.itemDetail23
-            },
-            projectItems: function() {
-              return $scope.projectItems
-            }
-          }
-        })
-        modalInstance.result.then(function (result) {
-          $scope.refreshData3()
-        }, function () {
+        $http.get('api/contract/getmainitemlist').success(function(res) {
+          // console.log(res, 'res')
+          if (res.status) {
+            $scope.projectItems = res.data
+            var modalInstance = $uibModal.open({
+              templateUrl: 'views/signed_tab3_detail.html',
+              controller: 'Tab3DetailAccount',
+              size: 'hg',
+              resolve: {
+                contractItem: function() {
+                  return $scope.itemDetail3
+                },
+                projectItems: function() {
+                  return $scope.projectItems
+                }
+              }
+            })
+            modalInstance.result.then(function (result) {
+              $scope.refreshData3()
+            }, function () {
 
+            })
+          }
         })
       }
     })
@@ -615,8 +625,7 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
   // tab4页卡内容
   $scope.refreshData4 = function() {
     // 点击页卡请求当前页卡数据内容
-    // var customerId = $scope.postDetail.CustomerId
-    var customerId = '1201043653'
+    var customerId = $scope.item.CustomerId
     var url = '/api/maintask/listforCustomerId/' + customerId + '?'
     var data = angular.extend({
         offset: ($scope.tab4.paginator.currentPage - 1) * $scope.tab4.paginator.perPage,
@@ -632,8 +641,7 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
   }
   $scope.detailTab4 = function(item) {
     // 弹框查看
-    // var Id = item.Id
-    var Id = 193
+    var Id = item.Id
     $http.get('api/maintask/' + Id).success(function(res) {
       // console.log(res, 'res')
       if (res.status) {
@@ -680,8 +688,7 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
   // tab5页卡内容
   $scope.refreshData5 = function() {
     // 点击页卡请求当前页卡数据内容
-    // var customerId = $scope.postDetail.CustomerId
-    var customerId = '1201043653'
+    var customerId = $scope.item.CustomerId
     var url = '/api/customer/remark/list/' + customerId + '?'
     var data = angular.extend({
         offset: ($scope.tab5.paginator.currentPage - 1) * $scope.tab5.paginator.perPage,
@@ -771,19 +778,14 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
     // 分页功能结束
   $scope.refreshData6 = function() {
     // 点击页卡请求当前页卡数据内容
-    // var customerId = $scope.postDetail.CustomerId
-    var customerId = '111'
+    var customerId = $scope.item.CustomerId
     var post = {}
     post.customerId = customerId
-    // var data = angular.extend({
-    //     offset: ($scope.tab6.paginator.currentPage - 1) * $scope.tab6.paginator.perPage,
-    //     limit: $scope.tab6.paginator.perPage
-    // }, post, data)
     var data = angular.extend({
-        offset: 0,
-        limit: 10
+        offset: ($scope.tab6.paginator.currentPage - 1) * $scope.tab6.paginator.perPage,
+        limit: $scope.tab6.paginator.perPage
     }, post, data)
-    $http.get('/api/customer/logs?' + $.param(data)).success(function(res) {
+    $http.get('/api/customer/rz?' + $.param(data)).success(function(res) {
       // console.log(res)
       if (res.status) {
         $scope.contractTab6 = res.data.list

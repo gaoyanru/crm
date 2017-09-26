@@ -169,8 +169,8 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
       // 点击请求接口返回 tab1及公共顶部信息
       $http.get('api/contractdetail/' + item.OrderId).success(function(res) {
           if (res.status) {
-              data = res.data
-              data.dt = item.ContractDate.replace('T'," ").split(' ')[0]
+              var data = res.data
+              // data.dt = item.ContractDate.replace('T'," ").split(' ')[0]
               var modalInstance = $uibModal.open({
                   templateUrl: 'views/contract_end_manage_detail.html',
                   controller: 'SignedDetail',
@@ -248,7 +248,7 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
     if (!$scope.sign) { // 挂起杨城接口
       // console.log($scope.postData)
       post.CompanyId = $scope.postData.CustomerId
-      post.SubsidiaryId = $scope.postData.SubsidiaryId
+      post.ChannelId = $scope.postData.SubsidiaryId
       post.Description = $scope.Remark
 
       // console.log(post)
@@ -282,6 +282,7 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
   }
 }]).controller('SignedDetail', ['$scope', '$http', '$uibModal', '$uibModalInstance', '$filter', 'user', 'item','projectItems',
     function($scope, $http, $uibModal, $uibModalInstance, $filter, UserServe, item,projectItems) {
+        item.ContractDate = new Date(item.ContractDate)
         $scope.postDetail = item
         $scope.canChange = true
         $scope.payTypes = {
@@ -295,7 +296,7 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
             1: "新增",
             2: "续费"
         }
-        $scope.dt = item.dt
+        // $scope.dt = item.dt
         $scope.rlist = [{}]
         $scope.paylist = [{}]
         $scope.projectItems = projectItems

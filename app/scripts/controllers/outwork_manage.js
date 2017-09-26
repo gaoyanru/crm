@@ -82,12 +82,19 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             $scope.onlyInformationIsAll = true // 这种情况的时候只能选择资料齐全提交会计
             return false
           }
-          if (item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
-          // if (item.OutWorkerStatus == 2 && item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
-            $scope.onlyInformationIsAll = false
+          if (item.OutWorkerStatus == 6 && item.AccountantStatus == 5) {
+            $scope.onlyInformationIsAll = true // 这种情况的时候只能选择资料齐全提交会计 外勤当月只跑完
             return false
           }
-          $scope.onlyInformationIsAll = true
+          if (item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
+            if (item.ServiceStatus == 3) {
+              $scope.onlyInformationIsAll = false
+              return false
+            }
+            $scope.onlyInformationIsAll = true // 外勤二次提交的情况
+            return false
+          }
+          $scope.onlyInformationIsAll = false
           return true
         }
         // 审核提交
@@ -111,8 +118,9 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
         };
         // 外勤提交给会计弹框选择资料齐全还是部分报税 注意情况2的时候只能选择资料齐全
         $scope.sub = function(item) {
+          $scope.isSub(item);
           var modalInstance = $uibModal.open({
-              templateUrl: 'views/order_outworker_detail_sub.html',
+              templateUrl: 'views/outworker_sub.html',
               controller: 'Order_outworkerDetail_sub',
               size: '',
               resolve: {
@@ -513,17 +521,39 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
     }
 ]).controller("Order_outworker_detail", ['$scope', '$http', '$uibModalInstance', 'item', '$mdDialog', 'user', '$uibModal',
     function($scope, $http, $uibModalInstance, item, $mdDialog, user, $uibModal) {
-        $scope.isSub = function() {
-            if (!item.PartTax && item.OutWorkerStatus == 2) {
-                return false
-            }
-            if (item.PartTax && item.OutWorkerStatus == 2 && item.AccountantStatus == 5) {
-                return false
-            }
-            return true
-        }
+        // $scope.isSub = function() {
+        //     if (!item.PartTax && item.OutWorkerStatus == 2) {
+        //         return false
+        //     }
+        //     if (item.PartTax && item.OutWorkerStatus == 2 && item.AccountantStatus == 5) {
+        //         return false
+        //     }
+        //     return true
+        // }
         console.log(item, 'item')
         $scope.item = item
+        $scope.isSub = function() {
+          if ($scope.item.OutWorkerStatus == 2 && !$scope.item.AccountantStatus) {
+            $scope.onlyInformationIsAll = false
+            return false
+          }
+          if ($scope.item.OutWorkerStatus == 2 && $scope.item.AccountantStatus == 5) {
+            $scope.onlyInformationIsAll = true // 这种情况的时候只能选择资料齐全提交会计
+            return false
+          }
+          if ($scope.item.AccountantStatus == 3 && $scope.item.AccountantTaskSource == '外勤') {
+          // if (item.OutWorkerStatus == 2 && item.AccountantStatus == 3 && item.AccountantTaskSource == '外勤') {
+            if ($scope.item.ServiceStatus == 3) {
+              $scope.onlyInformationIsAll = false // 外勤二次提交的情况
+              return false
+            }
+            $scope.onlyInformationIsAll = true // 外勤二次提交的情况
+            return false
+          }
+          $scope.onlyInformationIsAll = false
+          return true
+        }
+
         var taskId = item.Id
         $scope.ifSub = true
         $scope.customers = [];
@@ -561,8 +591,9 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
         };
         // 查看详情时候的提交
         $scope.sub = function() {
+          $scope.isSub()
           var modalInstance = $uibModal.open({
-              templateUrl: 'views/order_outworker_detail_sub.html',
+              templateUrl: 'views/outworker_sub.html',
               controller: 'Order_outworkerDetail_sub',
               size: '',
               resolve: {
@@ -911,14 +942,14 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
     function($scope, $http, $uibModalInstance, onlyInformationIsAll, item) {
       console.log(onlyInformationIsAll, '是否只能选择资料齐全')
       $scope.title = '外勤提交会计'
+      $scope.isSecondAccount = false
       $scope.close = function() {
         $uibModalInstance.close();
       }
 
+      console.log(onlyInformationIsAll, 'onlyInformationIsAll')
       if (onlyInformationIsAll) { // true的时候只能点击资料齐全
         $scope.isSecondAccount = true
-      } else {
-        $scope.isSecondAccount = false
       }
       $scope.sub = function() {
         console.log(item.OrderId, $scope.partT, item.ServiceStatus, '提交数据')

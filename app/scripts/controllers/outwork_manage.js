@@ -524,6 +524,19 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
         $scope.user = user
         console.log(item, 'item')
         $scope.item = item
+        $scope.load = function() {
+          $('.hover-remark').hover(function(e){
+            var right = $('body').width() - $('.hover-remark')[0].offsetLeft - 126
+            var top = $('.hover-remark')[0].offsetTop
+            $('body').append('<div class="order-outworer-detail-remark-tips">' + $scope.item.Remark + '</div>')
+            $('.order-outworer-detail-remark-tips').css({
+              position: 'absolute',
+              right: right
+            })
+          }, function(){
+            $('body .order-outworer-detail-remark-tips').remove()
+          })
+        }
         $scope.isSub = function() {
           if ($scope.item.OutWorkerStatus == 2 && !$scope.item.AccountantStatus) {
             $scope.onlyInformationIsAll = false

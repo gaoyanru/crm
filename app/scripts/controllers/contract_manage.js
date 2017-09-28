@@ -705,6 +705,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       $http.put(url, post).success(function(res) {
         // console.log(res)
         if(res.status) {
+          alert('审核成功')
           $uibModalInstance.close()
         }
       })

@@ -262,12 +262,12 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
     } else if ($scope.sign) { // 标记陈凯接口
       if ($scope.Remark) {
         var RealName = users.RealName
-        $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+        $scope.Remark = $scope.Remark + '{' + RealName + '}'
       }
       // console.log($scope.postData.RemarkSignId)
       post.CustomerId = $scope.postData.CustomerId
       post.SignVal = $scope.postData.RemarkSignId
-      post.Remark = $scope.postData.Remark
+      post.Remark = $scope.Remark
       var url = '/api/companySign'
       $http.put(url, post).success(function(res) {
         // console.log(res)

@@ -283,10 +283,10 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         }
       })
     } else if ($scope.sign) { // 标记
-      // if ($scope.Remark) {
-      //   var RealName = users.RealName
-      //   $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
-      // }
+      if ($scope.Remark) {
+        var RealName = users.RealName
+        $scope.Remark = $scope.Remark + '{' + RealName + '}'
+      }
       if (!$scope.postData.RemarkSignId) {
         alert('请选择标记状态')
       } else {

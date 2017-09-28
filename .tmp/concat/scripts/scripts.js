@@ -1162,10 +1162,10 @@ angular.module('crmApp').filter('filterAddValue', function() {
                 str = '进行时'
                 break;
             case 4:
-                str = '已取消'
+                str = '已完成'
                 break;
             case 5:
-                str = '已完成'
+                str = '已取消'
                 break;
         }
         return str
@@ -6880,6 +6880,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       $http.put(url, post).success(function(res) {
         // console.log(res)
         if(res.status) {
+          alert('审核成功')
           $uibModalInstance.close()
         }
       })
@@ -7469,10 +7470,10 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
         }
       })
     } else if ($scope.sign) { // 标记
-      // if ($scope.Remark) {
-      //   var RealName = users.RealName
-      //   $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
-      // }
+      if ($scope.Remark) {
+        var RealName = users.RealName
+        $scope.Remark = $scope.Remark + '{' + RealName + '}'
+      }
       if (!$scope.postData.RemarkSignId) {
         alert('请选择标记状态')
       } else {
@@ -8711,6 +8712,7 @@ angular.module('crmApp').controller('Finance_manageContract', ['$scope', '$http'
     $http.put('/api/contract/financeaudit', post).success(function(res) {
       // console.log(res)
       if(res.status) {
+        alert('审核成功')
         refreshData()
       }
     })
@@ -8764,6 +8766,7 @@ angular.module('crmApp').controller('Finance_manageContract', ['$scope', '$http'
     // 发送请求
     $http.put('/api/contract/financeauditlist', ids).success(function(res) {
       if (res.status) {
+        alert('审核成功')
         refreshData()
         $scope.forwards.isSelectAll = false
       }
@@ -8895,6 +8898,7 @@ function($scope, $http, $uibModal, $uibModalInstance, $filter, UserServe, contra
     $http.put('/api/contract/financeaudit', post).success(function(res) {
       // console.log(res)
       if(res.status) {
+        alert('审核成功')
         $uibModalInstance.close()
       }
     })
@@ -9217,6 +9221,7 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
       // console.log($scope.serviceEndDate, 'serviceEndDate')
       $http.put('/api/order/audit/pass/' + contractMsg.OrderId + '?accountantTaskSource=' + contractMsg.AccountantTaskSource + '&partTax=' + contractMsg.PartTax + '&serviceStatus=' + contractMsg.ServiceStatus + '&serviceStartDate=' + $scope.serviceStartDate + '&serviceEndDate=' + $scope.serviceEndDate).success(function(res){
         if (res.status) {
+          alert('审核成功')
           $uibModalInstance.close();
         }
       })
@@ -11120,12 +11125,12 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
     } else if ($scope.sign) { // 标记陈凯接口
       if ($scope.Remark) {
         var RealName = users.RealName
-        $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+        $scope.Remark = $scope.Remark + '{' + RealName + '}'
       }
       // console.log($scope.postData.RemarkSignId)
       post.CustomerId = $scope.postData.CustomerId
       post.SignVal = $scope.postData.RemarkSignId
-      post.Remark = $scope.postData.Remark
+      post.Remark = $scope.Remark
       var url = '/api/companySign'
       $http.put(url, post).success(function(res) {
         // console.log(res)
@@ -11522,7 +11527,7 @@ angular.module('crmApp').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('views/signed_tab2_detail.html',
-    "<div class=\"modal-header\"> <span class=\"close\" ng-click=\"cancel()\">&times;</span> <h3 class=\"modal-title\">合同{{postDetail.ContractNo}}详情：</h3> </div> <div class=\"modal-body\"> <div class=\"contract-belong-info clearfix\"> <form name=\"contractBelongform\" novalidate class=\"clearfix\"> <div class=\"form-group\" style=\"margin: 5px 10px 5px 10px\"> <label class=\"required\">合同类型</label>： <span>{{postDetail.OrderType | ContractType}}</span> </div> <div class=\"form-group\" style=\"margin: 5px 10px 5px 10px\"> <label>合同状态</label>： <span>{{postDetail.OrderStatus|Contractstatus}}</span> </div> <div class=\"form-group\" style=\"margin: 5px 10px 5px 10px\"> <label>合同期限</label>： <span>{{postDetail.OrderMonths}}</span> </div> <div class=\"form-group\" style=\"margin: 5px 10px 5px 10px\"> <label>赠送礼包</label>： <span>{{postDetail.GiftMonth}}</span> </div> </form> </div> <div class=\"contract-belong-info clearfix\"> <div class=\"item clearfix\" ng-repeat=\"(pindex, pl) in paylist\"> <div class=\"form-group\" style=\"margin: 5px 10px 5px 10px\"> <label class=\"required\">支付方式</label>： <span>{{pl.PayTypeId | PayType}}</span> </div> <div class=\"form-group\" style=\"margin: 5px 10px 5px 10px\"> <label class=\"required\">支付方账号</label>： <span>{{pl.PayAccountNo}}</span> </div> <div class=\"form-group col-md-3\" style=\"margin: 5px 10px 5px 10px\"> <lable class=\"required\" style=\"margin-bottom: 5px;font-weight: bold;float:left;line-height:34px;height:34px\">支付时间：</lable> <span>{{pl.PayTime | tDate}}</span> </div> <div class=\"form-group\" style=\"margin: 5px 10px 5px 10px; display: flex; align-items: center\"> <label class=\"required img-bottom\">凭证</label>： <div ng-if=\"canChange\" style=\"display: inline-block\"> <img ng-src=\"{{pl.PayImagePath}}\" class=\"contract-img\" pic-view> </div> </div> </div> </div> <div class=\"contract-belong-info clearfix\"> <div class=\"form-group\" style=\"margin: 5px 10px 5px 10px\"> <label class=\"required\">签订日期：</label>： <span>{{postDetail.ContractDate | tDate}}</span> </div> <div class=\"form-group\" style=\"margin: 5px 10px 5px 10px\"> <label class=\"required\">合同总金额：</label> <span>{{postDetail.Amount}}</span> </div> <div class=\"form-group\" style=\"margin: 5px 10px 5px 10px\"> <label class=\"required\">服务开始时间：</label> <span>{{postDetail.ServiceStart | tDate}}</span> </div> <div class=\"form-group\" style=\"margin: 5px 10px 5px 10px\"> <label class=\"required\">服务结束时间：</label> <span>{{postDetail.ServiceEnd | tDate}}</span> </div> </div> <div class=\"contract-belong-info clearfix\" style=\"margin: 5px 10px 5px 10px\"> <label>备注信息：</label> <textarea cols=\"100\" rows=\"3\" ng-model=\"postDetail.Remark\" readonly></textarea> </div> </div>"
+    "<div class=\"modal-header\"> <span class=\"close\" ng-click=\"cancel()\">&times;</span> <h3 class=\"modal-title\">合同{{postDetail.ContractNo}}详情：</h3> </div> <div class=\"modal-body\"> <div class=\"contract-belong-info clearfix\"> <form name=\"contractBelongform\" novalidate class=\"clearfix\"> <div class=\"form-group\" style=\"margin: 5px\"> <label class=\"required\">合同类型</label>： <span>{{postDetail.OrderType | ContractType}}</span> </div> <div class=\"form-group\" style=\"margin: 5px\"> <label>合同状态</label>： <span>{{postDetail.OrderStatus|Contractstatus}}</span> </div> <div class=\"form-group\" style=\"margin: 5px\"> <label>合同期限</label>： <span>{{postDetail.OrderMonths}}</span> </div> <div class=\"form-group\" style=\"margin: 5px\"> <label>赠送礼包</label>： <span>{{postDetail.GiftMonth}}</span> </div> </form> </div> <div class=\"contract-belong-info clearfix\"> <div class=\"item clearfix\" ng-repeat=\"(pindex, pl) in paylist\"> <div class=\"form-group\" style=\"margin: 5px;height: 34px;line-height:34px\"> <label class=\"required\">支付方式</label>： <span>{{pl.PayTypeId | PayType}}</span> </div> <div class=\"form-group\" style=\"margin: 5px;height: 34px;line-height:34px\"> <label class=\"required\">支付方账号</label>： <span>{{pl.PayAccountNo}}</span> </div> <div class=\"form-group col-md-3\" style=\"margin: 5px;height: 34px;line-height:34px\"> <lable class=\"required\">支付时间：</lable> <span>{{pl.PayTime | tDate}}</span> </div> <div class=\"form-group\" style=\"margin: 5px;height: 34px;line-height:34px\"> <label class=\"required\">凭证</label>： <div ng-if=\"canChange\" style=\"display: inline-block\"> <img ng-src=\"{{pl.PayImagePath}}\" class=\"contract-img\" pic-view> </div> </div> </div> </div> <div class=\"contract-belong-info clearfix\"> <div class=\"form-group\" style=\"margin: 5px\"> <label class=\"required\">签订日期：</label> <span>{{postDetail.ContractDate | tDate}}</span> </div> <div class=\"form-group\" style=\"margin: 5px\"> <label class=\"required\">合同总金额：</label> <span>{{postDetail.Amount}}</span> </div> <div class=\"form-group\" style=\"margin: 5px\"> <label class=\"required\">服务开始时间：</label> <span>{{postDetail.ServiceStart | tDate}}</span> </div> <div class=\"form-group\" style=\"margin: 5px\"> <label class=\"required\">服务结束时间：</label> <span>{{postDetail.ServiceEnd | tDate}}</span> </div> </div> <div class=\"contract-belong-info clearfix\" style=\"margin: 5px\"> <label>备注信息：</label> <textarea cols=\"100\" rows=\"3\" ng-model=\"postDetail.Remark\" readonly></textarea> </div> </div>"
   );
 
 

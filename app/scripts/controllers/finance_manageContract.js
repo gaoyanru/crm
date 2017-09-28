@@ -130,6 +130,7 @@ angular.module('crmApp').controller('Finance_manageContract', ['$scope', '$http'
     $http.put('/api/contract/financeaudit', post).success(function(res) {
       // console.log(res)
       if(res.status) {
+        alert('审核成功')
         refreshData()
       }
     })
@@ -183,6 +184,7 @@ angular.module('crmApp').controller('Finance_manageContract', ['$scope', '$http'
     // 发送请求
     $http.put('/api/contract/financeauditlist', ids).success(function(res) {
       if (res.status) {
+        alert('审核成功')
         refreshData()
         $scope.forwards.isSelectAll = false
       }
@@ -314,6 +316,7 @@ function($scope, $http, $uibModal, $uibModalInstance, $filter, UserServe, contra
     $http.put('/api/contract/financeaudit', post).success(function(res) {
       // console.log(res)
       if(res.status) {
+        alert('审核成功')
         $uibModalInstance.close()
       }
     })

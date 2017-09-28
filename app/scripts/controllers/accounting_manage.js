@@ -251,6 +251,7 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
       // console.log($scope.serviceEndDate, 'serviceEndDate')
       $http.put('/api/order/audit/pass/' + contractMsg.OrderId + '?accountantTaskSource=' + contractMsg.AccountantTaskSource + '&partTax=' + contractMsg.PartTax + '&serviceStatus=' + contractMsg.ServiceStatus + '&serviceStartDate=' + $scope.serviceStartDate + '&serviceEndDate=' + $scope.serviceEndDate).success(function(res){
         if (res.status) {
+          alert('审核成功')
           $uibModalInstance.close();
         }
       })

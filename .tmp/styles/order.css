@@ -22,7 +22,7 @@
 	white-space: normal;
 }
 .addtrack{
-	margin: 1em;	
+	margin: 1em;
     border: solid 1px #ccc;
     background: #eee;
 }
@@ -53,4 +53,29 @@
 }
 .outworkline>div>* {
 	margin: 0 6px;
+}
+
+/* 提示 */
+.order-outworer-detail-remark-tips{
+  position: absolute;
+  background: rgba(0,0,0,.5);
+  border-radius: 4px;
+  z-index: 99999;
+  padding: 8px 10px;
+  color: #fff;
+  top: 119px;
+  word-break: break-all;
+  max-width: 200px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,.2);
+}
+.order-outworer-detail-remark-tips:before{
+  border-width: 6px;
+  border-color: transparent;
+  border-bottom-color: rgba(0,0,0,.5);
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: -12px;
+  right: 7px;
+  border-style: solid;
 }

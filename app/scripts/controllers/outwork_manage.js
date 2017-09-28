@@ -527,7 +527,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
         $scope.load = function() {
           $('.hover-remark').hover(function(e){
             var right = $('.modal-content').width() - $('.hover-remark')[0].offsetLeft - 30
-            var top = $('.hover-remark')[0].offsetTop + 40
+            var top = $('.hover-remark')[0].offsetTop + 46
             $('.modal-content').append('<div class="order-outworer-detail-remark-tips">' + $scope.item.Remark + '</div>')
             $('.order-outworer-detail-remark-tips').css({
               position: 'absolute',

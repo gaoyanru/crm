@@ -522,12 +522,12 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
 ]).controller("Order_outworker_detail", ['$scope', '$http', '$uibModalInstance', 'item', '$mdDialog', 'user', '$uibModal',
     function($scope, $http, $uibModalInstance, item, $mdDialog, user, $uibModal) {
         $scope.user = user
-        console.log(item, 'item')
+        // console.log(item, 'item')
         $scope.item = item
         $scope.load = function() {
           $('.hover-remark').hover(function(e){
             var right = $('.modal-content').width() - $('.hover-remark')[0].offsetLeft - 30
-            var top = $('.hover-remark')[0].offsetTop + 46
+            var top = $('.hover-remark')[0].offsetTop + 40
             $('.modal-content').append('<div class="order-outworer-detail-remark-tips">' + $scope.item.Remark + '</div>')
             $('.order-outworer-detail-remark-tips').css({
               position: 'absolute',

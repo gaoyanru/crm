@@ -34,7 +34,6 @@
             <div class="form-group" style="margin: 5px;float:none">
                 <label>外勤人员</label>：
                 <select ng-model="search.outworkId" class="form-control">
-
                     <option value="" ng-selected="true">请选择</option>
                     <option ng-repeat="ot in outworkers" ng-value="{{ot.UserId}}">{{ot.RealName}}</option>
                      <!--需要改数据-->
@@ -51,7 +50,7 @@
                     <option value="4" >外勤会计服务</option>
                     <option value="5" >会计服务</option>
                     <option value="7" >结束</option>
-                    <option value="8" >终止</option>
+                    <option value="8" >中止</option>
                      <!--需要改数据-->
                 </select>
             </div>
@@ -83,27 +82,22 @@
             <div class="form-group" style="margin: 5px 10px;float:none">
                 <label>所属区（县）</label>：
                 <select ng-model="search.areacode" class="form-control">
-
                     <option value="" ng-selected="true">请选择</option>
                     <option ng-repeat="area in areas" ng-value="area.AreaCode">{{area.AreaName}}</option>
-                     <!--需要改数据-->
-
                 </select>
             </div>
             <div class="form-group" style="margin: 5px;float:none">
                 <label>销售人员</label>：
                 <select ng-model="search.salesId" class="form-control">
                     <option value="0" ng-selected="true">请选择</option>
-                    <option  ng-repeat="u in users" ng-value="u.UserId">{{u.RealName}}</option>
-                    <!--需要改-->
+                    <option ng-repeat="u in users" value="{{u.UserId}}">{{u.RealName}}</option>
                 </select>
             </div>
             <div class="form-group" style="margin: 5px;float:none">
-                <label>任务状态</label>：
+                <label>主任务状态</label>：
                 <select ng-model="search.taskstatus" class="form-control">
                     <option value="" ng-selected="true">请选择</option>
                     <option  ng-repeat="(key,value) in taskStatus" ng-value="key">{{value}}</option>
-                    <!--需要改-->
                 </select>
             </div>
             <!--<div class="form-group">
@@ -166,7 +160,7 @@
                   <button ng-if="(user.IsCenter == 0 && user.Category == 8) || (user.IsCenter == 0 && user.Category == 2)" class="btn btn-link" href="javascript:;" ng-click="check(customer)" style="padding:1px" ng-disabled="customer.OutWorkerStatus != 1">审核</button>
                   <button ng-if="(user.IsCenter == 0 && user.Category == 8) || (user.IsCenter == 0 && user.Category == 2)" class="btn btn-link" href="javascript:;" ng-click="reject(customer)" style="padding:1px" ng-disabled="customer.OutWorkerStatus != 1">驳回</button>
                   <!-- 取消不涉及可点不可点 -->
-                  <button class="btn btn-link" href="javascript:;" ng-click="cancel(customer)" style="padding:1px">取消</button>
+                  <button ng-show="user.Category ==2 || user.Category==8" ng-disabled="customer.Status > 3" class="btn btn-link" href="javascript:;" ng-click="cancel(customer)" style="padding:1px">取消</button>
                   <!-- 提交分三种情况
                     1. 审单直接提交给外勤的时候 外勤审核状态OutWorkerStatus=2已审核 会计审核状态AccountantStatus是null的时候 提交时候可以选择资料齐全或者部分
                     2. 审单分别提交给外勤和会计 审单提交给外勤后外勤要把剩下的部分提交给会计 外勤状态已审核OutWorkerStatus=2 会计审核状态部分审核 AccountantStatus=5 提交的时候只能选择资料齐全

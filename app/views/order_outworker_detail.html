@@ -1,12 +1,12 @@
 <div class="modal-header">
     <span class="close" ng-click="cancel()">&times;</span>
     <h3 class="modal-title">任务详情</h3>
-    <div ng-if="ifSub" style="display:inline;float:right;">
-        <button class="btn btn-warning" type="button" ng-click="sub()" ng-disabled="isSub(customer)">提交会计</button>
-        <!-- <div ng-if="item.Remark" class="hover-remark">aa</div> -->
-        <button ng-if="item.Remark" uib-popover="{{item.Remark}}" popover-title="备注" type="button" class="btn btn-default" >
+    <div ng-if="(user.IsCenter == 0 && user.Category == 8) || (user.IsCenter == 0 && user.Category == 2)" ng-if="ifSub" style="display:inline;float:right;">
+        <button  ng-if="(user.IsCenter == 0 && user.Category == 8) || (user.IsCenter == 0 && user.Category == 2)" class="btn btn-warning" type="button" ng-click="sub()" ng-disabled="isSub(customer)">提交会计</button>
+        <div ng-if="item.Remark" class="hover-remark"></div>
+        <!-- <button ng-if="item.Remark" uib-popover="{{item.Remark}}" popover-title="备注" type="button" class="btn btn-default" >
           <span class="glyphicon glyphicon-envelope" ></span>
-        </button>
+        </button> -->
     </div>
 </div>
 <div class="modal-body">

@@ -438,10 +438,10 @@ angular.module('crmApp').filter('filterAddValue', function() {
                 str = '进行时'
                 break;
             case 4:
-                str = '已完成'
+                str = '已取消'
                 break;
             case 5:
-                str = '已取消'
+                str = '已完成'
                 break;
         }
         return str

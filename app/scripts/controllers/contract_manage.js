@@ -321,19 +321,6 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
     function uploadError(item) {
       alert('上传失败!')
     }
-
-    // $scope.add0 = function (m) {
-    //   return m<10?'0'+m:m
-    // }
-    //
-    // $scope.formateDate = function (time) {
-    //   time = new Date(time);
-    //   var y = time.getFullYear();
-    //   var m = time.getMonth()+1;
-    //   var d = time.getDate();
-    //   return y+'-'+$scope.add0(m)+'-'+$scope.add0(d)
-    // }
-
     $scope.ok = function (ev) {
       if (!$scope.customer.CompanyName) {
         alert('请选择甲方！')
@@ -372,15 +359,11 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
           alert('项目费用必须是大于0的数！')
           return
         }
-        // if ($scope.rlist[i].MainItemId._filter()) {
-        //   alert('小规模和一般纳税人只能选择一个')
-        //   return
-        // }
       }
       var res = _.filter($scope.rlist, {MainItemId: '1'})
       // console.log(res.length, 'res')
       if (res.length > 1) {
-        alert('记账报税只能选择一个')
+        alert('记账报税只能选一条')
         return
       }
       // console.log(res)
@@ -409,8 +392,13 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       $scope.postData.Amount = a + b + c + d
       // console.log($scope.postData.Amount)
       var RealName = user.RealName
+      console.log($scope.postData.Remark)
       if ($scope.postData.Remark) {
-        $scope.postData.Remark = $scope.postData.Remark  + '{' + RealName + '}'
+        if (/[{}]/.test($scope.postData.Remark)) {
+          $scope.postData.Remark = $scope.postData.Remark
+        } else {
+          $scope.postData.Remark = $scope.postData.Remark  + '{' + RealName + '}'
+        }
       }
       // 出现提交多余字段传给后台情况 所以重新赋值下 及 把用户CustomerId传给后台
       $scope.postData.CompanyName = $scope.customer.CompanyName || ''
@@ -440,6 +428,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       $http.post('/api/contract', $scope.postData).success(function(res) {
         // console.log(res)
         if (res.status) {
+          alert('合同新建成功')
           $uibModalInstance.close();
         }
       })
@@ -803,7 +792,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       var res = _.filter($scope.rlist, {MainItemId: '1'})
       // console.log(res.length, 'res')
       if (res.length > 1) {
-        alert('小规模和一般纳税人只能选择一个')
+        alert('记账报税只能选一条')
         return
       }
       // 验证支付方式
@@ -890,6 +879,7 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
       $http.put(url, $scope.postDetail).success(function(res) {
         // console.log(res)
         if (res.status) {
+          alert('合同修改成功')
           $uibModalInstance.close();
           // $uibModalInstance.dismiss('cancel');
         }
@@ -1006,8 +996,11 @@ angular.module('crmApp').controller('Contract_manage', ['$scope', '$http', '$sta
     post.Remark = $scope.postData.Remark
     $http.put('/api/endcontract', post).success(function(res) {
       // console.log(res)
-      if (res.status) {
-          $uibModalInstance.close();
+      if (!res.status && res.errorcode == '-2') {
+        alert('该合同已中止')
+        $uibModalInstance.close();
+      } else if (res.status) {
+        $uibModalInstance.close();
       }
     })
   }

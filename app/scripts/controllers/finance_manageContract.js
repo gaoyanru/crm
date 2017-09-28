@@ -201,12 +201,14 @@ angular.module('crmApp').controller('Finance_manageContract', ['$scope', '$http'
     $http.get('/api/financelistcount?' + $.param(downItem)).success(function(res) {
       // console.log(res)
       if (res.status) {
-        if (res.data > 700) {
-          alert('总条数过多，请缩小查询范围')
-        } else {
-          var url = '/api/download/financelist?subsidairy=' + downItem.subsidairy + '&contractNo=' + downItem.contractNo + '&companyname=' + downItem.companyname + '&contact=' + downItem.contact + '&saleName=' + downItem.saleName + '&contractStatus=' + downItem.contractStatus + '&contractType=' + downItem.contractType + '&financeStatus=' + downItem.financeStatus + '&starttime=' + downItem.starttime + '&endtime=' + downItem.endtime
-          window.open(url)
-        }
+        var url = '/api/download/financelist?subsidairy=' + downItem.subsidairy + '&contractNo=' + downItem.contractNo + '&companyname=' + downItem.companyname + '&contact=' + downItem.contact + '&saleName=' + downItem.saleName + '&contractStatus=' + downItem.contractStatus + '&contractType=' + downItem.contractType + '&financeStatus=' + downItem.financeStatus + '&starttime=' + downItem.starttime + '&endtime=' + downItem.endtime
+        window.open(url)
+        // if (res.data > 700) {
+        //   alert('总条数过多，请缩小查询范围')
+        // } else {
+        //   var url = '/api/download/financelist?subsidairy=' + downItem.subsidairy + '&contractNo=' + downItem.contractNo + '&companyname=' + downItem.companyname + '&contact=' + downItem.contact + '&saleName=' + downItem.saleName + '&contractStatus=' + downItem.contractStatus + '&contractType=' + downItem.contractType + '&financeStatus=' + downItem.financeStatus + '&starttime=' + downItem.starttime + '&endtime=' + downItem.endtime
+        //   window.open(url)
+        // }
       }
     })
       // console.log(downItem.subsidairy,
@@ -355,14 +357,19 @@ function($scope, $http, $uibModal, $uibModalInstance, $filter, UserServe, contra
   // console.log(contract, 'contract')
   $scope.postData = contract
   $scope.Remark = ''
+  console.log($scope.postData.Remark, '$scope.postData.Remark')
   $scope.save = function() {
     if ($scope.Remark) {
       var RealName = users.RealName
-      $scope.postData.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+      if ($scope.postData.Remark) {
+        $scope.Remark = $scope.postData.Remark + $scope.Remark + '{' + RealName + '}'
+      } else {
+        $scope.Remark = $scope.Remark + '{' + RealName + '}'
+      }
     }
     var post = {}
     post.contractId = $scope.postData.OrderId
-    post.remark = $scope.postData.remark
+    post.remark = $scope.Remark
     post.auditVal = 1
     $http.put('/api/contract/financeaudit', post).success(function(res) {
       // console.log(res)

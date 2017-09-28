@@ -28,6 +28,7 @@ angular.module('crmApp').controller('Signed_manage', ['$scope', '$http', '$state
 
   $scope.search = { // 查询条件
     sequenceNumber: '',
+    contractNo: '',
     companyname: '',
     contact: '',
     saleName: '',
@@ -453,12 +454,16 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   // 编辑完成
   $scope.save = function() {
     // 保存提交后台信息 后变成不可编辑
+    if (!$scope.postDetail.CompanyName) {
+      alert ('请填写公司名称')
+      return
+    }
     if (!$scope.postDetail.Connector) {
       alert ('请填写公司联系人')
       return
     }
     if (!$scope.postDetail.Mobile) {
-      alert ('请联系人电话')
+      alert ('请填写联系人电话')
       return
     }
     if (!$scope.postDetail.AreaCode) {
@@ -622,6 +627,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   }
   $scope.detailTab2 = function(item) {
     // 弹框查看
+    // console.log(item, '点击本行item')
     var OrderId = item.OrderId
     $http.get('/api/contractdetail/' + OrderId).success(function(res) {
       $scope.itemDetail = res.data
@@ -885,7 +891,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   $scope.tab5.paginator = {
       total: 0,
       currentPage: 1,
-      perPage: 15,
+      perPage: 10,
       previousText: '上一页',
       nextText: '下一页',
       lastText: '最后一页',
@@ -965,7 +971,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
 }]).controller('ContractRefuseSigned', ['$scope', '$http', '$uibModalInstance', 'contractMsg', 'title', 'user', function($scope, $http, $uibModalInstance, contract, title, users) {
   var users = users.get()
   // console.log(users)
-  // console.log(contract, 'contract')
+  console.log(contract, 'contract')
   $scope.postData = contract
   $scope.title = title
   $scope.Remark = ''
@@ -980,8 +986,11 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
     post.Remark = $scope.postData.Remark
     $http.put('/api/endcontract', post).success(function(res) {
       // console.log(res)
-      if (res.status) {
-          $uibModalInstance.close();
+      if (!res.status && res.errorcode == '-2') {
+        alert('该合同已中止')
+        $uibModalInstance.close();
+      } else if (res.status) {
+        $uibModalInstance.close();
       }
     })
   }

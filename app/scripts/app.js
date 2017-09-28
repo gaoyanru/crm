@@ -184,7 +184,11 @@ crmApp.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', 'userPro
             if (response.status) { // response.status： true , false
                 return response;
             } else {
-                alert(response.message);
+                if (!response.message) {
+                  return response;
+                } else {
+                  alert(response.message);
+                }
                 //console.error(response.message);
             }
             return response;

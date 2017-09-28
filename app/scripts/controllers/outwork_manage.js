@@ -40,8 +40,8 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             1: "待分配",
             2: "待处理",
             3: "进行中",
-            4: "已取消",
-            5: "已完成"
+            4: "已完成",
+            5: "已取消"
         };
         if ($scope.user.Category !== 2 && $scope.user.Category !== 8) {
             delete $scope.taskStatus["1"];
@@ -231,8 +231,8 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
             $scope.searchItem.starttime = $scope.search.starttime;
             $scope.searchItem.endtime = $scope.search.endtime;
             $scope.searchItem.areacode = $scope.search.areacode
-            $scope.searchItem.salesId = $scope.search.salesId || 0;
-            $scope.searchItem.outworkId = $scope.search.currOutworker || 0;
+            $scope.searchItem.salesId = $scope.search.salesId;
+            $scope.searchItem.outworkId = $scope.search.outworkId || 0;
             $scope.searchItem.taskstatus = $scope.search.taskstatus
             $scope.searchItem.servicestatus = $scope.search.servicestatus
             refreshData($scope.searchItem);
@@ -521,15 +521,7 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
     }
 ]).controller("Order_outworker_detail", ['$scope', '$http', '$uibModalInstance', 'item', '$mdDialog', 'user', '$uibModal',
     function($scope, $http, $uibModalInstance, item, $mdDialog, user, $uibModal) {
-        // $scope.isSub = function() {
-        //     if (!item.PartTax && item.OutWorkerStatus == 2) {
-        //         return false
-        //     }
-        //     if (item.PartTax && item.OutWorkerStatus == 2 && item.AccountantStatus == 5) {
-        //         return false
-        //     }
-        //     return true
-        // }
+        $scope.user = user
         console.log(item, 'item')
         $scope.item = item
         $scope.isSub = function() {
@@ -539,6 +531,10 @@ angular.module('crmApp').controller('OutworkManage', ['$scope', '$http', '$state
           }
           if ($scope.item.OutWorkerStatus == 2 && $scope.item.AccountantStatus == 5) {
             $scope.onlyInformationIsAll = true // 这种情况的时候只能选择资料齐全提交会计
+            return false
+          }
+          if (item.OutWorkerStatus == 6 && item.AccountantStatus == 5) {
+            $scope.onlyInformationIsAll = true // 这种情况的时候只能选择资料齐全提交会计 外勤当月只跑完
             return false
           }
           if ($scope.item.AccountantStatus == 3 && $scope.item.AccountantTaskSource == '外勤') {

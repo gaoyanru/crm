@@ -45,12 +45,13 @@
       </div>
     </form>
     <div ng-show="isAccouting" class="con-header-right fr" style="width:10%">
-      <button class="btn btn-primary mt10" type="button" ng-click="AccountCheck()" ng-disabled="item.AccountantStatus ==2 || item.AccountantStatus == 3">会计审核</button>
-      <button class="btn btn-primary" type="button" ng-click="rejected()" ng-disabled="item.AccountantStatus ==2 || item.AccountantStatus == 3">会计驳回</button>
+      <button ng-if="user.IsCenter == 0 && (user.Category == 10 || user.Category == 2) && !item.ServiceStart" class="btn btn-primary mt10" type="button" ng-click="AccountCheck()" ng-disabled="item.AccountantStatus != 1">会计审核</button>
+      <button ng-if="user.IsCenter == 0 && (user.Category == 10 || user.Category == 2) && item.ServiceStart" class="btn btn-primary mt10" type="button" ng-click="AccountCheckSecond()" ng-disabled="item.AccountantStatus != 1">会计审核</button>
+      <button ng-if="user.IsCenter == 0 && (user.Category == 10 || user.Category == 2)" class="btn btn-primary" type="button" ng-click="rejected()" ng-disabled="item.AccountantStatus != 1">会计驳回</button>
     </div>
     <div ng-show="!isAccouting" class="con-header-right fr">
-      <button class="btn btn-primary mt10" type="button" ng-click="submitAccount()" ng-disabled="item.DisableCommitAccount == 1">审核提交会计</button>
-      <button class="btn btn-primary" type="button" ng-click="submitOutwork()" ng-disabled="item.DisableOutWorkCommitAccount == 1">审核提交外勤</button>
+      <button class="btn btn-primary mt10" type="button" ng-click="submitAccount()" ng-disabled="item.DisableCommitAccount == 1 || itemDetail23.OrderStatus == 7 || itemDetail23.OrderStatus == 8">审核提交会计</button>
+      <button class="btn btn-primary" type="button" ng-click="submitOutwork()" ng-disabled="item.DisableOutWorkCommitAccount == 1 || itemDetail23.OrderStatus == 7 || itemDetail23.OrderStatus == 8">审核提交外勤</button>
     </div>
   </div>
   <div class="content-tab">
@@ -213,9 +214,9 @@
                   <td style="text-align:center">{{contrac.Amount}}</td>
                   <td class="table-opt" style="text-align:center;width:200px">
                     <button class="btn btn-link" href="javascript:;" ng-click="detailTab2(contrac)">查看详情</button>
-                    <!-- 公司状态是挂起4 时候禁止点击终止合同 -->
-                    <button ng-show="!isAccouting" ng-disabled="isStop" class="btn btn-link" ng-disabled="contrac.Status == 4" ng-click="stop(contrac)">中止合同</button>
-                    <button ng-show="isAccouting" ng-disabled="isAccouting" class="btn btn-link">终止合同</button>
+                    <!-- 合同状态7 8 时候禁止点击终止合同 -->
+                    <button ng-show="!isAccouting" class="btn btn-link" ng-disabled="contrac.OrderStatus == 7 || contrac.OrderStatus == 8" ng-click="stop(contrac)">中止合同</button>
+                    <button ng-show="isAccouting" ng-disabled="isAccouting" class="btn btn-link">中止合同</button>
                   </td>
                 </tr>
               </tbody>
@@ -226,7 +227,7 @@
               <div class="u-pages"> <span>{{tab2.paginator.currentPage}}</span> / <span>{{tab2.paginator.numPages}}</span> &nbsp; <span>合计:{{tab2.paginator.total}}</span> </div>
               <form name="paginatorForm" novalidate>
                 <div class="input-group">
-                  <input type="number" name="paginatorInput" ng-model="tab2.currentPage" required min="1" max="{{tab2.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-disabled="!paginatorForm.$valid" ng-click="tab2.setCurrentPage()">Go!</button> </span>
+                  <input type="number" name="paginatorInput" ng-model="tab2.currentPage" required min="1" max="{{tab2.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-click="tab2.setCurrentPage()">Go!</button> </span>
                 </div>
               </form>
             </div>
@@ -269,7 +270,7 @@
               <div class="u-pages"> <span>{{tab3.paginator.currentPage}}</span> / <span>{{tab3.paginator.numPages}}</span> &nbsp; <span>合计:{{tab3.paginator.total}}</span> </div>
               <form name="paginatorForm" novalidate>
                 <div class="input-group">
-                  <input type="number" name="paginatorInput" ng-model="tab3.currentPage" required min="1" max="{{tab3.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-disabled="!paginatorForm.$valid" ng-click="tab3.setCurrentPage()">Go!</button> </span>
+                  <input type="number" name="paginatorInput" ng-model="tab3.currentPage" required min="1" max="{{tab3.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-click="tab3.setCurrentPage()">Go!</button> </span>
                 </div>
               </form>
             </div>
@@ -312,7 +313,7 @@
               <div class="u-pages"> <span>{{tab4.paginator.currentPage}}</span> / <span>{{tab4.paginator.numPages}}</span> &nbsp; <span>合计:{{tab4.paginator.total}}</span> </div>
               <form name="paginatorForm" novalidate>
                 <div class="input-group">
-                  <input type="number" name="paginatorInput" ng-model="tab4.currentPage" required min="1" max="{{tab4.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-disabled="!paginatorForm.$valid" ng-click="tab4.setCurrentPage()">Go!</button> </span>
+                  <input type="number" name="paginatorInput" ng-model="tab4.currentPage" required min="1" max="{{tab4.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-click="tab4.setCurrentPage()">Go!</button> </span>
                 </div>
               </form>
             </div>
@@ -351,7 +352,7 @@
               <div class="u-pages"> <span>{{tab5.paginator.currentPage}}</span> / <span>{{tab5.paginator.numPages}}</span> &nbsp; <span>合计:{{tab5.paginator.total}}</span> </div>
               <form name="paginatorForm" novalidate>
                 <div class="input-group">
-                  <input type="number" name="paginatorInput" ng-model="tab5.currentPage" required min="1" max="{{tab5.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-disabled="!paginatorForm.$valid" ng-click="tab5.setCurrentPage()">Go!</button> </span>
+                  <input type="number" name="paginatorInput" ng-model="tab5.currentPage" required min="1" max="{{tab5.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-click="tab5.setCurrentPage()">Go!</button> </span>
                 </div>
               </form>
             </div>
@@ -384,7 +385,7 @@
               <div class="u-pages"> <span>{{tab6.paginator.currentPage}}</span> / <span>{{tab6.paginator.numPages}}</span> &nbsp; <span>合计:{{tab6.paginator.total}}</span> </div>
               <form name="paginatorForm" novalidate>
                 <div class="input-group">
-                  <input type="number" name="paginatorInput" ng-model="tab6.currentPage" required min="1" max="{{tab6.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-disabled="!paginatorForm.$valid" ng-click="tab6.setCurrentPage()">Go!</button> </span>
+                  <input type="number" name="paginatorInput" ng-model="tab6.currentPage" required min="1" max="{{tab6.paginator.numPages}}" ng class="form-control"> <span class="input-group-btn"> <button class="btn btn-default" type="button" ng-click="tab6.setCurrentPage()">Go!</button> </span>
                 </div>
               </form>
             </div>

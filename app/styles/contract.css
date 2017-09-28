@@ -176,3 +176,13 @@
   vertical-align: middle;
   padding: 4px 4px;
 }
+.modal-header .hover-remark {
+  float: right;
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  background-color: red;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+}

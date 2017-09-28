@@ -11,7 +11,7 @@ angular.module('crmApp').controller('ContractEndManage', ['$scope', '$http', '$s
         4: "外勤会计服务",
         5: "会计服务",
         7: "结束",
-        8: "终止"
+        8: "中止"
     }
 
     $scope.companys = [] // 所属公司列表

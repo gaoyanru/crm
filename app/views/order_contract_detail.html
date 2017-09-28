@@ -12,7 +12,7 @@
       <div ng-if="(user.IsCenter == 0 && user.Category == 7) || (user.IsCenter == 0 && user.Category == 2)" class="fr belong-right">
         <button class="btn" type="button" ng-disabled="!(postDetail.OrderStatus == 1)" ng-click="check()">审核</button>
         <button class="btn" type="button" ng-disabled="!(postDetail.OrderStatus == 1)" ng-click="refuse()">驳回</button>
-        <button class="btn" type="button" ng-disabled="!(postDetail.FinancialAudit == 2)" ng-click="stop()">中止</button>
+        <button class="btn" type="button" ng-disabled="(postDetail.FinancialAudit == 2 && postDetail.OrderStatus == 8 || postDetail.OrderStatus == 7) ||  postDetail.FinancialAudit != 2" ng-click="stop()">中止</button>
       </div>
     </div>
     <form name="contractBelongform" novalidate class="clearfix">

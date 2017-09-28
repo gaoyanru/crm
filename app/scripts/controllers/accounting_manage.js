@@ -1,6 +1,7 @@
 angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$state', '$uibModal', '$filter', 'user', '$q',
     function($scope, $http, $state, $uibModal, $filter, user, $q) {
       $scope.user = user.get();
+      $scope.Category = $scope.user.Category
       $scope.areas = [] // 所属区域列表
 
       // 获取所属区域
@@ -174,6 +175,21 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
 
           });
         }
+        $scope.autidSecond = function(item) {
+          var OrderId = item.OrderId,
+              AccountantTaskSource = item.AccountantTaskSource,
+              PartTax = item.PartTax,
+              ServiceStatus = item.ServiceStatus,
+              ServiceStart = item.ServiceStart.replace('/', '-'),
+              ServiceEnd = item.ServiceEnd.replace('/', '-');
+              console.log(OrderId, AccountantTaskSource, PartTax, ServiceStatus, ServiceStart, ServiceEnd)
+          $http.put('/api/order/audit/pass/' + OrderId + '?accountantTaskSource=' + AccountantTaskSource + '&partTax=' + PartTax + '&serviceStatus=' + ServiceStatus + '&serviceStartDate=' + ServiceStart + '&serviceEndDate=' + ServiceEnd).success(function(res){
+            if (res.status) {
+              alert('审核成功')
+              refreshData();
+            }
+          })
+        }
         $scope.rejected = function(item) {
             if (!confirm("确认驳回？")) return;
             $http.put('/api/order/audit/reject/' + item.OrderId).success(function(res) {
@@ -183,6 +199,7 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
     }
 ]).controller('SetFirstPostMonth', ['$scope', '$http', '$uibModalInstance', '$filter', 'contractMsg', '$mdDialog', 'user', '$uibModal', function($scope, $http, $uibModalInstance, $filter, contractMsg, $mdDialog, user, $uibModal) {
     var date = ''
+    // 首报月如果填过就不需要再填 页面默认显示首报月
     $scope.serviceStartDate = ''
     $scope.serviceEndDate = ''
     var months = contractMsg.OrderMonths + contractMsg.GiftMonth
@@ -242,7 +259,7 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
       return
     }
 }]).controller('AccoutDetail', ['$scope', '$http', '$uibModal', '$uibModalInstance', 'FileUploader','$filter', 'contractMsg', 'item', 'areas', 'user', function($scope, $http, $uibModal, $uibModalInstance, FileUploader, $filter, contract, item, areas, users) {
-  var users = users.get()
+  $scope.user = users.get()
   // console.log(users)
   // console.log(contract, 'contract')
   $scope.title = '会计审核管理>查看'
@@ -315,6 +332,22 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
     }, function() {
 
     });
+  }
+  $scope.AccountCheckSecond = function() {
+    var item = $scope.item
+    var OrderId = item.OrderId,
+        AccountantTaskSource = item.AccountantTaskSource,
+        PartTax = item.PartTax,
+        ServiceStatus = item.ServiceStatus,
+        ServiceStart = item.ServiceStart.replace('/', '-'),
+        ServiceEnd = item.ServiceEnd.replace('/', '-');
+        console.log(OrderId, AccountantTaskSource, PartTax, ServiceStatus, ServiceStart, ServiceEnd)
+    $http.put('/api/order/audit/pass/' + OrderId + '?accountantTaskSource=' + AccountantTaskSource + '&partTax=' + PartTax + '&serviceStatus=' + ServiceStatus + '&serviceStartDate=' + ServiceStart + '&serviceEndDate=' + ServiceEnd).success(function(res){
+      if (res.status) {
+        alert('审核成功')
+        $uibModalInstance.close()
+      }
+    })
   }
   // 会计驳回
   $scope.rejected = function() {
@@ -498,8 +531,6 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
       }
     })
   }
-  $scope.detailTab2 = function(item) {
-    // 弹框查看
     $scope.detailTab2 = function(item) {
       // 弹框查看
       var OrderId = item.OrderId
@@ -524,7 +555,6 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
         }
       })
     }
-  }
 
   // tab2分页功能开始
   $scope.tab2 = {}

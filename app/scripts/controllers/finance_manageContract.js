@@ -127,6 +127,7 @@ angular.module('crmApp').controller('Finance_manageContract', ['$scope', '$http'
     post.contractId = item.OrderId
     post.remark = ''
     post.auditVal = 0
+    if (!confirm("确认审核？")) return;
     $http.put('/api/contract/financeaudit', post).success(function(res) {
       // console.log(res)
       if(res.status) {
@@ -180,7 +181,7 @@ angular.module('crmApp').controller('Finance_manageContract', ['$scope', '$http'
         $scope.forwards.isSelectAll = false
         return
     }
-
+    if (!confirm("确认批量审核？")) return;
     // 发送请求
     $http.put('/api/contract/financeauditlist', ids).success(function(res) {
       if (res.status) {
@@ -313,6 +314,7 @@ function($scope, $http, $uibModal, $uibModalInstance, $filter, UserServe, contra
     post.contractId = $scope.postDetail.OrderId
     post.remark = ''
     post.auditVal = 0
+    if (!confirm("确认审核？")) return;
     $http.put('/api/contract/financeaudit', post).success(function(res) {
       // console.log(res)
       if(res.status) {

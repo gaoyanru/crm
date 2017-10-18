@@ -189,6 +189,20 @@
 }
 .modal-header .hover-remark i{
   font-size: 28px;
-  color: #999999;
+  color: red;
   margin-top: 4px;
+}
+.remark-msg {
+  float: left;
+  margin: 7px 5px 0 20px;
+  width: 6px;
+  height: 6px;
+  background: red;
+  border-radius: 3px;
+}
+.remark-ms {
+  float: left;
+  margin: 7px 5px 0 26px;
+  background: red;
+  border-radius: 3px;
 }

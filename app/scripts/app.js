@@ -170,7 +170,7 @@ crmApp.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', 'userPro
 
         $urlRouterProvider
             .when('/main/user', '/login')
-            .otherwise('/login');
+            // .otherwise('/login');
 
 
         $httpProvider.defaults.transformResponse.push(function(response, header, status) { //请求成功

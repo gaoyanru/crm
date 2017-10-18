@@ -62,7 +62,7 @@
       </div>
       <button type="button" class="btn btn-primary" ng-click="searchFn()" style="position:absolute;right:20px;top:5px;">搜索</button>
       <!-- 只有提单人员有新增合同的权限 总经理 -->
-      <button ng-if="(IsCenter == 0 && Category == 2) || (IsCenter == 0 && Category == 5)" class="btn btn-primary pull-right" ng-click="open()" style="position:absolute;right:20px;top:50px">新增</button>
+      <button ng-if="(IsCenter == 0 && Category == 2) || (IsCenter == 0 && Category == 5) || (IsCenter == 0 && Category == 7)" class="btn btn-primary pull-right" ng-click="open()" style="position:absolute;right:20px;top:50px">新增</button>
     </form>
   </div>
   <div style="overflow-x: scroll;">
@@ -99,7 +99,7 @@
           <td class="table-opt" style="text-align:center;">
             <button class="btn btn-link" href="javascript:;" ng-click="detail(contract)">查看详情</button>
             <!-- 判断财务审核状态是已审核=2就不可以删除  只有提单员Category=5可以点击-->
-            <button ng-if="(IsCenter == 0 && Category == 2) || (IsCenter == 0 && Category == 5)" class="btn btn-link" ng-click="delete(contract)" ng-disabled="contract.FinancialAuditStatus == 2">删除</button>
+            <button ng-if="(IsCenter == 0 && Category == 2) || (IsCenter == 0 && Category == 5) || (IsCenter == 0 && Category == 7)" class="btn btn-link" ng-click="delete(contract)" ng-disabled="contract.FinancialAuditStatus == 2">删除</button>
           </td>
         </tr>
       </tbody>

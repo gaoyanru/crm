@@ -316,7 +316,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   $scope.isEdit = true;
   $scope.postDetail = {} // tab1内容
   $scope.item = item // 顶部公共信息 列表带过来
-  console.log($scope.item, '$scope.item')
+  // console.log($scope.item, '$scope.item')
   $scope.industries = [] // 所属行业列表
   $scope.areas = areas // 所属区域列表
   $scope.contractTab = [] // 合同信息lsit页卡2
@@ -341,6 +341,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   // } else {
   //   contract.BusnissDeadline.replace('T', ' ')
   // }
+  contract.IndustryId = contract.IndustryId + ''
   $scope.postDetail = contract
 
   // console.log($scope.item, '$scope.item')
@@ -373,9 +374,13 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   $scope.postDataOut.CustomerId = $scope.customerId
   $scope.postDataOut.AreaCode = $scope.postDetail.AreaCode
   $scope.postDataOut.OrderId = $scope.item.OrderId
-  // console.log($scope.postDataOut, '$scope.postDataOut')
+  console.log($scope.postDataOut, '提交外勤参数')
   // 审核提交会计
   $scope.submitAccount = function() {
+    if (!$scope.postDetail.AreaCode) {
+      alert ('请选择所属区域')
+      return
+    }
     var post = {}
     post.orderId = $scope.itemDetail23.OrderId
     post.partTax = ''
@@ -419,6 +424,10 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
   // 审核提交外勤
   $scope.submitOutwork = function() {
     // 提交外勤完毕后按钮禁止
+    if (!$scope.postDetail.AreaCode) {
+      alert ('请选择所属区域')
+      return
+    }
     var modalInstance = $uibModal.open({
         templateUrl: 'views/order_outworker_add.html',
         controller: 'Signed_outworker_add',
@@ -470,7 +479,7 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
       alert ('请选择所属区域')
       return
     }
-    console.log($scope.item)
+    // console.log($scope.item)
     var OrderId = $scope.item.OrderId
     var url = '/api/Customer/' + OrderId + '?verify=1'
     if ($scope.postDetail.NoDeadLine) {
@@ -482,7 +491,17 @@ function($scope, $http, $uibModalInstance, contract, signFrom, title, users) {
     $http.put(url, $scope.postDetail).success(function(res) {
       // console.log(res)
       if(res.status) {
-          $uibModalInstance.close()
+        alert('保存成功')
+        $http.get('/api/customerdetail/' + $scope.customerId).success(function(res) {
+          if (res.status) {
+            res.data.IndustryId = res.data.IndustryId + ''
+            $scope.postDetail = res.data
+            // console.log($scope.postDetail, '保存完成后再看返回')
+            $scope.postDataOut.AreaCode = $scope.postDetail.AreaCode
+            // console.log($scope.postDataOut, '第二次提交外勤参数')
+          }
+        })
+          // $uibModalInstance.close()
       }
     })
   }

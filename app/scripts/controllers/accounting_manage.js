@@ -279,6 +279,7 @@ angular.module('crmApp').controller('AccountingManage', ['$scope', '$http', '$st
   // contract.IndustryId = 1
   // contract.AreaCode = '110101'
   // contract.AddedValue = 1
+  contract.IndustryId = contract.IndustryId + ''
   $scope.postDetail = contract
   // 提交会计 提交外勤是否可点
   $scope.isSubmitAccount = false

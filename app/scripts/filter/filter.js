@@ -369,7 +369,7 @@ angular.module('crmApp').filter('filterAddValue', function() {
                 str = '待处理'
                 break;
             case 3:
-                str = '进行时'
+                str = '进行中'
                 break;
             case 4:
                 str = '已完成'
@@ -435,7 +435,7 @@ angular.module('crmApp').filter('filterAddValue', function() {
                 str = '待处理'
                 break;
             case 3:
-                str = '进行时'
+                str = '进行中'
                 break;
             case 4:
                 str = '已完成'
